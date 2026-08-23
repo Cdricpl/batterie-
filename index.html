@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ma Batterie — Apprendre la batterie pas à pas</title>
+<meta name="description" content="Application pour apprendre la batterie : cours progressifs, rythmes connus, partitions qui se lisent toutes seules.">
+<meta name="theme-color" content="#12100e">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🥁</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-logo">🥁</span>
+    <div>
+      <h1>Ma Batterie</h1>
+      <p class="brand-sub">Apprendre la batterie, pas à pas</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="streak" id="streak-box" title="Temps de pratique aujourd'hui">
+      <span id="streak-flame">🔥</span>
+      <span id="streak-text">0 min aujourd'hui</span>
+    </div>
+    <button class="btn ghost" id="btn-help" type="button">Aide clavier</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs" role="tablist">
+  <button class="tab active" data-view="cours" role="tab">📚 Parcours</button>
+  <button class="tab" data-view="rythmes" role="tab">🎵 Rythmes connus</button>
+  <button class="tab" data-view="fills" role="tab">🥁 Breaks &amp; fills</button>
+  <button class="tab" data-view="entrainement" role="tab">⏱️ Entraînement</button>
+  <button class="tab" data-view="progression" role="tab">📈 Ma progression</button>
+</nav>
+
+<main class="layout">
+
+  <!-- ============ Colonne gauche : listes ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-panel" data-panel="cours">
+      <div class="side-head">
+        <h2>Parcours débutant</h2>
+        <span class="pill" id="cours-count">0/0</span>
+      </div>
+      <div id="lesson-list" class="list"></div>
+    </div>
+
+    <div class="side-panel hidden" data-panel="rythmes">
+      <div class="side-head"><h2>Rythmes connus</h2></div>
+      <input type="search" id="search-grooves" class="search" placeholder="Chercher (rock, funk, reggae…)">
+      <div id="groove-list" class="list"></div>
+    </div>
+
+    <div class="side-panel hidden" data-panel="fills">
+      <div class="side-head"><h2>Breaks &amp; fills</h2></div>
+      <div id="fill-list" class="list"></div>
+    </div>
+
+    <div class="side-panel hidden" data-panel="entrainement">
+      <div class="side-head"><h2>Exercices</h2></div>
+      <div id="drill-list" class="list"></div>
+    </div>
+
+    <div class="side-panel hidden" data-panel="progression">
+      <div class="side-head"><h2>Résumé</h2></div>
+      <div id="progress-side" class="list"></div>
+    </div>
+  </aside>
+
+  <!-- ============ Colonne droite : scène ============ -->
+  <section class="stage" id="stage">
+
+    <div class="card player-card">
+      <div class="player-head">
+        <div>
+          <h2 id="piece-title">Choisis une leçon pour commencer</h2>
+          <p class="muted" id="piece-sub">Le parcours démarre à zéro : aucune connaissance requise.</p>
+        </div>
+        <div class="badges" id="piece-badges"></div>
+      </div>
+
+      <!-- Partition -->
+      <div class="score-toolbar">
+        <div class="seg" id="view-toggle">
+          <button class="seg-btn active" data-score="staff" type="button">Partition</button>
+          <button class="seg-btn" data-score="grid" type="button">Grille</button>
+          <button class="seg-btn" data-score="both" type="button">Les deux</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="opt-follow" checked> Défilement auto</label>
+        <label class="chk"><input type="checkbox" id="opt-names" checked> Noms des éléments</label>
+      </div>
+
+      <div class="score-wrap" id="score-wrap">
+        <div id="score-staff" class="score-staff"></div>
+        <div id="score-grid" class="score-grid hidden"></div>
+        <p class="empty-hint" id="score-empty">La partition s'affiche ici et défile toute seule pendant la lecture.</p>
+        <div class="count-overlay hidden" id="count-overlay"><span></span></div>
+      </div>
+
+      <!-- Transport -->
+      <div class="transport">
+        <button class="btn play" id="btn-play" type="button" disabled>
+          <span class="ico" id="play-ico">▶</span><span id="play-label">Écouter</span>
+        </button>
+        <button class="btn ghost" id="btn-stop" type="button" disabled>■ Stop</button>
+
+        <div class="tempo">
+          <label for="bpm">Tempo</label>
+          <input type="range" id="bpm" min="40" max="220" value="80" step="1">
+          <div class="bpm-box">
+            <input type="number" id="bpm-num" min="40" max="220" value="80">
+            <span>BPM</span>
+          </div>
+          <button class="btn tiny" id="btn-tap" type="button" title="Tape le tempo">Tap</button>
+        </div>
+
+        <div class="switches">
+          <label class="chk"><input type="checkbox" id="opt-loop" checked> Boucle</label>
+          <label class="chk"><input type="checkbox" id="opt-count" checked> Décompte</label>
+          <label class="chk"><input type="checkbox" id="opt-click"> Métronome</label>
+          <label class="chk"><input type="checkbox" id="opt-ramp"> Tempo progressif</label>
+        </div>
+      </div>
+
+      <div class="ramp-row hidden" id="ramp-row">
+        <span>+<input type="number" id="ramp-step" value="4" min="1" max="20"> BPM toutes les
+        <input type="number" id="ramp-every" value="2" min="1" max="16"> boucles, jusqu'à
+        <input type="number" id="ramp-max" value="120" min="40" max="260"> BPM</span>
+      </div>
+
+      <div class="play-row">
+        <button class="btn ghost" id="btn-practice" type="button">🎮 Mode jeu (clavier)</button>
+        <span class="muted small" id="practice-info">Joue sur le clavier en rythme, l'appli note ta précision.</span>
+        <span class="score-badge hidden" id="practice-score"></span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card kit-card">
+        <div class="card-head"><h3>Ton kit</h3><span class="muted small">les éléments s'allument quand ils jouent</span></div>
+        <div id="kit-diagram"></div>
+        <div class="mixer" id="mixer"></div>
+      </div>
+
+      <div class="card lesson-card">
+        <div id="lesson-body">
+          <h3>Bienvenue 👋</h3>
+          <p>Cette application est faite pour <strong>débuter de zéro</strong> et progresser sans professeur&nbsp;:</p>
+          <ul>
+            <li><strong>Parcours</strong> : 25 leçons dans l'ordre, de la première noire au premier morceau.</li>
+            <li><strong>Rythmes connus</strong> : les grooves qu'on entend partout (rock, funk, reggae, shuffle, métal…).</li>
+            <li><strong>Breaks &amp; fills</strong> : pour relier tes parties.</li>
+            <li><strong>Entraînement</strong> : métronome, tempo progressif, exercices de mains et de pied.</li>
+          </ul>
+          <p>Toutes les partitions <strong>se lisent automatiquement</strong> : appuie sur <em>Écouter</em>, la barre de lecture avance sur les notes et le son te montre le résultat.</p>
+          <p class="muted small">Commence par la leçon&nbsp;1 dans la colonne de gauche.</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<div class="modal hidden" id="help-modal">
+  <div class="modal-box">
+    <h3>Clavier — mode jeu</h3>
+    <p class="muted small">Tu peux « jouer » les partitions au clavier pour travailler la lecture et le placement rythmique.</p>
+    <table class="keys">
+      <tr><td><kbd>Espace</kbd></td><td>Grosse caisse</td></tr>
+      <tr><td><kbd>F</kbd> / <kbd>J</kbd></td><td>Caisse claire</td></tr>
+      <tr><td><kbd>D</kbd> / <kbd>K</kbd></td><td>Charleston</td></tr>
+      <tr><td><kbd>S</kbd></td><td>Charleston ouvert</td></tr>
+      <tr><td><kbd>A</kbd></td><td>Charleston au pied</td></tr>
+      <tr><td><kbd>I</kbd></td><td>Tom 1 (alto)</td></tr>
+      <tr><td><kbd>O</kbd></td><td>Tom 2 (médium)</td></tr>
+      <tr><td><kbd>P</kbd></td><td>Tom basse</td></tr>
+      <tr><td><kbd>E</kbd></td><td>Crash</td></tr>
+      <tr><td><kbd>R</kbd></td><td>Ride</td></tr>
+    </table>
+    <button class="btn" id="btn-help-close" type="button">Fermer</button>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

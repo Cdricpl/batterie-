@@ -1,0 +1,147 @@
+/* Lecteur : planification audio précise (lookahead) + tête de lecture fluide. */
+import { reprendreAudio, ctxAudio, jouer, clic } from './audio.js';
+import { analyser } from './notation.js';
+import { SIGNES, estNote } from './instruments.js';
+
+const LOOKAHEAD = 0.12;   // secondes planifiées à l'avance
+const TICK = 25;          // ms entre deux réveils du planificateur
+
+export class Lecteur {
+  constructor(cb = {}){
+    this.cb = cb;                 // {onPos, onFrappe, onBoucle, onFin, onCompte, onTempo}
+    this.motif = null;
+    this.bpm = 80;
+    this.enLecture = false;
+    this.options = { boucle:true, decompte:true, clic:false, rampe:null };
+    this.file = [];
+    this.boucles = 0;
+    this.debutBoucle = 0;
+    this.timer = null;
+    this.raf = null;
+  }
+
+  charger(motif){
+    this.motif = motif;
+    this.a = analyser(motif);
+    this.total = this.a.total;
+    this.frappesParStep = [];
+    for (let s = 0; s < this.total; s++){
+      const l = [];
+      for (const [id, str] of Object.entries(this.a.pistes)){
+        const c = str[s];
+        if (estNote(c)) l.push({ inst:id, signe:c });
+      }
+      this.frappesParStep.push(l);
+    }
+  }
+
+  get dureeStep(){ return 60 / this.bpm / this.a.res; }
+  get dureeTemps(){ return 60 / this.bpm; }
+
+  setTempo(bpm){
+    this.bpm = Math.max(30, Math.min(260, Math.round(bpm)));
+    this.cb.onTempo && this.cb.onTempo(this.bpm);
+  }
+
+  async basculer(){ this.enLecture ? this.arreter() : await this.demarrer(); }
+
+  async demarrer(){
+    if (!this.motif || this.enLecture) return;
+    const ctx = await reprendreAudio();
+    this.enLecture = true;
+    this.boucles = 0;
+    this.step = 0;
+    this.file = [];
+    this.compteRestant = this.options.decompte ? (this.motif.beats ?? 4) : 0;
+    this.prochain = ctx.currentTime + 0.12;
+    this.debutBoucle = this.prochain + this.compteRestant * this.dureeTemps;
+    this.timer = setInterval(() => this._planifier(), TICK);
+    this._planifier();
+    this._suivre();
+  }
+
+  arreter(){
+    this.enLecture = false;
+    clearInterval(this.timer); this.timer = null;
+    cancelAnimationFrame(this.raf); this.raf = null;
+    this.file = [];
+    this.cb.onPos && this.cb.onPos(null);
+    this.cb.onFin && this.cb.onFin();
+  }
+
+  _planifier(){
+    const ctx = ctxAudio();
+    if (!ctx || !this.enLecture) return;
+    const limite = ctx.currentTime + LOOKAHEAD;
+
+    while (this.prochain < limite){
+      if (this.compteRestant > 0){
+        const n = (this.motif.beats ?? 4) - this.compteRestant + 1;
+        clic(this.prochain, n === 1);
+        this.file.push({ compte:n, temps:this.prochain });
+        this.prochain += this.dureeTemps;
+        this.compteRestant--;
+        if (this.compteRestant === 0) this.debutBoucle = this.prochain;
+        continue;
+      }
+
+      const s = this.step;
+      if (s === 0) this.debutBoucle = this.prochain;
+
+      for (const f of this.frappesParStep[s]){
+        const sg = SIGNES[f.signe] || SIGNES.x;
+        const id = (f.inst === 'CH' && sg.open) ? 'CH_OPEN' : f.inst;
+        jouer(id, this.prochain, { velo:sg.velo, ghost:sg.ghost, open:sg.open, flam:sg.flam });
+      }
+      if (this.options.clic && s % this.a.res === 0){
+        clic(this.prochain, (s % this.a.parMesure) === 0);
+      }
+      this.file.push({ step:s, temps:this.prochain, notes:this.frappesParStep[s], duree:this.dureeStep });
+
+      this.prochain += this.dureeStep;
+      this.step++;
+
+      if (this.step >= this.total){
+        this.step = 0;
+        this.boucles++;
+        const r = this.options.rampe;
+        if (r && this.boucles % r.chaque === 0 && this.bpm < r.max){
+          this.setTempo(Math.min(r.max, this.bpm + r.pas));
+        }
+        if (!this.options.boucle){
+          this.file.push({ fin:true, temps:this.prochain });
+          clearInterval(this.timer); this.timer = null;
+          return;
+        }
+      }
+    }
+  }
+
+  _suivre(){
+    const boucle = () => {
+      const ctx = ctxAudio();
+      if (!ctx || !this.enLecture) return;
+      const now = ctx.currentTime;
+      let courant = null;
+      while (this.file.length && this.file[0].temps <= now){
+        courant = this.file.shift();
+        if (courant.fin){ this.arreter(); return; }
+        if (courant.compte){ this.cb.onCompte && this.cb.onCompte(courant.compte); }
+        else {
+          if (courant.step === 0) this.cb.onBoucle && this.cb.onBoucle(this.boucles);
+          this.cb.onFrappe && this.cb.onFrappe(courant.notes, courant.step);
+          this._dernier = courant;
+        }
+      }
+      if (this._dernier){
+        const pos = this._dernier.step + (now - this._dernier.temps) / this._dernier.duree;
+        this.cb.onPos && this.cb.onPos(Math.min(pos, this.total));
+      }
+      this.raf = requestAnimationFrame(boucle);
+    };
+    this.raf = requestAnimationFrame(boucle);
+  }
+
+  /* Instant théorique (horloge audio) du pas s dans la boucle en cours */
+  tempsDuStep(s){ return this.debutBoucle + s * this.dureeStep; }
+}
