@@ -304,3 +304,81 @@ kbd{
   .tempo{min-width:100%}
   .btn.play{flex:1}
 }
+
+/* ====== solo / mixer ====== */
+.mix-solo{
+  background:var(--fond2);border:1px solid var(--bord);color:var(--texte2);
+  border-radius:5px;width:20px;height:20px;flex:0 0 20px;font-size:10px;font-weight:800;
+  cursor:pointer;padding:0;line-height:1;
+}
+.mix-solo:hover{color:var(--texte);border-color:#544a3c}
+.mix-solo.actif{background:var(--accent2);border-color:var(--accent2);color:#12100e}
+.mixer.en-solo .mix-row:not(:has(.mix-solo.actif)){opacity:.4}
+
+/* ====== petits contrôles ====== */
+.mini-select{
+  background:var(--fond2);border:1px solid var(--bord);color:var(--texte);
+  border-radius:7px;padding:4px 6px;font:inherit;font-size:12px;
+}
+.mini-select:disabled{opacity:.45}
+
+/* ====== carte de progression ====== */
+.progress-card{display:flex;flex-direction:column;gap:2px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:6px 0 12px}
+.stats-grid .stat{margin:0}
+.jauge{
+  position:relative;height:24px;background:var(--carte2);border-radius:99px;overflow:hidden;
+  border:1px solid var(--bord);display:grid;place-items:center;
+}
+.jauge i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--accent2),var(--accent));opacity:.8}
+.jauge span{position:relative;font-size:12px;font-weight:650;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.bars.grand{height:96px;gap:4px;align-items:flex-end}
+.bars.grand .bar{flex-direction:column;justify-content:flex-end;gap:4px;height:100%}
+.bars.grand .piste{
+  flex:1;width:100%;display:flex;align-items:flex-end;
+  background:rgba(255,255,255,.04);border-radius:3px;
+}
+.bars.grand .piste i{width:100%;background:none;border-radius:3px}
+.bars.grand .piste i.plein{background:linear-gradient(180deg,var(--accent2),var(--accent))}
+.bars.grand u{font-size:9px;color:var(--texte2);text-decoration:none;text-align:center}
+.niv-bloc{margin:10px 0}
+.niv-head{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:6px}
+.niv-head b{font-weight:600}
+.niv-lecons{display:flex;gap:6px;flex-wrap:wrap}
+.pastille{
+  position:relative;width:46px;min-height:46px;border-radius:10px;cursor:pointer;
+  background:var(--carte2);border:1px solid var(--bord);color:var(--texte2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:inherit;
+}
+.pastille:hover{border-color:var(--accent);color:var(--texte)}
+.pastille span{font-size:14px;font-weight:700}
+.pastille em{font-size:9.5px;font-style:normal;color:var(--accent2)}
+.pastille.faite{background:rgba(6,214,160,.12);border-color:rgba(6,214,160,.45);color:var(--ok)}
+.pastille .defi-ok{position:absolute;top:-6px;right:-6px;font-size:11px;font-style:normal}
+
+/* ====== impression : la partition seule, en noir sur blanc ====== */
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff !important;color:#000}
+  .topbar,.tabs,.sidebar,.score-toolbar,.transport,.ramp-row,.play-row,
+  .two-col,.badges,.count-overlay,#score-grid,#progress-card,.modal{display:none !important}
+  .layout{display:block;padding:0;max-width:none}
+  .card,.player-card{border:none;box-shadow:none;background:#fff;padding:0}
+  .score-wrap{background:#fff;border:none;padding:0}
+  .scroll-x{overflow:visible}
+  #piece-title{color:#000;font-size:20px}
+  #piece-sub{color:#333}
+  .empty-hint,.playhead{display:none}
+  .legende,.doigte-info{color:#222}
+  .legende .lg-sym{color:#000 !important}
+  .portee{height:auto;width:100%}
+  /* le « :not([fill=none]) » évite de remplir les tracés qui ne sont que des contours */
+  .portee .ligne,.portee .hampe,.portee .accent,.portee .silence{stroke:#000}
+  .portee .ligature,.portee .ink{fill:#000}
+  .portee .silence:not([fill="none"]){fill:#333}
+  .portee .note-grp ellipse:not([fill="none"]){fill:#000}
+  .portee .note-grp line{stroke:#000}
+  .portee .note-grp circle[fill="none"]{stroke:#000}
+  .portee .compte{fill:#000}
+  .portee .txt-faible,.portee .doigte{fill:#555}
+}

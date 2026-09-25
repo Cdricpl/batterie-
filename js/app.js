@@ -1,6 +1,6 @@
 /* Assemblage de l'interface. */
 import { INSTRUMENTS, ORDRE, TOUCHES, estNote } from './instruments.js';
-import { initAudio, reprendreAudio, jouer, setVolume, setMute, VOLUMES_DEFAUT, ctxAudio } from './audio.js';
+import { initAudio, reprendreAudio, jouer, setVolume, setMute, setSolos, VOLUMES_DEFAUT, ctxAudio } from './audio.js';
 import { dessinerPortee, dessinerGrille, legende, analyser, frappes } from './notation.js';
 import { GROOVES, FILLS, EXERCICES } from './patterns.js';
 import { LECONS, NIVEAUX } from './lessons.js';
@@ -16,6 +16,7 @@ let leconCourante = null;
 let portee = null;          // {svg, xDe, playhead, ...}
 let grille = null;
 let modeJeu = false;
+let solosActifs = new Set();
 let jugements = [];
 let chronoLecture = null;
 
@@ -53,8 +54,11 @@ function chargerMotif(motif, { titre, sous, badges = [], corps = null, lecon = n
   $('#btn-stop').disabled = false;
   $('#score-empty').classList.add('hidden');
 
+  solosActifs.clear();
+  setSolos([]);
   rendrePartition();
   majMixer();
+  majOptionsClic();
   if (corps) $('#lesson-body').innerHTML = corps;
   $('#practice-score').classList.add('hidden');
   jugements = [];
@@ -161,6 +165,7 @@ function majMixer(){
     row.className = 'mix-row';
     row.innerHTML = `
       <button class="mix-mute" data-inst="${id}" title="Couper / rétablir">🔊</button>
+      <button class="mix-solo${solosActifs.has(id) ? ' actif' : ''}" data-solo="${id}" title="N'entendre que cet élément">S</button>
       <span class="mix-nom" style="border-color:${def.couleur}">${def.court}</span>
       <input type="range" min="0" max="1.4" step="0.05" value="${VOLUMES_DEFAUT[id]}" data-vol="${id}">`;
     mx.appendChild(row);
@@ -175,6 +180,16 @@ function majMixer(){
       b.textContent = on ? '🔇' : '🔊';
     });
   });
+  mx.querySelectorAll('.mix-solo').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.solo;
+      solosActifs.has(id) ? solosActifs.delete(id) : solosActifs.add(id);
+      b.classList.toggle('actif', solosActifs.has(id));
+      setSolos([...solosActifs]);
+      $('#mixer').classList.toggle('en-solo', solosActifs.size > 0);
+    });
+  });
+  $('#mixer').classList.toggle('en-solo', solosActifs.size > 0);
 }
 
 /* ================= listes ================= */
@@ -351,6 +366,77 @@ function majProgression(){
   });
   $('#streak-text').textContent = `${P.minutesAujourdhui()} min aujourd'hui`;
   $('#cours-count').textContent = `${P.nbFaites()}/${LECONS.length}`;
+  majCarteProgression();
+}
+
+function majCarteProgression(){
+  const box = $('#progress-card');
+  if (!box) return;
+  const hist = P.historique(21);
+  const maxi = Math.max(10, ...hist.map(h => h.minutes));
+  const faites = P.nbFaites();
+  const pct = Math.round(faites / LECONS.length * 100);
+  const prochaine = LECONS.find(l => !P.estFaite(l.id)) || LECONS[LECONS.length - 1];
+  const jours = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+
+  const niveaux = NIVEAUX.map(niv => {
+    const lot = LECONS.filter(l => l.niveau === niv.n);
+    const ok = lot.filter(l => P.estFaite(l.id)).length;
+    return `
+      <div class="niv-bloc">
+        <div class="niv-head">
+          <span class="grp-pt" style="background:${niv.couleur}"></span>
+          <b>${niv.nom}</b>
+          <span class="muted small">${ok}/${lot.length}</span>
+        </div>
+        <div class="niv-lecons">${lot.map(l => {
+          const bpm = P.meilleurTempo(l.pattern.id);
+          const fait = P.estFaite(l.id);
+          const defi = l.defi && bpm >= l.defi.bpm;
+          return `<button type="button" class="pastille${fait ? ' faite' : ''}" data-ouvrir="${l.id}"
+            title="${l.titre}${bpm ? ' — meilleur tempo : ' + bpm + ' BPM' : ''}">
+            <span>${LECONS.indexOf(l) + 1}</span>
+            ${bpm ? `<em>${bpm}</em>` : ''}${defi ? '<i class="defi-ok">🎯</i>' : ''}
+          </button>`;
+        }).join('')}</div>
+      </div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="card-head"><h3>Ma progression</h3>
+      <span class="muted small">tout est enregistré dans ce navigateur</span></div>
+
+    <div class="stats-grid">
+      <div class="stat"><span class="stat-n">${faites}/${LECONS.length}</span><span>leçons terminées</span></div>
+      <div class="stat"><span class="stat-n">${P.minutesAujourdhui()} min</span><span>aujourd'hui</span></div>
+      <div class="stat"><span class="stat-n">${P.serie()} j</span><span>jours d'affilée</span></div>
+      <div class="stat"><span class="stat-n">${P.minutesTotal()} min</span><span>au total</span></div>
+    </div>
+
+    <div class="jauge"><i style="width:${pct}%"></i><span>${pct} % du parcours</span></div>
+
+    <h4 class="mini-h">Temps de pratique — 3 dernières semaines</h4>
+    <div class="bars grand">${hist.map(h => {
+      const d = new Date(h.jour + 'T12:00:00');
+      return `<span class="bar" title="${h.jour} — ${h.minutes} min">
+        <span class="piste"><i class="${h.minutes ? 'plein' : ''}"
+          style="height:${h.minutes ? Math.max(4, Math.round(h.minutes / maxi * 70)) : 0}px"></i></span>
+        <u>${jours[d.getDay()]}</u></span>`;
+    }).join('')}</div>
+
+    <h4 class="mini-h">Parcours — clique sur un numéro pour ouvrir la leçon</h4>
+    ${niveaux}
+    <p class="muted small">Le petit nombre sous la pastille est le meilleur tempo atteint sur cette leçon ; 🎯 signale un défi réussi.</p>
+
+    <div class="lecon-actions">
+      <span class="muted small">Prochaine étape : <b>${LECONS.indexOf(prochaine) + 1}. ${prochaine.titre}</b></span>
+      <button class="btn" id="btn-reprendre">Reprendre l'entraînement →</button>
+    </div>`;
+
+  box.querySelectorAll('[data-ouvrir]').forEach(b =>
+    b.addEventListener('click', () => ouvrirLecon(b.dataset.ouvrir)));
+  const r = $('#btn-reprendre');
+  if (r) r.addEventListener('click', () => ouvrirLecon(prochaine.id));
 }
 
 /* ================= transport ================= */
@@ -392,9 +478,38 @@ $('#btn-tap').addEventListener('click', () => {
   }
 });
 
+function majOptionsClic(){
+  const sel = $('#click-sub');
+  const res = motifCourant ? (motifCourant.res ?? 4) : 4;
+  const choix = res % 3 === 0
+    ? [[1, 'à la noire'], [res, 'aux triolets']]
+    : [[1, 'à la noire'], [2, 'aux croches'], [4, 'aux doubles']].filter(c => res % c[0] === 0);
+  sel.innerHTML = choix.map(([v, t]) => `<option value="${v}">${t}</option>`).join('');
+  sel.value = '1';
+  lecteur.options.clicSub = 1;
+}
+$('#click-sub').addEventListener('change', e => lecteur.options.clicSub = +e.target.value);
+
+/* ---- demi-tempo / tempo doublé ---- */
+function tempoRelatif(facteur){
+  const min = +$('#bpm').min, max = +$('#bpm').max;
+  lecteur.setTempo(Math.max(min, Math.min(max, Math.round(lecteur.bpm * facteur))));
+}
+$('#btn-half').addEventListener('click', () => tempoRelatif(0.5));
+$('#btn-double').addEventListener('click', () => tempoRelatif(2));
+
+/* ---- impression ---- */
+$('#btn-print').addEventListener('click', () => {
+  if (lecteur.enLecture) { lecteur.arreter(); majBoutonPlay(false); }
+  window.print();
+});
+
 $('#opt-loop').addEventListener('change', e => lecteur.options.boucle = e.target.checked);
 $('#opt-count').addEventListener('change', e => lecteur.options.decompte = e.target.checked);
-$('#opt-click').addEventListener('change', e => lecteur.options.clic = e.target.checked);
+$('#opt-click').addEventListener('change', e => {
+  lecteur.options.clic = e.target.checked;
+  $('#click-sub').disabled = !e.target.checked;
+});
 $('#opt-ramp').addEventListener('change', e => {
   $('#ramp-row').classList.toggle('hidden', !e.target.checked);
   majRampe();
@@ -497,9 +612,13 @@ window.addEventListener('keydown', e => {
 
 /* ================= onglets ================= */
 function basculerVue(nom){
+  const bilan = nom === 'progression';
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === nom));
   $$('.side-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== nom));
-  if (nom === 'progression') majProgression();
+  $('.player-card').classList.toggle('hidden', bilan);
+  $('.two-col').classList.toggle('hidden', bilan);
+  $('#progress-card').classList.toggle('hidden', !bilan);
+  if (bilan){ if (lecteur.enLecture){ lecteur.arreter(); majBoutonPlay(false); } majProgression(); }
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => basculerVue(t.dataset.view)));
 

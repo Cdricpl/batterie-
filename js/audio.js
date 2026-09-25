@@ -4,8 +4,10 @@
 let ctx = null;
 let master = null;
 let noiseBuf = null;
-const gains = {};       // volume par instrument
-const mutes = {};
+const gains = {};       // sortie par instrument
+const vols  = {};       // volume choisi
+const mutes = {};       // éléments coupés
+let solos = new Set();  // si non vide, seuls ces éléments sont audibles
 
 export const VOLUMES_DEFAUT = {
   CR: 0.55, CH: 0.7, RD: 0.6, T1: 0.85, T2: 0.85, CC: 0.9, TB: 0.85, GC: 1.0, HP: 0.6
@@ -29,6 +31,7 @@ export function initAudio(){
     g.gain.value = v;
     g.connect(master);
     gains[id] = g;
+    vols[id] = v;
     mutes[id] = false;
   }
   // bruit blanc réutilisable
@@ -45,8 +48,15 @@ export async function reprendreAudio(){
   return ctx;
 }
 
-export function setVolume(id, v){ if (gains[id]) gains[id].gain.value = mutes[id] ? 0 : v; }
-export function setMute(id, m){ mutes[id] = m; if (gains[id]) gains[id].gain.value = m ? 0 : (VOLUMES_DEFAUT[id] ?? 0.8); }
+function appliquer(id){
+  if (!gains[id]) return;
+  const etouffe = mutes[id] || (solos.size > 0 && !solos.has(id));
+  gains[id].gain.value = etouffe ? 0 : (vols[id] ?? 0.8);
+}
+export function setVolume(id, v){ vols[id] = v; appliquer(id); }
+export function setMute(id, m){ mutes[id] = m; appliquer(id); }
+export function setSolos(ids){ solos = new Set(ids); for (const id of Object.keys(gains)) appliquer(id); }
+export function estCoupe(id){ return !!mutes[id]; }
 export function setMasterVolume(v){ if (master) master.gain.value = v; }
 
 function noise(t, dur){
@@ -154,12 +164,14 @@ function cymbale(t, v, id){
   }
 }
 
-export function clic(t, fort){
+/* niveau : 2 = premier temps, 1 = temps, 0 = subdivision */
+export function clic(t, niveau = 1){
   if (!ctx) return;
+  const n = niveau === true ? 2 : niveau === false ? 1 : niveau;
   const o = ctx.createOscillator();
   o.type = 'square';
-  o.frequency.value = fort ? 1600 : 1050;
-  const g = env(t, fort ? 0.28 : 0.16, 0.001, 0.035);
+  o.frequency.value = n >= 2 ? 1600 : n === 1 ? 1050 : 760;
+  const g = env(t, n >= 2 ? 0.28 : n === 1 ? 0.16 : 0.07, 0.001, 0.035);
   o.connect(g).connect(master);
   o.start(t); o.stop(t + 0.09);
 }

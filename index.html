@@ -91,6 +91,7 @@
         </div>
         <label class="chk"><input type="checkbox" id="opt-follow" checked> Défilement auto</label>
         <label class="chk"><input type="checkbox" id="opt-names" checked> Noms des éléments</label>
+        <button class="btn tiny ghost" id="btn-print" type="button" title="Imprimer la partition pour la poser sur un pupitre">🖨️ Imprimer</button>
       </div>
 
       <div class="score-wrap" id="score-wrap">
@@ -115,12 +116,19 @@
             <span>BPM</span>
           </div>
           <button class="btn tiny" id="btn-tap" type="button" title="Tape le tempo">Tap</button>
+          <button class="btn tiny" id="btn-half" type="button" title="Moitié du tempo — pour déchiffrer">÷2</button>
+          <button class="btn tiny" id="btn-double" type="button" title="Tempo doublé">×2</button>
         </div>
 
         <div class="switches">
           <label class="chk"><input type="checkbox" id="opt-loop" checked> Boucle</label>
           <label class="chk"><input type="checkbox" id="opt-count" checked> Décompte</label>
           <label class="chk"><input type="checkbox" id="opt-click"> Métronome</label>
+          <select id="click-sub" class="mini-select" title="Ce que joue le métronome" disabled>
+            <option value="1">à la noire</option>
+            <option value="2">aux croches</option>
+            <option value="4">aux doubles</option>
+          </select>
           <label class="chk"><input type="checkbox" id="opt-ramp"> Tempo progressif</label>
         </div>
       </div>
@@ -160,6 +168,8 @@
         </div>
       </div>
     </div>
+
+    <div class="card progress-card hidden" id="progress-card"></div>
 
   </section>
 </main>

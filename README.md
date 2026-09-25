@@ -23,8 +23,10 @@ une partition jouable, des conseils et parfois un défi de tempo :
 | 4 | Triolets, shuffle, reggae one drop, ride jazz, bossa nova |
 | 5 | Doubles au pied, half-time, tempos rapides, nuances, **construire un morceau** |
 
-La progression (leçons terminées, temps de pratique, meilleurs tempos) est
-enregistrée dans le navigateur.
+La progression est enregistrée dans le navigateur, et l'onglet **📈 Ma progression**
+en fait le bilan : leçons terminées, pourcentage du parcours, temps de pratique des
+trois dernières semaines, jours d'affilée, meilleur tempo atteint sur chaque leçon et
+défis réussis. Un clic sur le numéro d'une leçon la rouvre.
 
 ### 🎵 Rythmes connus — 28 grooves
 Rock, rock 16 temps, rythme de stade, four on the floor, Motown, funk, boom bap,
@@ -53,10 +55,18 @@ tenue du tempo.
   boîte à rythmes, beaucoup plus simple pour débuter. Ou les deux à la fois.
 - **Comptage affiché** sous chaque note (`1 e et a`, `1 la li`…).
 - **Métronome**, **décompte** d'une mesure, **boucle**, **tap tempo**.
+- **Métronome à la noire, aux croches ou aux doubles-croches** (aux triolets sur les
+  rythmes ternaires) : le clic s'adapte au rythme affiché, avec un son plus fort sur
+  le premier temps.
+- **÷2 / ×2** : passer en demi-tempo pour déchiffrer, puis revenir, en un clic.
 - **Tempo progressif** : +N BPM toutes les X boucles jusqu'à un maximum — la
   meilleure méthode pour gagner en vitesse sans se dégrader.
-- **Mixer** : couper ou baisser un élément pour travailler les autres séparément
-  (par exemple couper le charleston pour n'entendre que pied + caisse claire).
+- **Mixer avec solo et mute** : couper un élément, ou n'en garder qu'un seul
+  (« S ») pour travailler un membre à la fois — par exemple n'entendre que la
+  grosse caisse sous le charleston.
+- **Impression** : le bouton 🖨️ sort la partition seule, en noir sur blanc et en
+  paysage, pour la poser sur un pupitre. (Idéal sur 1 ou 2 mesures ; au-delà la
+  portée est réduite pour tenir sur une page.)
 - **Mode jeu** : joue la partition au clavier, l'appli mesure ton écart en
   millisecondes et te donne un pourcentage « en place » à chaque boucle.
 
@@ -77,10 +87,11 @@ tenue du tempo.
 
 ## Lancer l'application
 
-**Le plus simple** : double-cliquer sur `index.html`.
+**Le plus simple** : double-cliquer sur **`ma-batterie.html`** — tout est dedans, ça
+marche sans serveur et sans connexion.
 
-Si le navigateur bloque les modules JavaScript en `file://`, lance un petit serveur
-local depuis le dossier du projet :
+Pour travailler sur les sources (`index.html` + `js/` + `css/`), il faut un serveur
+local : les navigateurs bloquent les modules JavaScript ouverts en `file://`.
 
 ```bash
 python3 -m http.server 8000
@@ -137,7 +148,13 @@ js/lessons.js         les 25 leçons
 js/kit.js             schéma du kit
 js/progress.js        progression sauvegardée (localStorage)
 js/app.js             assemblage de l'interface
+build.js              fabrique ma-batterie.html (fichier unique autonome)
+ma-batterie.html      l'application entière en un seul fichier — à double-cliquer
 ```
+
+`node build.js` régénère le fichier unique après chaque modification. Comme tout se
+retrouve alors dans la même portée JavaScript, le script refuse de produire un fichier
+où deux modules déclarent le même nom, et indique lequel renommer.
 
 Tous les sons sont **synthétisés** en Web Audio (grosse caisse, caisse claire,
 charleston, toms, cymbales) : l'application fonctionne hors ligne et pèse quelques

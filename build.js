@@ -24,7 +24,29 @@ function module(chemin){
   return `\n/* ================= ${chemin} ================= */\n` + src.trim() + '\n';
 }
 
-let js = ORDRE.map(f => f === 'js/app.js' ? SHIM_P + module(f) : module(f)).join('\n');
+/* Détecte les noms déclarés deux fois : invisible en modules séparés,
+ * mais fatal une fois tout réuni dans la même portée. */
+function declarations(src){
+  const noms = new Set();
+  const re = /^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/gm;
+  let m;
+  while ((m = re.exec(src))) noms.add(m[1]);
+  return noms;
+}
+const vus = new Map();
+const morceaux = ORDRE.map(f => {
+  const src = f === 'js/app.js' ? SHIM_P + module(f) : module(f);
+  for (const n of declarations(src)){
+    if (vus.has(n)){
+      console.error(`ERREUR : « ${n} » est déclaré dans ${vus.get(n)} et dans ${f}.`);
+      console.error('Renomme l\'un des deux : dans le fichier unique, tout partage la même portée.');
+      process.exit(1);
+    }
+    vus.set(n, f);
+  }
+  return src;
+});
+let js = morceaux.join('\n');
 const css = fs.readFileSync('css/styles.css', 'utf8');
 
 let html = fs.readFileSync('index.html', 'utf8');

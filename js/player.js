@@ -12,7 +12,7 @@ export class Lecteur {
     this.motif = null;
     this.bpm = 80;
     this.enLecture = false;
-    this.options = { boucle:true, decompte:true, clic:false, rampe:null };
+    this.options = { boucle:true, decompte:true, clic:false, clicSub:1, rampe:null };
     this.file = [];
     this.boucles = 0;
     this.debutBoucle = 0;
@@ -77,7 +77,7 @@ export class Lecteur {
     while (this.prochain < limite){
       if (this.compteRestant > 0){
         const n = (this.motif.beats ?? 4) - this.compteRestant + 1;
-        clic(this.prochain, n === 1);
+        clic(this.prochain, n === 1 ? 2 : 1);
         this.file.push({ compte:n, temps:this.prochain });
         this.prochain += this.dureeTemps;
         this.compteRestant--;
@@ -93,8 +93,13 @@ export class Lecteur {
         const id = (f.inst === 'CH' && sg.open) ? 'CH_OPEN' : f.inst;
         jouer(id, this.prochain, { velo:sg.velo, ghost:sg.ghost, open:sg.open, flam:sg.flam });
       }
-      if (this.options.clic && s % this.a.res === 0){
-        clic(this.prochain, (s % this.a.parMesure) === 0);
+      if (this.options.clic){
+        const sub = this.options.clicSub || 1;
+        const pas = Number.isInteger(this.a.res / sub) ? this.a.res / sub : this.a.res;
+        if (s % pas === 0){
+          const niveau = (s % this.a.parMesure) === 0 ? 2 : (s % this.a.res) === 0 ? 1 : 0;
+          clic(this.prochain, niveau);
+        }
       }
       this.file.push({ step:s, temps:this.prochain, notes:this.frappesParStep[s], duree:this.dureeStep });
 

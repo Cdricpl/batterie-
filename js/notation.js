@@ -119,29 +119,30 @@ function tete(g, x, y, inst, signe){
       transform:`rotate(-18 ${x} ${y})`}, g);
   }
   if (signe === 'g'){ // ghost note : entre parenthèses
-    el('text', {x:x-10, y:y+4, fill:'#9aa0a6', 'font-size':13}, g).textContent = '(';
-    el('text', {x:x+6, y:y+4, fill:'#9aa0a6', 'font-size':13}, g).textContent = ')';
+    el('text', {class:'txt-faible', x:x-10, y:y+4, fill:'#9aa0a6', 'font-size':13}, g).textContent = '(';
+    el('text', {class:'txt-faible', x:x+6, y:y+4, fill:'#9aa0a6', 'font-size':13}, g).textContent = ')';
   }
 }
 
-function pointRythme(g, x, y){ el('circle', {cx:x + 10, cy:y - 2, r:1.7, fill:'#e9e4dc'}, g); }
+function pointRythme(g, x, y){ el('circle', {class:'ink', cx:x + 10, cy:y - 2, r:1.7, fill:'#e9e4dc'}, g); }
 
 function silence(g, x, y, val){
   const c = '#8d8579';
+  const K = 'silence';
   switch (val.r){
-    case 'ronde':   el('rect', {x:x-6, y:y-14, width:12, height:5, fill:c}, g); break;
-    case 'blanche': el('rect', {x:x-6, y:y-5,  width:12, height:5, fill:c}, g); break;
+    case 'ronde':   el('rect', {class:K, x:x-6, y:y-14, width:12, height:5, fill:c}, g); break;
+    case 'blanche': el('rect', {class:K, x:x-6, y:y-5,  width:12, height:5, fill:c}, g); break;
     case 'noire':
-      el('path', {d:`M ${x-3} ${y-12} q 7 5 2 10 q -6 5 1 10 q -6 -3 -3 -8 q -6 3 -1 -4 q 4 -4 -1 -8 z`,
+      el('path', {class:K, d:`M ${x-3} ${y-12} q 7 5 2 10 q -6 5 1 10 q -6 -3 -3 -8 q -6 3 -1 -4 q 4 -4 -1 -8 z`,
         fill:c}, g); break;
     case 'croche':
-      el('path', {d:`M ${x+3} ${y-11} l -5 14 M ${x+3} ${y-11} q -5 4 -8 1 q 4 5 8 -1`,
+      el('path', {class:K, d:`M ${x+3} ${y-11} l -5 14 M ${x+3} ${y-11} q -5 4 -8 1 q 4 5 8 -1`,
         fill:'none', stroke:c, 'stroke-width':1.8, 'stroke-linecap':'round'}, g);
-      el('circle', {cx:x-4, cy:y-10, r:2, fill:c}, g); break;
+      el('circle', {class:K, cx:x-4, cy:y-10, r:2, fill:c}, g); break;
     default: // double croche
-      el('path', {d:`M ${x+4} ${y-12} l -6 18`, fill:'none', stroke:c, 'stroke-width':1.8, 'stroke-linecap':'round'}, g);
-      el('circle', {cx:x-3, cy:y-9, r:2, fill:c}, g);
-      el('circle', {cx:x-5, cy:y-1, r:2, fill:c}, g);
+      el('path', {class:K, d:`M ${x+4} ${y-12} l -6 18`, fill:'none', stroke:c, 'stroke-width':1.8, 'stroke-linecap':'round'}, g);
+      el('circle', {class:K, cx:x-3, cy:y-9, r:2, fill:c}, g);
+      el('circle', {class:K, cx:x-5, cy:y-1, r:2, fill:c}, g);
   }
   if (val.p) pointRythme(g, x, y);
 }
@@ -150,7 +151,7 @@ function drapeau(g, x, y, nb, versLeHaut){
   const s = versLeHaut ? 1 : -1;
   for (let i = 0; i < nb; i++){
     const yy = y + s * i * 7;
-    el('path', {d:`M ${x} ${yy} q 9 4 8 13`, fill:'none', stroke:'#e9e4dc', 'stroke-width':2.4,
+    el('path', {class:'hampe', d:`M ${x} ${yy} q 9 4 8 13`, fill:'none', stroke:'#e9e4dc', 'stroke-width':2.4,
       'stroke-linecap':'round', transform: versLeHaut ? '' : `scale(1,-1) translate(0,${-2*yy})`}, g);
   }
 }
@@ -180,31 +181,31 @@ export function dessinerPortee(motif, opts = {}){
   /* portée */
   const fond = el('g', {}, svg);
   for (let p = 0; p <= 8; p += 2){
-    el('line', {x1:20, y1:yPos(p), x2:largeur - 14, y2:yPos(p), stroke:'#4a453d', 'stroke-width':1}, fond);
+    el('line', {class:'ligne', x1:20, y1:yPos(p), x2:largeur - 14, y2:yPos(p), stroke:'#4a453d', 'stroke-width':1}, fond);
   }
   // clé de percussion
-  el('rect', {x:30, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
-  el('rect', {x:38, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
+  el('rect', {class:'ink', x:30, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
+  el('rect', {class:'ink', x:38, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
   // chiffrage
-  const sig = el('text', {x:G.margeG - 6, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':17, 'font-weight':700,
+  const sig = el('text', {class:'ink', x:G.margeG - 6, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':17, 'font-weight':700,
     'text-anchor':'middle', 'font-family':'Georgia, serif'}, fond);
   sig.textContent = String(motif.beats ?? 4);
-  const sig2 = el('text', {x:G.margeG - 6, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':17, 'font-weight':700,
+  const sig2 = el('text', {class:'ink', x:G.margeG - 6, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':17, 'font-weight':700,
     'text-anchor':'middle', 'font-family':'Georgia, serif'}, fond);
   sig2.textContent = String(motif.unite ?? 4);
 
   // barres de mesure + numéros
   for (let b = 0; b <= bars; b++){
     const x = G.margeG + b * largeurMesure - (b === 0 ? 6 : 6);
-    el('line', {x1:x, y1:yPos(8), x2:x, y2:yPos(0), stroke:'#6b645a', 'stroke-width': b===0?1.4:1.4}, fond);
+    el('line', {class:'ligne', x1:x, y1:yPos(8), x2:x, y2:yPos(0), stroke:'#6b645a', 'stroke-width':1.4}, fond);
     if (b < bars){
-      const n = el('text', {x:x + 8, y:yPos(8) - 26, fill:'#7d7568', 'font-size':10, 'font-weight':600}, fond);
+      const n = el('text', {class:'txt-faible', x:x + 8, y:yPos(8) - 26, fill:'#7d7568', 'font-size':10, 'font-weight':600}, fond);
       n.textContent = String(b + 1);
     }
   }
   // double barre finale
   const xf = G.margeG + bars * largeurMesure - 6;
-  el('line', {x1:xf + 4, y1:yPos(8), x2:xf + 4, y2:yPos(0), stroke:'#6b645a', 'stroke-width':3.5}, fond);
+  el('line', {class:'ligne', x1:xf + 4, y1:yPos(8), x2:xf + 4, y2:yPos(0), stroke:'#6b645a', 'stroke-width':3.5}, fond);
 
   /* ---- construction des voix ---- */
   const voix = { up: new Map(), down: new Map() };
@@ -290,8 +291,8 @@ export function dessinerPortee(motif, opts = {}){
 
       // lignes supplémentaires
       for (const p of positions){
-        if (p >= 10) el('line', {x1:x-9, y1:yPos(10), x2:x+9, y2:yPos(10), stroke:'#4a453d', 'stroke-width':1}, grp);
-        if (p <= -2) el('line', {x1:x-9, y1:yPos(-2), x2:x+9, y2:yPos(-2), stroke:'#4a453d', 'stroke-width':1}, grp);
+        if (p >= 10) el('line', {class:'ligne', x1:x-9, y1:yPos(10), x2:x+9, y2:yPos(10), stroke:'#4a453d', 'stroke-width':1}, grp);
+        if (p <= -2) el('line', {class:'ligne', x1:x-9, y1:yPos(-2), x2:x+9, y2:yPos(-2), stroke:'#4a453d', 'stroke-width':1}, grp);
       }
 
       // hampe
@@ -302,7 +303,7 @@ export function dessinerPortee(motif, opts = {}){
         : (versLeHaut ? yPos(pHaut) - G.hampe : yPos(pBas) + G.hampe);
       const xh = versLeHaut ? x + G.teteRx - 0.4 : x - G.teteRx + 0.4;
       if (it.val.b < 4 - EPS){
-        el('line', {x1:xh, y1:yA, x2:xh, y2:yB, stroke:'#e9e4dc', 'stroke-width':1.7, 'stroke-linecap':'round'}, grp);
+        el('line', {class:'hampe', x1:xh, y1:yA, x2:xh, y2:yB, stroke:'#e9e4dc', 'stroke-width':1.7, 'stroke-linecap':'round'}, grp);
       }
       // drapeau si non ligaturée
       if (it.val.l > 0 && gi === undefined) drapeau(grp, xh, yB, it.val.l, versLeHaut);
@@ -315,16 +316,16 @@ export function dessinerPortee(motif, opts = {}){
           el('circle', {cx:x, cy:y - 11, r:3.4, fill:'none', stroke:INSTRUMENTS[n.inst].couleur, 'stroke-width':1.5}, grp);
         }
         if (n.signe === 'f'){ // flam : petite note d'agrément
-          el('ellipse', {cx:x-11, cy:y+2, rx:3, ry:2.4, fill:'#c9c2b6', transform:`rotate(-18 ${x-11} ${y+2})`}, grp);
-          el('line', {x1:x-8.2, y1:y+2, x2:x-8.2, y2:y-13, stroke:'#c9c2b6', 'stroke-width':1.2}, grp);
-          el('line', {x1:x-13, y1:y-6, x2:x-4, y2:y-11, stroke:'#c9c2b6', 'stroke-width':1.2}, grp);
+          el('ellipse', {class:'ink', cx:x-11, cy:y+2, rx:3, ry:2.4, fill:'#c9c2b6', transform:`rotate(-18 ${x-11} ${y+2})`}, grp);
+          el('line', {class:'hampe', x1:x-8.2, y1:y+2, x2:x-8.2, y2:y-13, stroke:'#c9c2b6', 'stroke-width':1.2}, grp);
+          el('line', {class:'hampe', x1:x-13, y1:y-6, x2:x-4, y2:y-11, stroke:'#c9c2b6', 'stroke-width':1.2}, grp);
         }
       }
       if (it.val.p) pointRythme(grp, x, yPos(pHaut));
       // accent
       if (it.notes.some(n => n.signe === 'X')){
         const yAcc = versLeHaut ? Math.min(yB, yPos(pHaut)) - 10 : yPos(pHaut) - 12;
-        el('path', {d:`M ${x-6} ${yAcc-4} L ${x+6} ${yAcc} L ${x-6} ${yAcc+4}`, fill:'none',
+        el('path', {class:'accent', d:`M ${x-6} ${yAcc-4} L ${x+6} ${yAcc} L ${x-6} ${yAcc+4}`, fill:'none',
           stroke:'#ffd166', 'stroke-width':1.8, 'stroke-linecap':'round'}, grp);
       }
 
@@ -346,7 +347,7 @@ export function dessinerPortee(motif, opts = {}){
           let x2 = xDe(run[run.length - 1].step) + (versLeHaut ? G.teteRx + 0.5 : -G.teteRx + 1.6);
           if (run.length === 1) x2 = x1 + 9;   // ligature partielle
           const yy = y + (niveau - 1) * ecart - (versLeHaut ? ep : 0);
-          el('rect', {x:Math.min(x1,x2), y:yy, width:Math.abs(x2-x1), height:ep, fill:'#e9e4dc', rx:1}, gNotes);
+          el('rect', {class:'ligature', x:Math.min(x1,x2), y:yy, width:Math.abs(x2-x1), height:ep, fill:'#e9e4dc', rx:1}, gNotes);
           run = [];
         };
         for (const it of grp){
@@ -371,8 +372,8 @@ export function dessinerPortee(motif, opts = {}){
       const x1 = xDe(s0) - 5, x2 = xDe(s0 + res - 1) + 6;
       const y = 16;
       el('path', {d:`M ${x1} ${y+5} L ${x1} ${y} L ${(x1+x2)/2 - 6} ${y} M ${(x1+x2)/2 + 6} ${y} L ${x2} ${y} L ${x2} ${y+5}`,
-        fill:'none', stroke:'#6b645a', 'stroke-width':1}, gT);
-      const tx = el('text', {x:(x1+x2)/2, y:y + 4, 'text-anchor':'middle', 'font-size':11,
+        fill:'none', stroke:'#6b645a', 'stroke-width':1, class:'ligne'}, gT);
+      const tx = el('text', {class:'txt-faible', x:(x1+x2)/2, y:y + 4, 'text-anchor':'middle', 'font-size':11,
         'font-style':'italic', fill:'#a49a8c'}, gT);
       tx.textContent = '3';
     }
