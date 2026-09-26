@@ -32,6 +32,8 @@
   <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/></symbol>
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-plein-ecran" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
 </svg>
@@ -148,6 +150,9 @@
         <button class="btn ghost" id="btn-stop" type="button" disabled>
           <svg class="ico" aria-hidden="true"><use href="#i-stop"/></svg> Stop
         </button>
+        <button class="btn" id="btn-scene" type="button" disabled title="Partition en grand, ligne par ligne">
+          <svg class="ico" aria-hidden="true"><use href="#i-plein-ecran"/></svg> Plein écran
+        </button>
 
         <div class="tempo">
           <label for="bpm">Tempo</label>
@@ -221,6 +226,30 @@
     </table>
     <button class="btn" id="btn-help-close" type="button">Fermer</button>
   </div>
+</div>
+
+<!-- Mode scène : la partition en grand, qui tourne la page à chaque ligne -->
+<div class="scene hidden" id="scene" role="dialog" aria-modal="true" aria-labelledby="scene-titre">
+  <div class="scene-barre">
+    <button class="btn ghost scene-fermer" id="scene-fermer" type="button" aria-label="Quitter le plein écran">
+      <svg class="ico" aria-hidden="true"><use href="#i-fermer"/></svg>
+    </button>
+    <div class="scene-titres">
+      <span class="scene-titre" id="scene-titre"></span>
+      <span class="scene-ligne-info" id="scene-ligne-info" aria-live="polite"></span>
+    </div>
+    <div class="scene-tempo" role="group" aria-label="Tempo">
+      <button class="btn tiny" id="scene-moins" type="button" aria-label="Ralentir de 5 BPM">−5</button>
+      <span class="scene-bpm"><b id="scene-bpm">80</b> BPM</span>
+      <button class="btn tiny" id="scene-plus" type="button" aria-label="Accélérer de 5 BPM">+5</button>
+    </div>
+    <button class="btn play" id="scene-play" type="button">
+      <svg class="ico" aria-hidden="true"><use id="scene-play-ico" href="#i-play"/></svg><span id="scene-play-label">Jouer</span>
+    </button>
+  </div>
+  <div class="scene-partition" id="scene-partition"></div>
+  <div class="scene-compte hidden" id="scene-compte" aria-live="assertive"><span></span></div>
+  <p class="scene-astuce" id="scene-astuce">Tourne ton téléphone : la partition sera plus grande.</p>
 </div>
 
 <div class="modal hidden" id="ios-modal" role="dialog" aria-modal="true" aria-labelledby="ios-title">

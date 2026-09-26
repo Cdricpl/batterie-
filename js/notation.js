@@ -169,6 +169,16 @@ function drapeau(g, x, y, nb, versLeHaut){
   }
 }
 
+/* ---------- dimensions ---------- */
+function pasLargeur(res){ return res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 : res === 3 ? 30 : res === 2 ? 38 : 56; }
+
+/* Largeur (en unités SVG) d'une mesure et de ce qui entoure les mesures :
+ * sert à choisir combien de mesures tiennent sur une ligne d'écran. */
+export function dimensions(motif){
+  const a = analyser(motif);
+  return { largeurMesure: a.parMesure * pasLargeur(a.res) + G.padMesure * 2, marge: G.margeG + 26 };
+}
+
 /* ---------- rendu principal ---------- */
 export function dessinerPortee(motif, opts = {}){
   const a = analyser(motif);
@@ -176,7 +186,7 @@ export function dessinerPortee(motif, opts = {}){
   // en 6/8, 9/8… on ligature par groupes de trois croches
   const groupe = (unite === 8 && beats % 3 === 0) ? res * 3 : res;
 
-  const stepW = res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 : res === 3 ? 30 : res === 2 ? 38 : 56;
+  const stepW = pasLargeur(res);
   const largeurMesure = parMesure * stepW + G.padMesure * 2;
   const largeur = G.margeG + largeurMesure * bars + 26;
 

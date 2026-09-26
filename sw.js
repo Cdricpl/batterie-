@@ -3,7 +3,7 @@
  * - l'application elle-même : mise en cache à l'installation
  * - les polices : mises en cache au premier chargement
  * Changer VERSION à chaque mise à jour pour que les téléphones la récupèrent. */
-const VERSION = 'ma-batterie-v4';
+const VERSION = 'ma-batterie-v5';
 const COQUILLE = [
   './', './index.html', './manifest.webmanifest',
   './icons/icone-192.png', './icons/icone-512.png',

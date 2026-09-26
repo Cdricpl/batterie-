@@ -393,6 +393,60 @@ kbd{
   background:var(--laiton);box-shadow:0 0 0 2px var(--fut);
 }
 
+/* ====== mode scène : plein écran, ligne par ligne ====== */
+body.en-scene{overflow:hidden}
+.scene{
+  position:fixed;inset:0;z-index:60;background:var(--mousse);
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.scene-barre{
+  display:flex;align-items:center;gap:12px;padding:8px 12px;
+  border-bottom:1px solid var(--chrome);background:var(--fut);
+}
+.scene-fermer{padding:8px;flex:0 0 auto}
+.scene-fermer .ico{width:22px;height:22px}
+.scene-titres{flex:1;min-width:0;display:flex;flex-direction:column}
+.scene-titre{font:800 var(--t-xl)/1.1 var(--f-titre);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene-ligne-info{font:600 var(--t-xs) var(--f-chiffres);color:var(--peau-3)}
+.scene-tempo{display:flex;align-items:center;gap:6px}
+.scene-tempo .btn{font-family:var(--f-chiffres);min-width:44px;justify-content:center}
+.scene-bpm{font:600 var(--t-xs) var(--f-chiffres);color:var(--peau-3);white-space:nowrap}
+.scene-bpm b{font:800 var(--t-2xl)/1 var(--f-titre);color:var(--peau)}
+.scene .btn.play{min-width:130px}
+.scene-partition{
+  position:relative;flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:6px 6px 40vh;background:var(--partition);cursor:pointer;
+}
+.scene-systeme{padding:4px 0 10px;border-bottom:1px dashed var(--chrome);opacity:.42;transition:opacity .15s}
+.scene-systeme.courante{opacity:1}
+.scene-systeme.passee{opacity:.25}
+.scene .portee.systeme{display:block;height:auto;max-width:none}
+.scene-compte{
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  background:radial-gradient(circle at center, rgba(18,16,16,.85) 0%, rgba(18,16,16,.35) 55%, transparent 80%);
+}
+.scene-compte span{font:800 140px/1 var(--f-titre);color:var(--laiton);animation:pop .35s ease-out}
+.scene-astuce{
+  position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  margin:0;padding:8px 14px;border-radius:99px;background:var(--fut-2);border:1px solid var(--chrome-2);
+  font-size:var(--t-xs);color:var(--peau-2);white-space:nowrap;pointer-events:none;
+}
+@media (max-width:640px){
+  .scene-barre{gap:8px;padding:6px 8px;flex-wrap:wrap}
+  .scene-titres{order:1;flex-basis:calc(100% - 60px)}
+  .scene-fermer{order:0}
+  .scene-tempo{order:2}
+  .scene .btn.play{order:3;flex:1;min-width:0}
+}
+/* téléphone couché : une barre compacte pour laisser la place à la partition */
+@media (max-height:500px){
+  .scene-barre{padding:4px 10px}
+  .scene-titre{font-size:var(--t-l)}
+  .scene-ligne-info{display:none}
+  .scene .btn.play{padding:8px 14px;font-size:var(--t-l)}
+}
+
 /* ====== fenêtre d'aide ====== */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:grid;place-items:center;z-index:50;padding:20px}
 .modal-box{background:var(--fut);border:1px solid var(--chrome-2);border-radius:var(--r);padding:22px;max-width:440px;width:100%}
@@ -439,7 +493,7 @@ kbd{
   @page{size:A4 landscape;margin:12mm}
   body{background:#fff !important;color:#000}
   .topbar,.tabs,.sidebar,.score-toolbar,.transport,.ramp-row,.play-row,.sections-bar,
-  .two-col,.badges,.count-overlay,#score-grid,#progress-card,.modal{display:none !important}
+  .two-col,.badges,.count-overlay,#score-grid,#progress-card,.modal,.scene{display:none !important}
   .layout{display:block;padding:0;max-width:none}
   .card,.player-card{border:none;background:#fff;padding:0}
   .score-wrap{background:#fff;border:none;padding:0}

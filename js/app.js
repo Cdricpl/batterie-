@@ -1,7 +1,7 @@
 /* Assemblage de l'interface. */
 import { INSTRUMENTS, ORDRE, TOUCHES, estNote } from './instruments.js';
 import { initAudio, reprendreAudio, jouer, setVolume, setMute, setSolos, VOLUMES_DEFAUT, ctxAudio } from './audio.js';
-import { dessinerPortee, dessinerGrille, legende, analyser, frappes, tranche } from './notation.js';
+import { dessinerPortee, dessinerGrille, legende, analyser, frappes, tranche, dimensions } from './notation.js';
 import { GROOVES, FILLS, EXERCICES } from './patterns.js';
 import { RUDIMENTS, FAMILLES_RUDIMENTS } from './rudiments.js';
 import { MORCEAUX, compilerMorceau } from './songs.js';
@@ -29,11 +29,11 @@ $('#kit-diagram').appendChild(kit.svg);
 
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
-  onPos: pos => majTeteLecture(pos),
+  onPos: pos => { majTeteLecture(pos); if (scene.ouverte) majScene(pos); },
   onFrappe: notes => { masquerDecompte(); for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst); },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
-  onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; },
+  onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; $('#scene-bpm').textContent = bpm; },
   onFin: () => { majBoutonPlay(false); stopChrono(); masquerDecompte(); }
 });
 
@@ -56,6 +56,7 @@ function chargerMotif(motif, { eyebrow = '', titre, sous, badges = [], corps = n
   $('#piece-badges').innerHTML = badges.map(b => `<span class="badge">${b}</span>`).join('');
   $('#btn-play').disabled = false;
   $('#btn-stop').disabled = false;
+  $('#btn-scene').disabled = false;
   $('#score-empty').classList.add('hidden');
 
   solosActifs.clear();
@@ -132,10 +133,13 @@ function majTeteLecture(pos){
     portee.playhead.setAttribute('x', x - 1.2);
     portee.playhead.setAttribute('opacity', 1);
     if ($('#opt-follow').checked){
+      // quand la tête de lecture sort de l'écran, on saute : la mesure en cours
+      // se retrouve au début de la vue, comme une page qu'on tourne
       const box = $('#score-staff .scroll-x');
-      if (box && box.scrollWidth > box.clientWidth){
-        const cible = x - box.clientWidth * 0.35;
-        box.scrollLeft += (cible - box.scrollLeft) * 0.25;
+      if (box && box.scrollWidth > box.clientWidth &&
+          (x > box.scrollLeft + box.clientWidth - 24 || x < box.scrollLeft + 8)){
+        const parMesure = analyser(motifCourant).parMesure;
+        box.scrollLeft = Math.max(0, portee.xDe(Math.floor(pos / parMesure) * parMesure) - 40);
       }
     }
   }
@@ -150,17 +154,23 @@ function majTeteLecture(pos){
     const g = $('#score-grid .grille');
     if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth){
       const cel = g.querySelector(`td[data-step="${step}"]`);
-      if (cel) g.scrollLeft += (cel.offsetLeft - g.clientWidth * 0.4 - g.scrollLeft) * 0.3;
+      const lbl = 90;   // colonne des noms, fixe à gauche
+      if (cel && (cel.offsetLeft + cel.offsetWidth > g.scrollLeft + g.clientWidth || cel.offsetLeft < g.scrollLeft + lbl))
+        g.scrollLeft = Math.max(0, cel.offsetLeft - lbl - 4);
     }
   }
 }
 
 function afficherDecompte(n){
-  const o = $('#count-overlay');
-  o.classList.remove('hidden');
-  o.querySelector('span').textContent = n;
+  for (const o of [$('#count-overlay'), $('#scene-compte')]){
+    o.classList.remove('hidden');
+    o.querySelector('span').textContent = n;
+  }
 }
-function masquerDecompte(){ $('#count-overlay').classList.add('hidden'); }
+function masquerDecompte(){
+  $('#count-overlay').classList.add('hidden');
+  $('#scene-compte').classList.add('hidden');
+}
 
 /* ================= mixer ================= */
 function majMixer(){
@@ -552,7 +562,29 @@ function majBoutonPlay(enCours){
   $('#play-ico').setAttribute('href', enCours ? '#i-stop' : '#i-play');
   $('#play-label').textContent = enCours ? 'Arrêter' : 'Écouter';
   $('#btn-play').classList.toggle('actif', enCours);
+  $('#scene-play-ico').setAttribute('href', enCours ? '#i-stop' : '#i-play');
+  $('#scene-play-label').textContent = enCours ? 'Arrêter' : 'Jouer';
+  $('#scene-play').classList.toggle('actif', enCours);
+  garderEcranAllume(enCours);
 }
+
+/* Le téléphone posé sur le pupitre ne doit pas se mettre en veille pendant qu'on joue */
+let verrouEcran = null;
+async function garderEcranAllume(oui){
+  try {
+    if (oui && !verrouEcran && 'wakeLock' in navigator){
+      verrouEcran = await navigator.wakeLock.request('screen');
+      verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+    } else if (!oui && verrouEcran){
+      await verrouEcran.release();
+      verrouEcran = null;
+    }
+  } catch { /* refusé (économie d'énergie) ou non pris en charge */ }
+}
+// le verrou saute quand on change d'appli : on le reprend au retour si ça joue encore
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && lecteur.enLecture) garderEcranAllume(true);
+});
 
 function startChrono(){
   stopChrono();
@@ -570,6 +602,128 @@ $('#btn-play').addEventListener('click', async () => {
   }
 });
 $('#btn-stop').addEventListener('click', () => { lecteur.arreter(); majBoutonPlay(false); });
+
+/* ================= mode scène : plein écran, ligne par ligne ================= */
+const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1 };
+
+/* Découpe la partition en lignes de 1 à 4 mesures, selon la largeur de l'écran,
+ * en gardant des notes au moins aussi grandes qu'à l'écran normal. */
+function rendreScene(){
+  const box = $('#scene-partition');
+  box.innerHTML = '';
+  scene.systemes = [];
+  if (!motifCourant) return;
+  const a = analyser(motifCourant);
+  const { largeurMesure, marge } = dimensions(motifCourant);
+  const largeur = box.clientWidth - 12;
+  const n = Math.max(1, Math.min(4, Math.floor((largeur / 1.15 - marge) / largeurMesure)));
+  for (let b = 0; b < a.bars; b += n){
+    const fin = Math.min(a.bars, b + n);
+    const t = tranche(motifCourant, b, fin);
+    const po = dessinerPortee(t, { premiereMesure: b, barreFinale: fin === a.bars });
+    if (t.doigte) dessinerDoigte(po, t);
+    po.svg.classList.add('systeme');
+    // une ligne incomplète garde la même échelle que les autres
+    po.svg.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
+    const ligne = document.createElement('div');
+    ligne.className = 'scene-systeme';
+    ligne.appendChild(po.svg);
+    box.appendChild(ligne);
+    scene.systemes.push({ po, el: ligne, debut: b * a.parMesure, fin: fin * a.parMesure });
+  }
+  scene.ligne = -1;
+  scene.dernierStep = -1;
+  allerLigne(Math.max(0, scene.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
+  // en portrait sur téléphone : conseiller de tourner l'écran
+  $('#scene-astuce').classList.toggle('hidden', !(n === 1 && innerHeight > innerWidth && innerWidth < 700));
+}
+
+function allerLigne(i){
+  if (i < 0 || i === scene.ligne) return;
+  scene.ligne = i;
+  scene.systemes.forEach((sy, k) => {
+    sy.el.classList.toggle('courante', k === i);
+    sy.el.classList.toggle('passee', k < i);
+  });
+  // saut franc vers la ligne suivante, comme une page qu'on tourne
+  $('#scene-partition').scrollTop = scene.systemes[i].el.offsetTop - 6;
+  $('#scene-ligne-info').textContent = `Ligne ${i + 1} / ${scene.systemes.length}`;
+}
+
+function majScene(pos){
+  if (pos == null){
+    for (const sy of scene.systemes) sy.po.playhead.setAttribute('opacity', 0);
+    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    scene.dernierStep = -1;
+    return;
+  }
+  let i = scene.systemes.findIndex(sy => pos < sy.fin);
+  if (i < 0) i = scene.systemes.length - 1;
+  allerLigne(i);
+  scene.systemes.forEach((sy, k) => {
+    if (k !== i) { sy.po.playhead.setAttribute('opacity', 0); return; }
+    const local = Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001);
+    sy.po.playhead.setAttribute('x', sy.po.xDe(local) - 1.2);
+    sy.po.playhead.setAttribute('opacity', 1);
+  });
+  const step = Math.floor(pos);
+  if (step !== scene.dernierStep){
+    scene.dernierStep = step;
+    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    const sy = scene.systemes[i];
+    const groupes = sy.po.notesParStep.get(step - sy.debut);
+    if (groupes) groupes.forEach(g => g.classList.add('actif'));
+  }
+}
+
+async function ouvrirScene(){
+  if (!motifCourant) return;
+  scene.ouverte = true;
+  $('#scene').classList.remove('hidden');
+  document.body.classList.add('en-scene');
+  $('#scene-titre').textContent = $('#piece-title').textContent;
+  $('#scene-bpm').textContent = lecteur.bpm;
+  // vrai plein écran quand le navigateur le permet (Android, ordinateur)
+  const racine = document.documentElement;
+  if (racine.requestFullscreen && !document.fullscreenElement){
+    try { await racine.requestFullscreen({ navigationUI:'hide' }); scene.natif = true; } catch { scene.natif = false; }
+  }
+  rendreScene();
+  $('#scene-play').focus();
+}
+
+function fermerScene(){
+  if (!scene.ouverte) return;
+  scene.ouverte = false;
+  $('#scene').classList.add('hidden');
+  document.body.classList.remove('en-scene');
+  if (scene.natif && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  scene.natif = false;
+  $('#btn-scene').focus();
+}
+
+$('#btn-scene').addEventListener('click', ouvrirScene);
+$('#scene-fermer').addEventListener('click', fermerScene);
+$('#scene-play').addEventListener('click', () => $('#btn-play').click());
+$('#scene-moins').addEventListener('click', () => lecteur.setTempo(Math.max(+$('#bpm').min, lecteur.bpm - 5)));
+$('#scene-plus').addEventListener('click', () => lecteur.setTempo(Math.min(+$('#bpm').max, lecteur.bpm + 5)));
+// un toucher sur la partition lance ou arrête la lecture : pratique baguettes en main
+$('#scene-partition').addEventListener('click', () => $('#btn-play').click());
+document.addEventListener('fullscreenchange', () => {
+  // sortie du plein écran par le système (bouton retour d'Android, Échap) : on quitte la scène
+  if (!document.fullscreenElement && scene.natif) { scene.natif = false; fermerScene(); }
+});
+window.addEventListener('keydown', e => { if (e.key === 'Escape' && scene.ouverte) fermerScene(); });
+let minuterieScene = null;
+window.addEventListener('resize', () => {
+  if (!scene.ouverte) return;
+  clearTimeout(minuterieScene);
+  minuterieScene = setTimeout(() => {
+    const ligne = scene.ligne;
+    rendreScene();
+    if (ligne >= 0 && ligne < scene.systemes.length){ scene.ligne = -1; allerLigne(ligne); }
+  }, 180);
+});
 
 $('#bpm').addEventListener('input', e => { lecteur.setTempo(+e.target.value); });
 $('#bpm-num').addEventListener('change', e => { lecteur.setTempo(+e.target.value); });

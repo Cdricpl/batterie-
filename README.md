@@ -72,6 +72,10 @@ Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue d
 - **Deux affichages** : la vraie **partition** (portée, hampes, ligatures, silences,
   accents, ghost notes, triolets, charleston ouvert…) et une **grille** de type
   boîte à rythmes, beaucoup plus simple pour débuter. Ou les deux à la fois.
+- **Plein écran** : la partition en grand, découpée en lignes de 1 à 4 mesures selon
+  la taille de l'écran. Pendant la lecture, **la partition tourne la page** : quand la
+  phrase est finie, elle saute à la ligne suivante. Un toucher sur la partition lance
+  ou arrête la lecture ; l'écran ne se met pas en veille pendant qu'on joue.
 - **Comptage affiché** sous chaque note (`1 e et a`, `1 la li`…).
 - **Métronome**, **décompte** d'une mesure, **boucle**, **tap tempo**.
 - **Métronome à la noire, aux croches ou aux doubles-croches** (aux triolets sur les

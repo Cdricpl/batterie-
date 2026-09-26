@@ -412,6 +412,60 @@ kbd{
   background:var(--laiton);box-shadow:0 0 0 2px var(--fut);
 }
 
+/* ====== mode scène : plein écran, ligne par ligne ====== */
+body.en-scene{overflow:hidden}
+.scene{
+  position:fixed;inset:0;z-index:60;background:var(--mousse);
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.scene-barre{
+  display:flex;align-items:center;gap:12px;padding:8px 12px;
+  border-bottom:1px solid var(--chrome);background:var(--fut);
+}
+.scene-fermer{padding:8px;flex:0 0 auto}
+.scene-fermer .ico{width:22px;height:22px}
+.scene-titres{flex:1;min-width:0;display:flex;flex-direction:column}
+.scene-titre{font:800 var(--t-xl)/1.1 var(--f-titre);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene-ligne-info{font:600 var(--t-xs) var(--f-chiffres);color:var(--peau-3)}
+.scene-tempo{display:flex;align-items:center;gap:6px}
+.scene-tempo .btn{font-family:var(--f-chiffres);min-width:44px;justify-content:center}
+.scene-bpm{font:600 var(--t-xs) var(--f-chiffres);color:var(--peau-3);white-space:nowrap}
+.scene-bpm b{font:800 var(--t-2xl)/1 var(--f-titre);color:var(--peau)}
+.scene .btn.play{min-width:130px}
+.scene-partition{
+  position:relative;flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:6px 6px 40vh;background:var(--partition);cursor:pointer;
+}
+.scene-systeme{padding:4px 0 10px;border-bottom:1px dashed var(--chrome);opacity:.42;transition:opacity .15s}
+.scene-systeme.courante{opacity:1}
+.scene-systeme.passee{opacity:.25}
+.scene .portee.systeme{display:block;height:auto;max-width:none}
+.scene-compte{
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  background:radial-gradient(circle at center, rgba(18,16,16,.85) 0%, rgba(18,16,16,.35) 55%, transparent 80%);
+}
+.scene-compte span{font:800 140px/1 var(--f-titre);color:var(--laiton);animation:pop .35s ease-out}
+.scene-astuce{
+  position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  margin:0;padding:8px 14px;border-radius:99px;background:var(--fut-2);border:1px solid var(--chrome-2);
+  font-size:var(--t-xs);color:var(--peau-2);white-space:nowrap;pointer-events:none;
+}
+@media (max-width:640px){
+  .scene-barre{gap:8px;padding:6px 8px;flex-wrap:wrap}
+  .scene-titres{order:1;flex-basis:calc(100% - 60px)}
+  .scene-fermer{order:0}
+  .scene-tempo{order:2}
+  .scene .btn.play{order:3;flex:1;min-width:0}
+}
+/* téléphone couché : une barre compacte pour laisser la place à la partition */
+@media (max-height:500px){
+  .scene-barre{padding:4px 10px}
+  .scene-titre{font-size:var(--t-l)}
+  .scene-ligne-info{display:none}
+  .scene .btn.play{padding:8px 14px;font-size:var(--t-l)}
+}
+
 /* ====== fenêtre d'aide ====== */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:grid;place-items:center;z-index:50;padding:20px}
 .modal-box{background:var(--fut);border:1px solid var(--chrome-2);border-radius:var(--r);padding:22px;max-width:440px;width:100%}
@@ -458,7 +512,7 @@ kbd{
   @page{size:A4 landscape;margin:12mm}
   body{background:#fff !important;color:#000}
   .topbar,.tabs,.sidebar,.score-toolbar,.transport,.ramp-row,.play-row,.sections-bar,
-  .two-col,.badges,.count-overlay,#score-grid,#progress-card,.modal{display:none !important}
+  .two-col,.badges,.count-overlay,#score-grid,#progress-card,.modal,.scene{display:none !important}
   .layout{display:block;padding:0;max-width:none}
   .card,.player-card{border:none;background:#fff;padding:0}
   .score-wrap{background:#fff;border:none;padding:0}
@@ -502,6 +556,8 @@ kbd{
   <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/></symbol>
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-plein-ecran" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
 </svg>
@@ -618,6 +674,9 @@ kbd{
         <button class="btn ghost" id="btn-stop" type="button" disabled>
           <svg class="ico" aria-hidden="true"><use href="#i-stop"/></svg> Stop
         </button>
+        <button class="btn" id="btn-scene" type="button" disabled title="Partition en grand, ligne par ligne">
+          <svg class="ico" aria-hidden="true"><use href="#i-plein-ecran"/></svg> Plein écran
+        </button>
 
         <div class="tempo">
           <label for="bpm">Tempo</label>
@@ -691,6 +750,30 @@ kbd{
     </table>
     <button class="btn" id="btn-help-close" type="button">Fermer</button>
   </div>
+</div>
+
+<!-- Mode scène : la partition en grand, qui tourne la page à chaque ligne -->
+<div class="scene hidden" id="scene" role="dialog" aria-modal="true" aria-labelledby="scene-titre">
+  <div class="scene-barre">
+    <button class="btn ghost scene-fermer" id="scene-fermer" type="button" aria-label="Quitter le plein écran">
+      <svg class="ico" aria-hidden="true"><use href="#i-fermer"/></svg>
+    </button>
+    <div class="scene-titres">
+      <span class="scene-titre" id="scene-titre"></span>
+      <span class="scene-ligne-info" id="scene-ligne-info" aria-live="polite"></span>
+    </div>
+    <div class="scene-tempo" role="group" aria-label="Tempo">
+      <button class="btn tiny" id="scene-moins" type="button" aria-label="Ralentir de 5 BPM">−5</button>
+      <span class="scene-bpm"><b id="scene-bpm">80</b> BPM</span>
+      <button class="btn tiny" id="scene-plus" type="button" aria-label="Accélérer de 5 BPM">+5</button>
+    </div>
+    <button class="btn play" id="scene-play" type="button">
+      <svg class="ico" aria-hidden="true"><use id="scene-play-ico" href="#i-play"/></svg><span id="scene-play-label">Jouer</span>
+    </button>
+  </div>
+  <div class="scene-partition" id="scene-partition"></div>
+  <div class="scene-compte hidden" id="scene-compte" aria-live="assertive"><span></span></div>
+  <p class="scene-astuce" id="scene-astuce">Tourne ton téléphone : la partition sera plus grande.</p>
 </div>
 
 <div class="modal hidden" id="ios-modal" role="dialog" aria-modal="true" aria-labelledby="ios-title">
@@ -1137,6 +1220,16 @@ function drapeau(g, x, y, nb, versLeHaut){
   }
 }
 
+/* ---------- dimensions ---------- */
+function pasLargeur(res){ return res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 : res === 3 ? 30 : res === 2 ? 38 : 56; }
+
+/* Largeur (en unités SVG) d'une mesure et de ce qui entoure les mesures :
+ * sert à choisir combien de mesures tiennent sur une ligne d'écran. */
+function dimensions(motif){
+  const a = analyser(motif);
+  return { largeurMesure: a.parMesure * pasLargeur(a.res) + G.padMesure * 2, marge: G.margeG + 26 };
+}
+
 /* ---------- rendu principal ---------- */
 function dessinerPortee(motif, opts = {}){
   const a = analyser(motif);
@@ -1144,7 +1237,7 @@ function dessinerPortee(motif, opts = {}){
   // en 6/8, 9/8… on ligature par groupes de trois croches
   const groupe = (unite === 8 && beats % 3 === 0) ? res * 3 : res;
 
-  const stepW = res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 : res === 3 ? 30 : res === 2 ? 38 : 56;
+  const stepW = pasLargeur(res);
   const largeurMesure = parMesure * stepW + G.padMesure * 2;
   const largeur = G.margeG + largeurMesure * bars + 26;
 
@@ -3219,11 +3312,11 @@ $('#kit-diagram').appendChild(kit.svg);
 
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
-  onPos: pos => majTeteLecture(pos),
+  onPos: pos => { majTeteLecture(pos); if (scene.ouverte) majScene(pos); },
   onFrappe: notes => { masquerDecompte(); for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst); },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
-  onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; },
+  onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; $('#scene-bpm').textContent = bpm; },
   onFin: () => { majBoutonPlay(false); stopChrono(); masquerDecompte(); }
 });
 
@@ -3246,6 +3339,7 @@ function chargerMotif(motif, { eyebrow = '', titre, sous, badges = [], corps = n
   $('#piece-badges').innerHTML = badges.map(b => `<span class="badge">${b}</span>`).join('');
   $('#btn-play').disabled = false;
   $('#btn-stop').disabled = false;
+  $('#btn-scene').disabled = false;
   $('#score-empty').classList.add('hidden');
 
   solosActifs.clear();
@@ -3322,10 +3416,13 @@ function majTeteLecture(pos){
     portee.playhead.setAttribute('x', x - 1.2);
     portee.playhead.setAttribute('opacity', 1);
     if ($('#opt-follow').checked){
+      // quand la tête de lecture sort de l'écran, on saute : la mesure en cours
+      // se retrouve au début de la vue, comme une page qu'on tourne
       const box = $('#score-staff .scroll-x');
-      if (box && box.scrollWidth > box.clientWidth){
-        const cible = x - box.clientWidth * 0.35;
-        box.scrollLeft += (cible - box.scrollLeft) * 0.25;
+      if (box && box.scrollWidth > box.clientWidth &&
+          (x > box.scrollLeft + box.clientWidth - 24 || x < box.scrollLeft + 8)){
+        const parMesure = analyser(motifCourant).parMesure;
+        box.scrollLeft = Math.max(0, portee.xDe(Math.floor(pos / parMesure) * parMesure) - 40);
       }
     }
   }
@@ -3340,17 +3437,23 @@ function majTeteLecture(pos){
     const g = $('#score-grid .grille');
     if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth){
       const cel = g.querySelector(`td[data-step="${step}"]`);
-      if (cel) g.scrollLeft += (cel.offsetLeft - g.clientWidth * 0.4 - g.scrollLeft) * 0.3;
+      const lbl = 90;   // colonne des noms, fixe à gauche
+      if (cel && (cel.offsetLeft + cel.offsetWidth > g.scrollLeft + g.clientWidth || cel.offsetLeft < g.scrollLeft + lbl))
+        g.scrollLeft = Math.max(0, cel.offsetLeft - lbl - 4);
     }
   }
 }
 
 function afficherDecompte(n){
-  const o = $('#count-overlay');
-  o.classList.remove('hidden');
-  o.querySelector('span').textContent = n;
+  for (const o of [$('#count-overlay'), $('#scene-compte')]){
+    o.classList.remove('hidden');
+    o.querySelector('span').textContent = n;
+  }
 }
-function masquerDecompte(){ $('#count-overlay').classList.add('hidden'); }
+function masquerDecompte(){
+  $('#count-overlay').classList.add('hidden');
+  $('#scene-compte').classList.add('hidden');
+}
 
 /* ================= mixer ================= */
 function majMixer(){
@@ -3742,7 +3845,29 @@ function majBoutonPlay(enCours){
   $('#play-ico').setAttribute('href', enCours ? '#i-stop' : '#i-play');
   $('#play-label').textContent = enCours ? 'Arrêter' : 'Écouter';
   $('#btn-play').classList.toggle('actif', enCours);
+  $('#scene-play-ico').setAttribute('href', enCours ? '#i-stop' : '#i-play');
+  $('#scene-play-label').textContent = enCours ? 'Arrêter' : 'Jouer';
+  $('#scene-play').classList.toggle('actif', enCours);
+  garderEcranAllume(enCours);
 }
+
+/* Le téléphone posé sur le pupitre ne doit pas se mettre en veille pendant qu'on joue */
+let verrouEcran = null;
+async function garderEcranAllume(oui){
+  try {
+    if (oui && !verrouEcran && 'wakeLock' in navigator){
+      verrouEcran = await navigator.wakeLock.request('screen');
+      verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+    } else if (!oui && verrouEcran){
+      await verrouEcran.release();
+      verrouEcran = null;
+    }
+  } catch { /* refusé (économie d'énergie) ou non pris en charge */ }
+}
+// le verrou saute quand on change d'appli : on le reprend au retour si ça joue encore
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && lecteur.enLecture) garderEcranAllume(true);
+});
 
 function startChrono(){
   stopChrono();
@@ -3760,6 +3885,128 @@ $('#btn-play').addEventListener('click', async () => {
   }
 });
 $('#btn-stop').addEventListener('click', () => { lecteur.arreter(); majBoutonPlay(false); });
+
+/* ================= mode scène : plein écran, ligne par ligne ================= */
+const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1 };
+
+/* Découpe la partition en lignes de 1 à 4 mesures, selon la largeur de l'écran,
+ * en gardant des notes au moins aussi grandes qu'à l'écran normal. */
+function rendreScene(){
+  const box = $('#scene-partition');
+  box.innerHTML = '';
+  scene.systemes = [];
+  if (!motifCourant) return;
+  const a = analyser(motifCourant);
+  const { largeurMesure, marge } = dimensions(motifCourant);
+  const largeur = box.clientWidth - 12;
+  const n = Math.max(1, Math.min(4, Math.floor((largeur / 1.15 - marge) / largeurMesure)));
+  for (let b = 0; b < a.bars; b += n){
+    const fin = Math.min(a.bars, b + n);
+    const t = tranche(motifCourant, b, fin);
+    const po = dessinerPortee(t, { premiereMesure: b, barreFinale: fin === a.bars });
+    if (t.doigte) dessinerDoigte(po, t);
+    po.svg.classList.add('systeme');
+    // une ligne incomplète garde la même échelle que les autres
+    po.svg.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
+    const ligne = document.createElement('div');
+    ligne.className = 'scene-systeme';
+    ligne.appendChild(po.svg);
+    box.appendChild(ligne);
+    scene.systemes.push({ po, el: ligne, debut: b * a.parMesure, fin: fin * a.parMesure });
+  }
+  scene.ligne = -1;
+  scene.dernierStep = -1;
+  allerLigne(Math.max(0, scene.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
+  // en portrait sur téléphone : conseiller de tourner l'écran
+  $('#scene-astuce').classList.toggle('hidden', !(n === 1 && innerHeight > innerWidth && innerWidth < 700));
+}
+
+function allerLigne(i){
+  if (i < 0 || i === scene.ligne) return;
+  scene.ligne = i;
+  scene.systemes.forEach((sy, k) => {
+    sy.el.classList.toggle('courante', k === i);
+    sy.el.classList.toggle('passee', k < i);
+  });
+  // saut franc vers la ligne suivante, comme une page qu'on tourne
+  $('#scene-partition').scrollTop = scene.systemes[i].el.offsetTop - 6;
+  $('#scene-ligne-info').textContent = `Ligne ${i + 1} / ${scene.systemes.length}`;
+}
+
+function majScene(pos){
+  if (pos == null){
+    for (const sy of scene.systemes) sy.po.playhead.setAttribute('opacity', 0);
+    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    scene.dernierStep = -1;
+    return;
+  }
+  let i = scene.systemes.findIndex(sy => pos < sy.fin);
+  if (i < 0) i = scene.systemes.length - 1;
+  allerLigne(i);
+  scene.systemes.forEach((sy, k) => {
+    if (k !== i) { sy.po.playhead.setAttribute('opacity', 0); return; }
+    const local = Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001);
+    sy.po.playhead.setAttribute('x', sy.po.xDe(local) - 1.2);
+    sy.po.playhead.setAttribute('opacity', 1);
+  });
+  const step = Math.floor(pos);
+  if (step !== scene.dernierStep){
+    scene.dernierStep = step;
+    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    const sy = scene.systemes[i];
+    const groupes = sy.po.notesParStep.get(step - sy.debut);
+    if (groupes) groupes.forEach(g => g.classList.add('actif'));
+  }
+}
+
+async function ouvrirScene(){
+  if (!motifCourant) return;
+  scene.ouverte = true;
+  $('#scene').classList.remove('hidden');
+  document.body.classList.add('en-scene');
+  $('#scene-titre').textContent = $('#piece-title').textContent;
+  $('#scene-bpm').textContent = lecteur.bpm;
+  // vrai plein écran quand le navigateur le permet (Android, ordinateur)
+  const racine = document.documentElement;
+  if (racine.requestFullscreen && !document.fullscreenElement){
+    try { await racine.requestFullscreen({ navigationUI:'hide' }); scene.natif = true; } catch { scene.natif = false; }
+  }
+  rendreScene();
+  $('#scene-play').focus();
+}
+
+function fermerScene(){
+  if (!scene.ouverte) return;
+  scene.ouverte = false;
+  $('#scene').classList.add('hidden');
+  document.body.classList.remove('en-scene');
+  if (scene.natif && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  scene.natif = false;
+  $('#btn-scene').focus();
+}
+
+$('#btn-scene').addEventListener('click', ouvrirScene);
+$('#scene-fermer').addEventListener('click', fermerScene);
+$('#scene-play').addEventListener('click', () => $('#btn-play').click());
+$('#scene-moins').addEventListener('click', () => lecteur.setTempo(Math.max(+$('#bpm').min, lecteur.bpm - 5)));
+$('#scene-plus').addEventListener('click', () => lecteur.setTempo(Math.min(+$('#bpm').max, lecteur.bpm + 5)));
+// un toucher sur la partition lance ou arrête la lecture : pratique baguettes en main
+$('#scene-partition').addEventListener('click', () => $('#btn-play').click());
+document.addEventListener('fullscreenchange', () => {
+  // sortie du plein écran par le système (bouton retour d'Android, Échap) : on quitte la scène
+  if (!document.fullscreenElement && scene.natif) { scene.natif = false; fermerScene(); }
+});
+window.addEventListener('keydown', e => { if (e.key === 'Escape' && scene.ouverte) fermerScene(); });
+let minuterieScene = null;
+window.addEventListener('resize', () => {
+  if (!scene.ouverte) return;
+  clearTimeout(minuterieScene);
+  minuterieScene = setTimeout(() => {
+    const ligne = scene.ligne;
+    rendreScene();
+    if (ligne >= 0 && ligne < scene.systemes.length){ scene.ligne = -1; allerLigne(ligne); }
+  }, 180);
+});
 
 $('#bpm').addEventListener('input', e => { lecteur.setTempo(+e.target.value); });
 $('#bpm-num').addEventListener('change', e => { lecteur.setTempo(+e.target.value); });
