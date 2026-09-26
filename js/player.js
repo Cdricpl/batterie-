@@ -22,6 +22,7 @@ export class Lecteur {
 
   charger(motif){
     this.motif = motif;
+    this.plage = null;              // {debut, fin} en pas : boucler une partie seulement
     this.a = analyser(motif);
     this.total = this.a.total;
     this.frappesParStep = [];
@@ -33,6 +34,15 @@ export class Lecteur {
       }
       this.frappesParStep.push(l);
     }
+  }
+
+  get debutPlage(){ return this.plage ? this.plage.debut : 0; }
+  get finPlage(){ return this.plage ? this.plage.fin : this.total; }
+
+  /* Limite la lecture (et la boucle) à [debut, fin[ — ex. une section d'un morceau */
+  setPlage(debut, fin){
+    this.plage = (debut == null) ? null
+      : { debut:Math.max(0, debut), fin:Math.min(this.total, fin) };
   }
 
   get dureeStep(){ return 60 / this.bpm / this.a.res; }
@@ -50,8 +60,9 @@ export class Lecteur {
     const ctx = await reprendreAudio();
     this.enLecture = true;
     this.boucles = 0;
-    this.step = 0;
+    this.step = this.debutPlage;
     this.file = [];
+    this._dernier = null;
     this.compteRestant = this.options.decompte ? (this.motif.beats ?? 4) : 0;
     this.prochain = ctx.currentTime + 0.12;
     this.debutBoucle = this.prochain + this.compteRestant * this.dureeTemps;
@@ -86,12 +97,12 @@ export class Lecteur {
       }
 
       const s = this.step;
-      if (s === 0) this.debutBoucle = this.prochain;
+      if (s === this.debutPlage) this.debutBoucle = this.prochain;
 
       for (const f of this.frappesParStep[s]){
         const sg = SIGNES[f.signe] || SIGNES.x;
         const id = (f.inst === 'CH' && sg.open) ? 'CH_OPEN' : f.inst;
-        jouer(id, this.prochain, { velo:sg.velo, ghost:sg.ghost, open:sg.open, flam:sg.flam });
+        jouer(id, this.prochain, { velo:sg.velo, ghost:sg.ghost, open:sg.open, flam:sg.flam, drag:sg.drag });
       }
       if (this.options.clic){
         const sub = this.options.clicSub || 1;
@@ -106,8 +117,8 @@ export class Lecteur {
       this.prochain += this.dureeStep;
       this.step++;
 
-      if (this.step >= this.total){
-        this.step = 0;
+      if (this.step >= this.finPlage){
+        this.step = this.debutPlage;
         this.boucles++;
         const r = this.options.rampe;
         if (r && this.boucles % r.chaque === 0 && this.bpm < r.max){
@@ -133,14 +144,14 @@ export class Lecteur {
         if (courant.fin){ this.arreter(); return; }
         if (courant.compte){ this.cb.onCompte && this.cb.onCompte(courant.compte); }
         else {
-          if (courant.step === 0) this.cb.onBoucle && this.cb.onBoucle(this.boucles);
+          if (courant.step === this.debutPlage) this.cb.onBoucle && this.cb.onBoucle(this.boucles);
           this.cb.onFrappe && this.cb.onFrappe(courant.notes, courant.step);
           this._dernier = courant;
         }
       }
       if (this._dernier){
         const pos = this._dernier.step + (now - this._dernier.temps) / this._dernier.duree;
-        this.cb.onPos && this.cb.onPos(Math.min(pos, this.total));
+        this.cb.onPos && this.cb.onPos(Math.min(pos, this.finPlage));
       }
       this.raf = requestAnimationFrame(boucle);
     };
@@ -148,5 +159,5 @@ export class Lecteur {
   }
 
   /* Instant théorique (horloge audio) du pas s dans la boucle en cours */
-  tempsDuStep(s){ return this.debutBoucle + s * this.dureeStep; }
+  tempsDuStep(s){ return this.debutBoucle + (s - this.debutPlage) * this.dureeStep; }
 }

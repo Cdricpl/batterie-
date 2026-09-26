@@ -211,17 +211,103 @@ export const GROOVES = [
     tracks:{ CH:'X-xxX-xxX-xxX-xx', CC:'----X---g---X-g-', GC:'x--x--x---x-x---' },
     desc:"Charleston en doubles-croches accentuées, caisse claire décalée : le groove de Tony Allen.",
     astuce:"L'accent du charleston tombe sur chaque temps, le reste reste très léger."
+  },
+  {
+    id:'motown-4', nom:'Motown (caisse claire sur les 4 temps)', style:'Soul', niveau:2,
+    bpm:[80,120,160], beats:4, res:2, bars:1,
+    tracks:{ CH:'xxxxxxxx', CC:'x-x-x-x-', GC:'x---x---' },
+    desc:"La caisse claire frappe chaque temps : le son des tubes Motown des années 60.",
+    astuce:"Toutes les frappes de caisse claire au même volume, sans accent sur 2 et 4."
+  },
+  {
+    id:'rock-16-pied', nom:'Rock — grosse caisse en doubles', style:'Rock', niveau:3,
+    bpm:[60,90,140], beats:4, res:4, bars:1,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x--x-x--x----' },
+    desc:"La grosse caisse tombe sur des doubles-croches : entre les frappes de charleston.",
+    astuce:"Joue lentement et vérifie : chaque coup de pied décalé tombe entre deux charlestons."
+  },
+  {
+    id:'pop-punk', nom:'Pop-punk (skank beat)', style:'Punk', niveau:3,
+    bpm:[120,170,220], beats:4, res:2, bars:1,
+    tracks:{ RD:'xxxxxxxx', CC:'-x-x-x-x', GC:'x-x-x-x-' },
+    desc:"Pied et caisse claire en alternance sur chaque croche : l'énergie du pop-punk.",
+    astuce:"Ride ou crash ouverte en croches, et surtout pas de crispation."
+  },
+  {
+    id:'hiphop-16', nom:'Hip-hop syncopé', style:'Hip-hop', niveau:4,
+    bpm:[70,90,105], beats:4, res:4, bars:1,
+    tracks:{ CH:'xxxxxxxxxxxxxxxx', CC:'----X-------X---', GC:'x-x----x--x---x-' },
+    desc:"Charleston en doubles, grosse caisse très syncopée autour d'un backbeat lourd.",
+    astuce:"Charleston léger, backbeat fort : c'est le contraste qui fait sonner."
+  },
+  {
+    id:'shuffle-ghost', nom:'Shuffle avec ghost notes', style:'Blues', niveau:5,
+    bpm:[60,90,130], beats:4, res:3, bars:1,
+    tracks:{ CH:'x-xx-xx-xx-x', CC:'-g-Xg--g-Xg-', GC:'x-----x-----' },
+    desc:"Le shuffle avec des ghost notes sur la note du milieu des triolets : le son du blues moderne.",
+    astuce:"Les ghosts se jouent main gauche, très bas, pendant que la droite fait le shuffle."
+  },
+  {
+    id:'lineaire', nom:'Groove linéaire', style:'Funk', niveau:5,
+    bpm:[60,85,120], beats:4, res:4, bars:1,
+    tracks:{ CH:'-xx--xx--xx--x-x', CC:'----X-------X-g-', GC:'x--x---xx--x----' },
+    desc:"Une seule frappe à la fois : jamais deux éléments ensemble. Chaque double-croche est occupée.",
+    astuce:"Sans unisson, le groove devient une mélodie. Très exigeant pour le placement."
+  },
+  {
+    id:'dnb', nom:"Drum'n'bass", style:'Électro', niveau:4,
+    bpm:[140,170,180], beats:4, res:4, bars:1,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x---------x-----' },
+    desc:"Rapide mais aéré : la grosse caisse sur le 1 et le « et » du 3, backbeat sur 2 et 4.",
+    astuce:"Ça paraît simple à 90 BPM. À 170, il faut une vraie détente."
+  },
+  {
+    id:'trap', nom:'Trap (roulement de charleston)', style:'Hip-hop', niveau:5,
+    bpm:[60,70,85], beats:4, res:8, bars:1,
+    tracks:{ CH:'x---x---x---x---x---x---x-x-xxxx', CC:'----------------X---------------', GC:'x-------------x-----x-----------' },
+    desc:"Half-time lourd et roulements de charleston en triples-croches à la fin de la mesure.",
+    astuce:"Le roulement se joue du bout des doigts, main droite seule ou mains alternées."
+  },
+  {
+    id:'double-pied', nom:'Métal — grosse caisse continue', style:'Métal', niveau:5,
+    bpm:[50,80,150], beats:4, res:4, bars:1,
+    tracks:{ RD:'x---x---x---x---', CC:'----X-------X---', GC:'xxxxxxxxxxxxxxxx' },
+    desc:"Doubles-croches continues au pied sous une ride en noires.",
+    astuce:"Avec une seule pédale : talon levé, cheville souple. Monte de 4 BPM en 4 BPM."
+  },
+  {
+    id:'rock-7-8', nom:'Rock en 7/8', style:'Mesures composées', niveau:5,
+    bpm:[140,180,220], beats:7, unite:8, res:1, bars:1,
+    tracks:{ CH:'xxxxxxx', CC:'--x--x-', GC:'x---x--' },
+    desc:"Sept croches par mesure, groupées 2+2+3. Le tempo compte les croches.",
+    astuce:"Compte « 1-2, 1-2, 1-2-3 » : les groupes tombent tout seuls."
+  },
+  {
+    id:'rock-5-4', nom:'Rock en 5/4', style:'Mesures composées', niveau:5,
+    bpm:[70,110,160], beats:5, res:2, bars:1,
+    tracks:{ CH:'xxxxxxxxxx', CC:'----x---x-', GC:'x-----x---' },
+    desc:"Cinq temps par mesure, pensés 3 + 2.",
+    astuce:"Compte « 1-2-3, 1-2 » et sens la mesure boiter : c'est voulu."
+  },
+  {
+    id:'blues-12-8', nom:'Blues lent en 12/8', style:'Blues', niveau:4,
+    bpm:[120,168,210], beats:12, unite:8, res:1, bars:1,
+    tracks:{ RD:'xxxxxxxxxxxx', CC:'---x-----x--', GC:'x-----x-----' },
+    desc:"Douze croches par mesure en groupes de trois : le vrai blues lent. Le tempo compte les croches.",
+    astuce:"Pense en 4 grands temps de 3 croches. Backbeat sur le 2e et le 4e grand temps."
   }
 ];
 
 /* ============================ BREAKS & FILLS ============================ */
 const BAR_ROCK = { CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-------x-------' };
 
-function avecGroove(id, nom, niveau, fillTracks, desc, astuce, bpm = [55,80,130]){
+function avecGroove(id, nom, niveau, fillTracks, desc, astuce, bpm = [55,80,130], doigte = null){
   const ids = new Set([...Object.keys(BAR_ROCK), ...Object.keys(fillTracks)]);
   const tracks = {};
   for (const k of ids) tracks[k] = (BAR_ROCK[k] || R(16)) + (fillTracks[k] || R(16));
-  return { id, nom, niveau, style:'Fill', bpm, beats:4, res:4, bars:2, tracks, desc, astuce };
+  const o = { id, nom, niveau, style:'Fill', bpm, beats:4, res:4, bars:2, tracks, desc, astuce };
+  if (doigte) o.doigte = R(16) + doigte;
+  return o;
 }
 
 export const FILLS = [
@@ -250,10 +336,6 @@ export const FILLS = [
     "Le fill se termine et la crash marque le 1 de la mesure suivante (écoute la boucle).",
     "La crash se joue toujours avec la grosse caisse : les deux ensemble, sinon ça sonne mou.",
     [55,84,140]),
-  avecGroove('fill-triolets', 'Fill en triolets', 4,
-    { CC:'xxx---xxx-------', T1:'---xxx----------', T2:'---------xxx----', TB:'------------xxx-', CH:R(16) },
-    "Trois frappes par temps : un fill très « rond », idéal sur les shuffles.",
-    "Compte « 1-la-li 2-la-li ». Le motif est écrit ici en doubles-croches pour rester lisible."),
   avecGroove('fill-ghost', 'Fill funk avec ghost notes', 5,
     { CC:'g-gXg-gXg-gX-g-x', T1:'--------------x-', TB:'---------------x', CH:R(16) },
     "Les ghost notes remplissent, les accents marquent la pulsation.",
@@ -286,20 +368,6 @@ export const EXERCICES = [
     tracks:{ CC:'Xxxx Xxxx Xxxx Xxxx' }, doigte:'DGDGDGDGDGDGDGDG',
     desc:"Quatre frappes par temps. Accentue la première de chaque groupe.",
     astuce:"Si ça se déforme, baisse le tempo de 10 BPM. La régularité prime sur la vitesse."
-  },
-  {
-    id:'ex-moulin', nom:'Doubles frappes (moulin)', niveau:3, style:'Mains',
-    bpm:[40,60,120], beats:4, res:4, bars:1,
-    tracks:{ CC:'XxxxXxxxXxxxXxxx' }, doigte:'DDGGDDGGDDGGDDGG',
-    desc:"Deux coups par main : DD-GG. C'est la base du roulement.",
-    astuce:"Le 2e coup vient du rebond, pas d'un nouveau mouvement du bras."
-  },
-  {
-    id:'ex-paradiddle', nom:'Paradiddle (D-G-D-D / G-D-G-G)', niveau:3, style:'Mains',
-    bpm:[40,60,120], beats:4, res:4, bars:1,
-    tracks:{ CC:'Xxxx Xxxx Xxxx Xxxx' }, doigte:'DGDDGDGGDGDDGDGG',
-    desc:"Le rudiment le plus utile de la batterie : il sert dans les fills et les grooves.",
-    astuce:"Accentue seulement la 1re note de chaque groupe de 4."
   },
   {
     id:'ex-gc-croches', nom:'Indépendance — grosse caisse en croches', niveau:2, style:'Coordination',
@@ -337,6 +405,72 @@ export const EXERCICES = [
     astuce:"Quand tu joues pile en place, on n'entend presque plus le métronome. C'est le meilleur test."
   }
 ];
+
+/* --- breaks supplémentaires --- */
+FILLS.push(
+  avecGroove('fill-deplace', 'Fill décalé (départ sur le « et » du 3)', 4,
+    { CH:'x-x-x-x-x-------', CC:'----x-----xx----', T1:'------------xx--', TB:'--------------xx', GC:'x-------x-------' },
+    "Le break démarre entre deux temps : plus surprenant, plus musical.",
+    "Compte « 3 ET » à voix haute : c'est là que le break part."),
+  avecGroove('fill-paradiddle', 'Fill paradiddle sur les toms', 4,
+    { CC:'-x--x-xx-x--x-xx', T1:'x-xx-x----------', TB:'--------x-xx-x--', CH:R(16) },
+    "Le paradiddle réparti : main droite sur les toms, main gauche sur la caisse claire.",
+    "Travaille d'abord le paradiddle seul (onglet Entraînement) jusqu'à 90 BPM.",
+    [50,72,120], 'DGDDGDGGDGDDGDGG'),
+  avecGroove('fill-six', 'Fill roulement de 6', 5,
+    { T1:'X-------X-------', CC:'-xxxx----xxxx---', TB:'-----X-------X--', CH:R(16) },
+    "Accents sur les toms, doubles sur la caisse claire : un fill très moderne.",
+    "Les notes sur la caisse claire restent douces, seuls les toms ressortent.",
+    [50,70,120], 'DGGDDG--DGGDDG--'),
+  avecGroove('fill-flams', 'Fill en flams qui descend', 4,
+    { CC:'f---------------', T1:'----f-----------', T2:'--------f-------', TB:'------------f---', CH:R(16) },
+    "Un flam par temps en descendant les fûts : un son épais et large.",
+    "La note d'agrément doit rester très basse, sinon le flam devient une double frappe.")
+);
+
+/* Vrais triolets : une mesure de groove ternaire puis le break en croches de triolet */
+FILLS.push({
+  id:'fill-triolets', nom:'Fill en triolets', niveau:4, style:'Fill', bpm:[50,72,120],
+  beats:4, res:3, bars:2,
+  tracks:{
+    CH:'x-xx-xx-xx-x' + R(12),
+    CC:'---x-----x--' + 'xxx---------',
+    T1:R(12)         + '---xxx------',
+    T2:R(12)         + '------xxx---',
+    TB:R(12)         + '---------xxx',
+    GC:'x-----x-----' + R(12)
+  },
+  doigte: R(12) + 'DGDGDGDGDGDG',
+  desc:"Trois frappes par temps, du haut vers le bas des fûts : le fill idéal des shuffles et ballades.",
+  astuce:"Compte « 1-la-li 2-la-li » : chaque fût reçoit un groupe de trois."
+});
+FILLS.push({
+  id:'fill-bonham', nom:'Triolets main-main-pied (style Bonham)', niveau:5, style:'Fill', bpm:[50,70,120],
+  beats:4, res:3, bars:2,
+  tracks:{
+    CH:'x-xx-xx-xx-x' + R(12),
+    CC:'---x-----x--' + '-x--x-------',
+    T1:R(12)         + 'x--x--x--x--',
+    TB:R(12)         + '-------x--x-',
+    GC:'x-----x-----' + '--x--x--x--x'
+  },
+  doigte: R(12) + 'DG-DG-DG-DG-',
+  desc:"Main droite, main gauche, pied, en boucle : le triolet qui a fait la légende de John Bonham.",
+  astuce:"Le pied est une troisième « main ». Commence très lentement, les trois sons doivent être égaux."
+});
+FILLS.push({
+  id:'fill-triples', nom:'Roulement en triples-croches', niveau:5, style:'Fill', bpm:[50,66,100],
+  beats:4, res:8, bars:2,
+  tracks:{
+    CR:'x' + R(31) + R(32),
+    CH:'----x---x---x---x---x---x---x---' + 'x---x---x---x---x---x-----------',
+    CC:'--------x---------------x-------' + '--------x---------------xxxxxxxx',
+    GC:'x---------------x---------------' + 'x---------------x---------------'
+  },
+  doigte: R(32) + R(24) + 'DGDGDGDG',
+  desc:"Huit notes sur le dernier temps (triples-croches), puis la crash : le roulement qui lance un refrain.",
+  astuce:"Deux fois plus rapide que des doubles-croches : mains alternées, poignets souples, tempo lent."
+});
 
 /* le fill « retour sur la crash » a besoin d'une crash sur le 1 de la mesure de groove */
 {

@@ -1,8 +1,10 @@
 /* Assemblage de l'interface. */
 import { INSTRUMENTS, ORDRE, TOUCHES, estNote } from './instruments.js';
 import { initAudio, reprendreAudio, jouer, setVolume, setMute, setSolos, VOLUMES_DEFAUT, ctxAudio } from './audio.js';
-import { dessinerPortee, dessinerGrille, legende, analyser, frappes } from './notation.js';
+import { dessinerPortee, dessinerGrille, legende, analyser, frappes, tranche } from './notation.js';
 import { GROOVES, FILLS, EXERCICES } from './patterns.js';
+import { RUDIMENTS, FAMILLES_RUDIMENTS } from './rudiments.js';
+import { MORCEAUX, compilerMorceau } from './songs.js';
 import { LECONS, NIVEAUX } from './lessons.js';
 import { dessinerKit } from './kit.js';
 import { Lecteur } from './player.js';
@@ -19,6 +21,7 @@ let modeJeu = false;
 let solosActifs = new Set();
 let jugements = [];
 let chronoLecture = null;
+let demarre = false;        // devient vrai une fois l'appli affichée
 
 /* ================= kit ================= */
 const kit = dessinerKit(async id => { await reprendreAudio(); jouer(id, 0, { velo:0.9 }); kit.flash(id); });
@@ -35,7 +38,7 @@ const lecteur = new Lecteur({
 });
 
 /* ================= chargement d'un motif ================= */
-function chargerMotif(motif, { titre, sous, badges = [], corps = null, lecon = null } = {}){
+function chargerMotif(motif, { eyebrow = '', titre, sous, badges = [], corps = null, lecon = null } = {}){
   if (lecteur.enLecture) lecteur.arreter();
   motifCourant = motif;
   leconCourante = lecon;
@@ -47,6 +50,7 @@ function chargerMotif(motif, { titre, sous, badges = [], corps = null, lecon = n
   lecteur.setTempo(bpm[1]);
   $('#ramp-max').value = Math.min(bpm[2], bpm[1] + 30);
 
+  $('#piece-eyebrow').textContent = eyebrow;
   $('#piece-title').textContent = titre || motif.nom;
   $('#piece-sub').textContent = sous || motif.desc || '';
   $('#piece-badges').innerHTML = badges.map(b => `<span class="badge">${b}</span>`).join('');
@@ -57,6 +61,7 @@ function chargerMotif(motif, { titre, sous, badges = [], corps = null, lecon = n
   solosActifs.clear();
   setSolos([]);
   rendrePartition();
+  majSections(motif);
   majMixer();
   majOptionsClic();
   if (corps) $('#lesson-body').innerHTML = corps;
@@ -65,6 +70,10 @@ function chargerMotif(motif, { titre, sous, badges = [], corps = null, lecon = n
 
   const utilises = Object.keys(analyser(motif).pistes).filter(id => INSTRUMENTS[id]);
   kit.surligner(utilises);
+
+  // sur petit écran, la liste est au-dessus du lecteur : on y descend après un choix
+  if (demarre && matchMedia('(max-width:1080px)').matches)
+    $('.player-card').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
 }
 
 function rendrePartition(){
@@ -104,7 +113,7 @@ function dessinerDoigte(po, motif){
     t.setAttribute('text-anchor', 'middle');
     t.setAttribute('class', 'doigte');
     t.textContent = c;
-    po.svg.appendChild(t);
+    po.racine.appendChild(t);
   }
 }
 
@@ -164,10 +173,10 @@ function majMixer(){
     const row = document.createElement('div');
     row.className = 'mix-row';
     row.innerHTML = `
-      <button class="mix-mute" data-inst="${id}" title="Couper / rétablir">🔊</button>
-      <button class="mix-solo${solosActifs.has(id) ? ' actif' : ''}" data-solo="${id}" title="N'entendre que cet élément">S</button>
+      <button class="mix-mute" data-inst="${id}" aria-pressed="false" aria-label="Couper ${def.nom}" title="Couper">M</button>
+      <button class="mix-solo${solosActifs.has(id) ? ' actif' : ''}" data-solo="${id}" aria-pressed="${solosActifs.has(id)}" aria-label="Isoler ${def.nom}" title="N'entendre que cet élément">S</button>
       <span class="mix-nom" style="border-color:${def.couleur}">${def.court}</span>
-      <input type="range" min="0" max="1.4" step="0.05" value="${VOLUMES_DEFAUT[id]}" data-vol="${id}">`;
+      <input type="range" min="0" max="1.4" step="0.05" value="${VOLUMES_DEFAUT[id]}" data-vol="${id}" aria-label="Volume ${def.nom}">`;
     mx.appendChild(row);
   }
   mx.querySelectorAll('[data-vol]').forEach(sl => {
@@ -177,7 +186,7 @@ function majMixer(){
     b.addEventListener('click', () => {
       const on = b.classList.toggle('coupe');
       setMute(b.dataset.inst, on);
-      b.textContent = on ? '🔇' : '🔊';
+      b.setAttribute('aria-pressed', on);
     });
   });
   mx.querySelectorAll('.mix-solo').forEach(b => {
@@ -185,6 +194,7 @@ function majMixer(){
       const id = b.dataset.solo;
       solosActifs.has(id) ? solosActifs.delete(id) : solosActifs.add(id);
       b.classList.toggle('actif', solosActifs.has(id));
+      b.setAttribute('aria-pressed', solosActifs.has(id));
       setSolos([...solosActifs]);
       $('#mixer').classList.toggle('en-solo', solosActifs.size > 0);
     });
@@ -193,100 +203,197 @@ function majMixer(){
 }
 
 /* ================= listes ================= */
-function carte(p, extra = ''){
+const CONSEIL = t => `<div class="tip"><span class="tip-lbl">Conseil</span><p>${t}</p></div>`;
+const NOMS_NIVEAUX = ['', 'Débutant', 'Débutant +', 'Intermédiaire', 'Confirmé', 'Avancé', 'Expert'];
+const signature = m => `${m.beats ?? 4}/${m.unite ?? 4}`;
+const METHODE = `
+  <h3>Méthode d'entraînement</h3>
+  <ol>
+    <li>Tempo au minimum, <b>Métronome</b> coché.</li>
+    <li>8 mesures d'affilée sans aucune erreur.</li>
+    <li><b>Tempo progressif</b> : +4 BPM toutes les 2 boucles.</li>
+    <li>Note le tempo où ça se dégrade : c'est ta limite du jour. Reviens 10 BPM en dessous pendant 5 minutes.</li>
+  </ol>`;
+
+function carte(p, { meta } = {}){
   const el = document.createElement('button');
   el.type = 'button';
   el.className = 'item';
   el.innerHTML = `
     <span class="item-main">
       <span class="item-nom">${p.nom}</span>
-      <span class="item-meta">${p.style ? p.style + ' · ' : ''}${p.bpm ? p.bpm[1] + ' BPM' : ''}${extra}</span>
+      <span class="item-meta">${meta ?? [p.style, p.bpm ? p.bpm[1] + ' BPM' : ''].filter(Boolean).join(' · ')}</span>
     </span>
-    <span class="niv niv-${p.niveau || 1}">N${p.niveau || 1}</span>`;
+    <span class="niv niv-${p.niveau || 1}" title="Niveau ${p.niveau || 1}">N${p.niveau || 1}</span>`;
   return el;
+}
+
+function entete(box, texte, couleur){
+  const h = document.createElement('div');
+  h.className = 'grp';
+  h.innerHTML = (couleur ? `<span class="grp-pt" style="background:${couleur}"></span>` : '') + texte;
+  box.appendChild(h);
+}
+
+/* liste regroupée par niveau, filtrable par recherche */
+function listeParNiveau(box, items, filtre, texteDe, fabriquer){
+  box.innerHTML = '';
+  const f = filtre.trim().toLowerCase();
+  const garde = items.filter(it => !f || texteDe(it).toLowerCase().includes(f));
+  for (let n = 1; n <= 6; n++){
+    const lot = garde.filter(it => (it.niveau || 1) === n);
+    if (!lot.length) continue;
+    const niv = NIVEAUX.find(x => x.n === n);
+    entete(box, `Niveau ${n} · ${NOMS_NIVEAUX[n]}`, niv && niv.couleur);
+    for (const it of lot) box.appendChild(fabriquer(it));
+  }
+  if (!garde.length) box.innerHTML = '<p class="muted small">Rien ne correspond à cette recherche.</p>';
 }
 
 function listeGrooves(filtre = ''){
   const box = $('#groove-list');
-  box.innerHTML = '';
-  const f = filtre.trim().toLowerCase();
-  for (const g of GROOVES){
-    if (f && !(g.nom + ' ' + g.style + ' ' + (g.desc || '')).toLowerCase().includes(f)) continue;
+  listeParNiveau(box, GROOVES, filtre, g => `${g.nom} ${g.style} ${signature(g)} ${g.desc || ''}`, g => {
     const el = carte(g);
     el.addEventListener('click', () => {
       selectionner(el, box);
       chargerMotif(g, {
-        titre: g.nom, sous: g.desc, badges:[g.style, 'Niveau ' + g.niveau, g.bpm[1] + ' BPM'],
-        corps: `<h3>${g.nom}</h3><p>${g.desc}</p>
-                <div class="tip"><b>💡 Conseil</b><p>${g.astuce}</p></div>
-                <p class="muted small">Astuce : coupe un élément dans le mixer pour travailler les autres séparément.</p>`
+        eyebrow: g.style, titre: g.nom, sous: g.desc,
+        badges:['Niveau ' + g.niveau, g.bpm[1] + ' BPM', signature(g)],
+        corps: `<h2>${g.nom}</h2><p>${g.desc}</p>${CONSEIL(g.astuce)}
+                <p class="muted small">Isole un élément avec « S » dans le mixeur, ou coupe-le avec « M », pour travailler les autres séparément.</p>`
       });
     });
-    box.appendChild(el);
-  }
-  if (!box.children.length) box.innerHTML = '<p class="muted small">Aucun rythme ne correspond.</p>';
+    return el;
+  });
+  $('#rythmes-count').textContent = GROOVES.length;
+}
+
+function listeMorceaux(filtre = ''){
+  const box = $('#song-list');
+  listeParNiveau(box, MORCEAUX, filtre, m => `${m.titre} ${m.artiste} ${m.style}`, m => {
+    const el = carte({ nom:m.titre, niveau:m.niveau }, { meta:`${m.artiste} · ${m.bpm} BPM` });
+    el.addEventListener('click', () => { selectionner(el, box); ouvrirMorceau(m); });
+    return el;
+  });
+  $('#morceaux-count').textContent = MORCEAUX.length;
+}
+
+function ouvrirMorceau(m){
+  const motif = compilerMorceau(m);
+  const origine = m.fidelite === 'origine';
+  const structure = motif.sections.map(s => {
+    const n = s.fin - s.debut;
+    return `<li><b>${s.nom}</b> · ${n} mesure${n > 1 ? 's' : ''}</li>`;
+  }).join('');
+  chargerMotif(motif, {
+    eyebrow: `${m.artiste} · ${m.annee}`,
+    titre: m.titre, sous: m.desc,
+    badges: [m.style, 'Niveau ' + m.niveau, m.bpm + ' BPM', signature(m)],
+    corps: `<h2>${m.titre}</h2>
+      <p class="muted">${m.artiste}, ${m.annee}</p>
+      <p><span class="badge ${origine ? 'fid-origine' : 'fid-acc'}">${origine ? "Groove d'origine, simplifié" : "Groove d'accompagnement"}</span></p>
+      <p>${m.desc}</p>
+      ${CONSEIL(m.astuce)}
+      <h3>Structure d'entraînement</h3>
+      <ol class="structure">${structure}</ol>
+      <p class="muted small">${origine
+        ? "C'est le groove caractéristique du morceau, simplifié pour être jouable. Les variations et les fills sont à aller chercher à l'oreille."
+        : "Ce n'est pas une transcription : c'est un groove qui colle au morceau et à son tempo, pour jouer par-dessus l'enregistrement."}
+        La structure est une suite d'entraînement, pas la forme exacte du morceau.</p>
+      <h3>Méthode</h3>
+      <ol>
+        <li>Choisis une section au-dessus de la partition : elle se joue seule, en boucle.</li>
+        <li>Commence avec <b>÷2</b>, puis monte avec le <b>Tempo progressif</b>.</li>
+        <li>Au tempo du disque, lance l'enregistrement original et joue par-dessus.</li>
+      </ol>`
+  });
+}
+
+/* barre des sections d'un morceau : jouer / boucler une section */
+function majSections(motif){
+  const bar = $('#sections-bar');
+  if (!motif.sections){ bar.classList.add('hidden'); bar.innerHTML = ''; return; }
+  bar.classList.remove('hidden');
+  const parMesure = (motif.beats ?? 4) * (motif.res ?? 4);
+  const choix = [{ nom:'Tout', debut:0, fin:motif.bars, tout:true }, ...motif.sections];
+  bar.innerHTML = '<span class="sec-lbl">Sections</span>' + choix.map((c, i) =>
+    `<button type="button" class="chip${c.tout ? ' actif' : ''}" data-i="${i}" aria-pressed="${!!c.tout}">${c.nom}${c.fois > 1 ? ` <em>×${c.fois}</em>` : ''}</button>`
+  ).join('');
+  bar.querySelectorAll('.chip').forEach(b => b.addEventListener('click', async () => {
+    const c = choix[+b.dataset.i];
+    bar.querySelectorAll('.chip').forEach(x => {
+      x.classList.toggle('actif', x === b);
+      x.setAttribute('aria-pressed', x === b);
+    });
+    const relancer = lecteur.enLecture;
+    if (relancer) lecteur.arreter();
+    lecteur.setPlage(c.tout ? null : c.debut * parMesure, c.fin * parMesure);
+    const box = $('#score-staff .scroll-x');
+    if (box && portee) box.scrollLeft = Math.max(0, portee.xDe(c.debut * parMesure) - 70);
+    if (relancer){ await lecteur.demarrer(); majBoutonPlay(true); startChrono(); }
+  }));
 }
 
 function listeFills(){
   const box = $('#fill-list');
-  for (const g of FILLS){
-    const el = carte(g);
+  listeParNiveau(box, FILLS, '', g => g.nom, g => {
+    const el = carte(g, { meta: g.res === 3 ? 'Triolets' : g.res === 8 ? 'Triples-croches' : 'Groove + break' });
     el.addEventListener('click', () => {
       selectionner(el, box);
       chargerMotif(g, {
-        titre:g.nom, sous:'1 mesure de groove + 1 mesure de break, en boucle',
-        badges:['Break', 'Niveau ' + g.niveau],
-        corps:`<h3>${g.nom}</h3><p>${g.desc}</p>
-               <div class="tip"><b>💡 Conseil</b><p>${g.astuce}</p></div>
-               <p class="muted small">La première mesure est un groove rock simple : elle sert à te remettre en place après le break.</p>`
+        eyebrow:'Break', titre:g.nom, sous:'Une mesure de groove, une mesure de break, en boucle',
+        badges:['Niveau ' + g.niveau],
+        corps:`<h2>${g.nom}</h2><p>${g.desc}</p>${CONSEIL(g.astuce)}
+               <p class="muted small">La première mesure est un groove simple : elle sert à te remettre en place après le break.</p>`
       });
     });
-    box.appendChild(el);
-  }
+    return el;
+  });
+  $('#fills-count').textContent = FILLS.length;
 }
 
 function listeExercices(){
   const box = $('#drill-list');
-  for (const g of EXERCICES){
-    const el = carte(g);
+  box.innerHTML = '';
+  const fabriquer = (g, type) => {
+    const el = carte(g, { meta: type === 'Rudiment' ? (g.doigte ? g.doigte.replace(/-/g, '').slice(0, 8) : '') : g.style });
     el.addEventListener('click', () => {
       selectionner(el, box);
       chargerMotif(g, {
-        titre:g.nom, sous:g.desc, badges:[g.style, 'Niveau ' + g.niveau],
-        corps:`<h3>${g.nom}</h3><p>${g.desc}</p>
-               <div class="tip"><b>💡 Conseil</b><p>${g.astuce}</p></div>
-               <h4>Méthode d'entraînement</h4>
-               <ol>
-                 <li>Règle le tempo au minimum, coche <b>Métronome</b>.</li>
-                 <li>Joue 8 mesures sans aucune erreur.</li>
-                 <li>Coche <b>Tempo progressif</b> : +4 BPM toutes les 2 boucles.</li>
-                 <li>Note le tempo où ça se dégrade : c'est ta limite du jour. Reviens 10 BPM en dessous et reste-y 5 minutes.</li>
-               </ol>`
+        eyebrow: type, titre:g.nom, sous:g.desc, badges:['Niveau ' + g.niveau],
+        corps:`<h2>${g.nom}</h2><p>${g.desc}</p>${CONSEIL(g.astuce)}
+               ${type === 'Rudiment' ? '<p class="muted small">D = main droite, G = main gauche. Le doigté est écrit sous la partition.</p>' : ''}
+               ${METHODE}`
       });
     });
-    box.appendChild(el);
+    return el;
+  };
+  for (const fam of FAMILLES_RUDIMENTS){
+    entete(box, `Rudiments · ${fam.nom}`);
+    for (const r of RUDIMENTS.filter(x => x.famille === fam.id)) box.appendChild(fabriquer(r, 'Rudiment'));
   }
+  entete(box, 'Coordination et tempo');
+  for (const e of EXERCICES) box.appendChild(fabriquer(e, 'Exercice'));
+  $('#drills-count').textContent = RUDIMENTS.length + EXERCICES.length;
 }
 
 function listeLecons(){
   const box = $('#lesson-list');
   box.innerHTML = '';
   for (const niv of NIVEAUX){
-    const h = document.createElement('div');
-    h.className = 'grp';
-    h.innerHTML = `<span class="grp-pt" style="background:${niv.couleur}"></span>${niv.nom}`;
-    box.appendChild(h);
+    entete(box, niv.nom, niv.couleur);
     for (const l of LECONS.filter(x => x.niveau === niv.n)){
       const el = document.createElement('button');
       el.type = 'button';
       el.className = 'item lecon' + (P.estFaite(l.id) ? ' faite' : '');
       el.dataset.lecon = l.id;
       el.innerHTML = `
-        <span class="coche">${P.estFaite(l.id) ? '✓' : ''}</span>
+        <span class="coche" aria-hidden="true">${P.estFaite(l.id) ? '✓' : ''}</span>
         <span class="item-main">
-          <span class="item-nom">${LECONS.indexOf(l) + 1}. ${l.titre}</span>
+          <span class="item-nom">${LECONS.indexOf(l) + 1}. ${l.titre}${l.cle ? ' <span class="cle">étape clé</span>' : ''}</span>
           <span class="item-meta">${l.duree} · ${l.objectif}</span>
         </span>`;
+      el.setAttribute('aria-label', `Leçon ${LECONS.indexOf(l) + 1} : ${l.titre}${P.estFaite(l.id) ? ' (terminée)' : ''}`);
       el.addEventListener('click', () => ouvrirLecon(l.id));
       box.appendChild(el);
     }
@@ -315,12 +422,12 @@ function ouvrirLecon(id){
       <span class="badge">Niveau ${l.niveau}</span>
       <span class="badge">${l.duree}</span>
     </div>
-    <h3>${l.titre}</h3>
+    <h2>${l.titre}</h2>
     <p class="objectif"><b>Objectif :</b> ${l.objectif}</p>
     ${l.contenu}
-    ${l.defi ? `<div class="defi"><b>🎯 Défi</b><p>${l.defi.texte}</p>
-        ${record ? `<p class="muted small">Ton meilleur tempo sur cette leçon : <b>${record} BPM</b>${record >= l.defi.bpm ? ' — défi réussi ✅' : ''}</p>` : ''}</div>` : ''}
-    ${(l.conseils || []).map(c => `<div class="tip"><b>💡</b><p>${c}</p></div>`).join('')}
+    ${l.defi ? `<div class="defi"><span class="tip-lbl">Défi</span><p>${l.defi.texte}</p>
+        ${record ? `<p class="muted small">Ton meilleur tempo sur cette leçon : <b>${record} BPM</b>${record >= l.defi.bpm ? ' · défi réussi' : ''}</p>` : ''}</div>` : ''}
+    ${(l.conseils || []).map(CONSEIL).join('')}
     <div class="lecon-actions">
       <label class="chk big"><input type="checkbox" id="chk-faite" ${P.estFaite(l.id) ? 'checked' : ''}> Leçon terminée</label>
       ${idx > 0 ? `<button class="btn tiny ghost" data-goto="${LECONS[idx-1].id}">← Précédente</button>` : ''}
@@ -328,6 +435,7 @@ function ouvrirLecon(id){
     </div>`;
 
   chargerMotif(l.pattern, {
+    eyebrow: `Leçon ${idx + 1} · ${NOMS_NIVEAUX[l.niveau]}`,
     titre: l.titre, sous: l.objectif,
     badges:['Leçon ' + (idx + 1), 'Niveau ' + l.niveau],
     corps, lecon: l
@@ -396,7 +504,7 @@ function majCarteProgression(){
           return `<button type="button" class="pastille${fait ? ' faite' : ''}" data-ouvrir="${l.id}"
             title="${l.titre}${bpm ? ' — meilleur tempo : ' + bpm + ' BPM' : ''}">
             <span>${LECONS.indexOf(l) + 1}</span>
-            ${bpm ? `<em>${bpm}</em>` : ''}${defi ? '<i class="defi-ok">🎯</i>' : ''}
+            ${bpm ? `<em>${bpm}</em>` : ''}${defi ? '<i class="defi-ok" aria-label="défi réussi"></i>' : ''}
           </button>`;
         }).join('')}</div>
       </div>`;
@@ -426,7 +534,7 @@ function majCarteProgression(){
 
     <h4 class="mini-h">Parcours — clique sur un numéro pour ouvrir la leçon</h4>
     ${niveaux}
-    <p class="muted small">Le petit nombre sous la pastille est le meilleur tempo atteint sur cette leçon ; 🎯 signale un défi réussi.</p>
+    <p class="muted small">Le petit nombre sous la pastille est le meilleur tempo atteint sur cette leçon ; le point doré signale un défi réussi.</p>
 
     <div class="lecon-actions">
       <span class="muted small">Prochaine étape : <b>${LECONS.indexOf(prochaine) + 1}. ${prochaine.titre}</b></span>
@@ -441,7 +549,7 @@ function majCarteProgression(){
 
 /* ================= transport ================= */
 function majBoutonPlay(enCours){
-  $('#play-ico').textContent = enCours ? '■' : '▶';
+  $('#play-ico').setAttribute('href', enCours ? '#i-stop' : '#i-play');
   $('#play-label').textContent = enCours ? 'Arrêter' : 'Écouter';
   $('#btn-play').classList.toggle('actif', enCours);
 }
@@ -499,10 +607,30 @@ $('#btn-half').addEventListener('click', () => tempoRelatif(0.5));
 $('#btn-double').addEventListener('click', () => tempoRelatif(2));
 
 /* ---- impression ---- */
+/* À l'impression, une longue partition est découpée en lignes de quelques mesures */
+function preparerImpression(){
+  const box = $('#score-print');
+  box.innerHTML = '';
+  if (!motifCourant) return;
+  const a = analyser(motifCourant);
+  const parLigne = a.parMesure > 16 ? 2 : 4;
+  for (let b = 0; b < a.bars; b += parLigne){
+    const fin = Math.min(a.bars, b + parLigne);
+    const t = tranche(motifCourant, b, fin);
+    const po = dessinerPortee(t, { premiereMesure: b, barreFinale: fin === a.bars });
+    if (t.doigte) dessinerDoigte(po, t);
+    po.svg.classList.add('systeme');
+    // largeur proportionnelle au nombre de mesures : la dernière ligne n'est pas étirée
+    po.svg.style.width = (fin - b) / parLigne * 100 + '%';
+    box.appendChild(po.svg);
+  }
+}
 $('#btn-print').addEventListener('click', () => {
   if (lecteur.enLecture) { lecteur.arreter(); majBoutonPlay(false); }
+  preparerImpression();
   window.print();
 });
+window.addEventListener('beforeprint', preparerImpression);
 
 $('#opt-loop').addEventListener('change', e => lecteur.options.boucle = e.target.checked);
 $('#opt-count').addEventListener('change', e => lecteur.options.decompte = e.target.checked);
@@ -525,8 +653,9 @@ $('#opt-names').addEventListener('change', rendrePartition);
 $('#opt-follow').addEventListener('change', () => {});
 
 $$('#view-toggle .seg-btn').forEach(b => b.addEventListener('click', () => {
-  $$('#view-toggle .seg-btn').forEach(x => x.classList.remove('active'));
+  $$('#view-toggle .seg-btn').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
   b.classList.add('active');
+  b.setAttribute('aria-pressed', 'true');
   majVueScore();
 }));
 function majVueScore(){
@@ -539,9 +668,10 @@ function majVueScore(){
 $('#btn-practice').addEventListener('click', () => {
   modeJeu = !modeJeu;
   $('#btn-practice').classList.toggle('actif', modeJeu);
+  $('#btn-practice').setAttribute('aria-pressed', modeJeu);
   $('#practice-info').textContent = modeJeu
-    ? "Mode jeu actif : joue au clavier (touche « Aide clavier » pour les touches)."
-    : "Joue sur le clavier en rythme, l'appli note ta précision.";
+    ? "Mode jeu actif : joue au clavier (bouton « Clavier » pour la liste des touches)."
+    : "Joue au clavier en rythme : l'appli mesure ta précision.";
   jugements = [];
   $('#practice-score').classList.toggle('hidden', !modeJeu);
   if (modeJeu) $('#practice-score').textContent = 'Prêt — lance la lecture et joue !';
@@ -553,9 +683,10 @@ function juger(inst, tempsJoue){
   const piste = a.pistes[inst];
   if (!piste) return;
   const dur = lecteur.dureeStep;
-  const longueur = a.total * dur;
+  const d0 = lecteur.debutPlage, d1 = lecteur.finPlage;
+  const longueur = (d1 - d0) * dur;
   let meilleur = Infinity;
-  for (let s = 0; s < a.total; s++){
+  for (let s = d0; s < d1; s++){
     if (!estNote(piste[s])) continue;
     for (const dec of [-longueur, 0, longueur]){
       const d = tempsJoue - (lecteur.tempsDuStep(s) + dec);
@@ -588,8 +719,11 @@ function resumerJeu(){
 }
 
 const enfoncees = new Set();
+const INTERACTIF = 'button, a, summary, [role="button"], [role="tab"], [tabindex]';
 window.addEventListener('keydown', async e => {
   if (e.target.matches('input, textarea, select')) return;
+  if ((e.key === ' ' || e.key === 'Enter') && e.target.closest(INTERACTIF)) return;
+  if (!$('#help-modal').classList.contains('hidden')) return;
   const k = e.key === ' ' ? ' ' : e.key.toLowerCase();
   if (k === ' ') e.preventDefault();
   if (enfoncees.has(k)) return;
@@ -606,14 +740,18 @@ window.addEventListener('keyup', e => enfoncees.delete(e.key === ' ' ? ' ' : e.k
 /* Espace = lecture quand on n'est pas en mode jeu -> on préfère la grosse caisse.
    Raccourci lecture : touche Entrée. */
 window.addEventListener('keydown', e => {
-  if (e.target.matches('input, textarea, select')) return;
+  if (e.key === 'Escape' && !$('#help-modal').classList.contains('hidden')){ fermerAide(); return; }
+  if (e.target.matches('input, textarea, select') || e.target.closest(INTERACTIF)) return;
   if (e.key === 'Enter'){ e.preventDefault(); $('#btn-play').click(); }
 });
 
 /* ================= onglets ================= */
 function basculerVue(nom){
   const bilan = nom === 'progression';
-  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === nom));
+  $$('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.view === nom);
+    t.setAttribute('aria-selected', t.dataset.view === nom);
+  });
   $$('.side-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== nom));
   $('.player-card').classList.toggle('hidden', bilan);
   $('.two-col').classList.toggle('hidden', bilan);
@@ -622,15 +760,26 @@ function basculerVue(nom){
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => basculerVue(t.dataset.view)));
 
-$('#btn-help').addEventListener('click', () => $('#help-modal').classList.remove('hidden'));
-$('#btn-help-close').addEventListener('click', () => $('#help-modal').classList.add('hidden'));
-$('#help-modal').addEventListener('click', e => { if (e.target.id === 'help-modal') e.currentTarget.classList.add('hidden'); });
+/* fenêtre d'aide : focus dedans à l'ouverture, retour au bouton à la fermeture */
+function ouvrirAide(){
+  $('#help-modal').classList.remove('hidden');
+  $('#btn-help-close').focus();
+}
+function fermerAide(){
+  $('#help-modal').classList.add('hidden');
+  $('#btn-help').focus();
+}
+$('#btn-help').addEventListener('click', ouvrirAide);
+$('#btn-help-close').addEventListener('click', fermerAide);
+$('#help-modal').addEventListener('click', e => { if (e.target.id === 'help-modal') fermerAide(); });
 
 $('#search-grooves').addEventListener('input', e => listeGrooves(e.target.value));
+$('#search-songs').addEventListener('input', e => listeMorceaux(e.target.value));
 
 /* ================= démarrage ================= */
 listeLecons();
 listeGrooves();
+listeMorceaux();
 listeFills();
 listeExercices();
 majProgression();
@@ -641,3 +790,4 @@ if (derniere && LECONS.some(l => l.id === derniere)) ouvrirLecon(derniere);
 else ouvrirLecon(LECONS[0].id);
 
 document.addEventListener('pointerdown', () => initAudio(), { once:true });
+demarre = true;

@@ -26,7 +26,7 @@ export function dessinerKit(surClic){
   const tige = (x1,y1,x2,y2) => {
     const l = document.createElementNS(NS, 'line');
     l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
-    l.setAttribute('stroke','#4a453d'); l.setAttribute('stroke-width','3');
+    l.setAttribute('stroke','#5a5247'); l.setAttribute('stroke-width','3');
     svg.appendChild(l);
   };
   tige(74,104,50,280); tige(195,52,205,120); tige(424,94,420,170);
@@ -46,7 +46,7 @@ export function dessinerKit(surClic){
       corps.setAttribute('cx', e.x); corps.setAttribute('cy', e.y);
       corps.setAttribute('rx', e.rx); corps.setAttribute('ry', e.ry);
       corps.setAttribute('class', 'corps');
-      corps.setAttribute('fill', '#211e1a');
+      corps.setAttribute('fill', '#1f1b17');
       corps.setAttribute('stroke', def.couleur);
       corps.setAttribute('stroke-width', '2.5');
       g.appendChild(corps);
@@ -61,7 +61,7 @@ export function dessinerKit(surClic){
       c.setAttribute('cx', e.x); c.setAttribute('cy', e.y);
       c.setAttribute('rx', e.rx); c.setAttribute('ry', e.ry);
       c.setAttribute('class', 'corps');
-      c.setAttribute('fill', 'rgba(242,177,52,.14)');
+      c.setAttribute('fill', 'rgba(217,164,65,.14)');
       c.setAttribute('stroke', def.couleur);
       c.setAttribute('stroke-width', '2.5');
       g.appendChild(c);
@@ -76,7 +76,7 @@ export function dessinerKit(surClic){
       r.setAttribute('x', e.x - e.rx); r.setAttribute('y', e.y - e.ry);
       r.setAttribute('width', e.rx * 2); r.setAttribute('height', e.ry * 2);
       r.setAttribute('rx', 4); r.setAttribute('class', 'corps');
-      r.setAttribute('fill', '#211e1a'); r.setAttribute('stroke', def.couleur);
+      r.setAttribute('fill', '#1f1b17'); r.setAttribute('stroke', def.couleur);
       r.setAttribute('stroke-width', '2');
       g.appendChild(r);
     }

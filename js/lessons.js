@@ -3,11 +3,12 @@
 const p = (o) => ({ beats:4, res:4, bars:1, bpm:[50,80,140], ...o });
 
 export const NIVEAUX = [
-  { n:1, nom:'Niveau 1 — Les tout premiers pas', couleur:'#06d6a0' },
-  { n:2, nom:'Niveau 2 — Les croches et le vrai groove', couleur:'#8ecae6' },
-  { n:3, nom:'Niveau 3 — Doubles-croches, nuances, breaks', couleur:'#ffd166' },
-  { n:4, nom:'Niveau 4 — Ternaire et styles', couleur:'#f2b134' },
-  { n:5, nom:'Niveau 5 — Aller plus loin', couleur:'#ef476f' }
+  { n:1, nom:'Niveau 1 — Les tout premiers pas', couleur:'#5cc8a8' },
+  { n:2, nom:'Niveau 2 — Les croches et le vrai groove', couleur:'#8eabbf' },
+  { n:3, nom:'Niveau 3 — Doubles-croches, nuances, breaks', couleur:'#d9a441' },
+  { n:4, nom:'Niveau 4 — Ternaire et styles', couleur:'#e58a3f' },
+  { n:5, nom:'Niveau 5 — Aller plus loin', couleur:'#e5584b' },
+  { n:6, nom:'Niveau 6 — Avancé', couleur:'#aaa0c6' }
 ];
 
 export const LECONS = [
@@ -73,7 +74,7 @@ export const LECONS = [
   conseils:["Frappe fort la caisse claire : le backbeat doit être le son le plus présent."]
 },
 {
-  id:'l05', niveau:1, titre:'🎉 Ton premier groove complet', duree:'20 min',
+  id:'l05', niveau:1, cle:true, titre:'Ton premier groove complet', duree:'20 min',
   objectif:"Assembler charleston, grosse caisse et caisse claire.",
   contenu:`
     <p>On réunit tout : charleston en noires, grosse caisse sur <b>1 et 3</b>, caisse claire sur <b>2 et 4</b>.</p>
@@ -101,7 +102,7 @@ export const LECONS = [
   conseils:["Petit mouvement de poignet, la baguette rebondit. Le bras ne bouge presque pas."]
 },
 {
-  id:'l07', niveau:2, titre:'🎉 Le groove rock 8 temps', duree:'25 min',
+  id:'l07', niveau:2, cle:true, titre:'Le groove rock 8 temps', duree:'25 min',
   objectif:"Le rythme le plus joué au monde.",
   contenu:`
     <p>Charleston en croches, grosse caisse sur 1 et 3, caisse claire sur 2 et 4.
@@ -316,7 +317,7 @@ export const LECONS = [
   conseils:["L'accent (>) ne veut pas dire « tape plus fort » mais « joue le reste plus doucement »."]
 },
 {
-  id:'l25', niveau:5, titre:'🎉 Construire un morceau', duree:'40 min',
+  id:'l25', niveau:5, cle:true, titre:'Construire un morceau', duree:'40 min',
   objectif:"Enchaîner intro, couplet, break et refrain.",
   contenu:`
     <p>Un morceau, c'est une suite de blocs de 4 ou 8 mesures. Voici une structure complète en 4 mesures :</p>
@@ -335,6 +336,86 @@ export const LECONS = [
     } }),
   defi:{ bpm:100, texte:"Enchaîner les 4 mesures 3 fois de suite sans erreur à 100 BPM." },
   conseils:["Bravo : à ce stade tu peux jouer sur la majorité des morceaux pop/rock. La suite : les rythmes connus !"]
+},
+{
+  id:'l26', niveau:6, titre:'Le paradiddle devient un groove', duree:'30 min',
+  objectif:"Transformer un rudiment en rythme.",
+  contenu:`
+    <p>Joue le paradiddle (D-G-D-D / G-D-G-G) avec la <b>main droite au charleston</b> et la
+    <b>main gauche à la caisse claire</b>. Surprise : les deux accents de caisse claire tombent pile sur
+    <b>2 et 4</b>. Les autres coups de main gauche deviennent des ghost notes.</p>
+    <p>C'est comme ça que les batteurs funk construisent leurs grooves : un rudiment réparti sur le kit.</p>
+    <p>Prérequis : le paradiddle à 80 BPM (onglet <b>Entraînement → Rudiments</b>).</p>`,
+  pattern: p({ id:'l26-p', nom:'Groove paradiddle', res:4, bars:2, bpm:[45,70,110],
+    tracks:{ CH:'x-xx-x--x-xx-x--'.repeat(2), CC:'-g--X-gg-g--X-gg'.repeat(2), GC:'x-------x-------'.repeat(2) },
+    doigte:'DGDDGDGGDGDDGDGG'.repeat(2) }),
+  conseils:["Les ghost notes doivent être presque inaudibles : seuls 2 et 4 claquent."]
+},
+{
+  id:'l27', niveau:6, titre:'Flams et drags dans le jeu', duree:'30 min',
+  objectif:"Épaissir le son avec les notes d'agrément.",
+  contenu:`
+    <p>Le <b>flam</b> (une note d'agrément) et le <b>drag</b> (deux notes d'agrément rebondies) donnent de
+    l'épaisseur à une frappe. Ici, un <b>flam accent</b> en triolets : un flam sur chaque temps, en alternant
+    la main qui fait le flam.</p>
+    <p>La règle d'or : la main de l'agrément part de <b>très bas</b> (2 cm), la main principale de haut (15 cm).
+    Elles tombent presque ensemble, mais pas tout à fait.</p>`,
+  pattern: p({ id:'l27-p', nom:'Flam accent', res:3, bars:2, bpm:[40,60,110],
+    tracks:{ CC:'fxxfxxfxxfxx'.repeat(2), GC:'x-----x-----'.repeat(2) }, doigte:'DGDGDGDGDGDG'.repeat(2) }),
+  conseils:["Si tu entends « fla-fla » (deux notes égales), la note d'agrément est trop haute."]
+},
+{
+  id:'l28', niveau:6, titre:'Le jeu linéaire', duree:'35 min',
+  objectif:"Ne jamais jouer deux éléments en même temps.",
+  contenu:`
+    <p>Dans un groove <b>linéaire</b>, chaque double-croche est jouée par un seul élément : charleston,
+    caisse claire ou grosse caisse, jamais deux à la fois. Le groove devient une mélodie de timbres.</p>
+    <p>Regarde la grille : chaque colonne ne contient qu'une seule case pleine.</p>`,
+  pattern: p({ id:'l28-p', nom:'Groove linéaire', res:4, bars:2, bpm:[50,75,115],
+    tracks:{ CH:'-xx--xx--xx--x-x'.repeat(2), CC:'----X-------X-g-'.repeat(2), GC:'x--x---xx--x----'.repeat(2) } }),
+  defi:{ bpm:95, texte:"Tenir 1 minute à 95 BPM, sans jamais doubler une note." },
+  conseils:["Passe en vue « Grille » : on y voit immédiatement l'enchaînement."]
+},
+{
+  id:'l29', niveau:6, titre:'Mesures composées : 7/8 et 5/4', duree:'40 min',
+  objectif:"Jouer en dehors du 4/4.",
+  contenu:`
+    <p>Une mesure en <b>7/8</b> contient sept croches. On ne les compte pas une par une : on les
+    <b>groupe</b>, ici 2 + 2 + 3 (« 1-2, 1-2, 1-2-3 »). La grosse caisse marque le début de chaque grand groupe.</p>
+    <p>Même principe pour le <b>5/4</b> (3 + 2) : essaie le « Rock en 5/4 » et le morceau <b>Money</b> (7/4)
+    dans les onglets Rythmes et Morceaux.</p>`,
+  pattern: p({ id:'l29-p', nom:'Rock en 7/8', beats:7, unite:8, res:1, bars:2, bpm:[120,168,220],
+    tracks:{ CH:'xxxxxxx'.repeat(2), CC:'--x--x-'.repeat(2), GC:'x---x--'.repeat(2) } }),
+  conseils:["Le tempo compte les croches. Chante les groupes à voix haute avant de jouer."]
+},
+{
+  id:'l30', niveau:6, titre:'Le 12/8 : le blues lent', duree:'30 min',
+  objectif:"Sentir quatre grands temps de trois croches.",
+  contenu:`
+    <p>Le <b>12/8</b> regroupe douze croches en quatre groupes de trois. On sent 4 grands temps,
+    chacun divisé en 3 : c'est un ternaire écrit autrement.</p>
+    <p>La ride joue toutes les croches, la caisse claire marque le 2<sup>e</sup> et le 4<sup>e</sup> grand temps.</p>`,
+  pattern: p({ id:'l30-p', nom:'Blues en 12/8', beats:12, unite:8, res:1, bars:2, bpm:[120,168,210],
+    tracks:{ RD:'xxxxxxxxxxxx'.repeat(2), CC:'---x-----x--'.repeat(2), GC:'x-----x-----'.repeat(2) } }),
+  conseils:["Accentue légèrement la 1re croche de chaque groupe de trois à la ride."]
+},
+{
+  id:'l31', niveau:6, cle:true, titre:'Triples-croches et roulements', duree:'40 min',
+  objectif:"Jouer huit notes dans un temps.",
+  contenu:`
+    <p>Une <b>triple-croche</b> vaut la moitié d'une double : <b>8 par temps</b>, notées avec trois barres.
+    On les utilise pour les roulements qui lancent un refrain.</p>
+    <p>Mains alternées, poignets très souples, mouvements minuscules. Travaille-les d'abord à 50 BPM.</p>
+    <p>Tu as fini le parcours. La suite : les <b>morceaux</b>, et les <b>rudiments</b> jusqu'au dernier.</p>`,
+  pattern: p({ id:'l31-p', nom:'Groove + roulement', res:8, bars:2, bpm:[45,60,95],
+    tracks:{
+      CR:'x' + '-'.repeat(31) + '-'.repeat(32),
+      CH:'----x---x---x---x---x---x---x---' + 'x---x---x---x---x---x-----------',
+      CC:'--------x---------------x-------' + '--------x---------------xxxxxxxx',
+      GC:'x---------------x---------------' + 'x---------------x---------------' },
+    doigte:'-'.repeat(56) + 'DGDGDGDG' }),
+  defi:{ bpm:72, texte:"Roulement régulier à 72 BPM, et retour pile sur la crash." },
+  conseils:["Si les triples-croches se tassent, reviens aux doubles-croches au même tempo × 2."]
 }
 ];
 

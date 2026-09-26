@@ -193,8 +193,12 @@ export function jouer(id, t = 0, opt = {}){
     case 'CR': cymbale(when, v, 'CR'); break;
     case 'RD': cymbale(when, v, 'RD'); break;
   }
-  if (opt.flam) {                       // petite note d'agrément juste avant
-    const f = Math.max(0, when - 0.035);
-    if (id === 'CC') caisseClaire(f, v * 0.45, {ghost:true});
+  // notes d'agrément, sur le même élément, jouées juste avant la note principale
+  if (opt.drag) {
+    jouer(id, Math.max(0, when - 0.062), { velo: v * 0.32, ghost:true });
+    jouer(id, Math.max(0, when - 0.031), { velo: v * 0.36, ghost:true });
+  }
+  if (opt.flam) {
+    jouer(id, Math.max(0, when - 0.035), { velo: v * 0.45, ghost:true });
   }
 }
