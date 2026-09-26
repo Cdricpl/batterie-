@@ -68,7 +68,9 @@ Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue d
 
 - **Une appli en écrans, à l'horizontale.** L'accueil présente cinq grandes cartes
   (Parcours, Rythmes, Morceaux, Breaks, Rudiments) ; chacune ouvre ses niveaux ou ses
-  familles, puis ses exercices. Sur téléphone, l'appli passe en plein écran et se
+  familles, puis ses exercices. Les listes défilent **de gauche à droite**, du bout
+  du doigt ou à la molette ; pour les morceaux et les breaks, des pastilles N1…N6
+  sautent directement à un niveau. Sur téléphone, l'appli passe en plein écran et se
   joue couchée : tenu droit, l'écran invite à tourner le téléphone.
 - **Le lecteur occupe tout l'écran** : la partition sur une feuille claire, en haut
   le titre avec ‹ › pour passer à l'exercice voisin, (?) pour les explications et le
@@ -79,8 +81,9 @@ Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue d
 - **Deux affichages** : la vraie **partition** (portée, hampes, ligatures, silences,
   accents, ghost notes, triolets, charleston ouvert…) et une **grille** de type
   boîte à rythmes, beaucoup plus simple pour débuter. Ou les deux à la fois.
-- **Lignes de 1 à 4 mesures** selon la taille de l'écran, sans jamais rapetisser les
-  notes. Pendant la lecture, **la partition tourne la page** : quand la
+- **Au moins deux lignes à l'écran** : celle qu'on joue et la suivante, pour lire en
+  avance. Chaque ligne compte de 1 à 4 mesures selon la largeur, et la portée est
+  recadrée au plus près des notes pour que les deux lignes restent lisibles. Pendant la lecture, **la partition tourne la page** : quand la
   phrase est finie, elle saute à la ligne suivante. Un toucher sur la partition lance
   ou arrête la lecture ; l'écran ne se met pas en veille pendant qu'on joue.
 - **Comptage affiché** sous chaque note (`1 e et a`, `1 la li`…).

@@ -166,16 +166,35 @@ for (const [id, dessin] of Object.entries(CATEGORIES)){
 }
 
 /* ================= écrans de liste ================= */
-function ecranListe({ sur = '', titre, retour = '#/', html }){
+/* Les listes défilent de gauche à droite : une bande de cartes sur toute la hauteur */
+function ecranListe({ sur = '', titre, retour = '#/', html, sauts = [] }){
   montrer('ecran-liste');
   $('#liste-sur').textContent = sur;
   $('#liste-titre').textContent = titre;
   $('#liste-retour').href = retour;
   const corps = $('#liste-corps');
-  corps.innerHTML = html;
-  corps.scrollTop = 0;
+  corps.innerHTML = `<div class="bande">${html}</div>`;
+  corps.scrollLeft = 0;
+  // raccourcis vers un groupe (niveaux des morceaux, des breaks)
+  const bar = $('#liste-sauts');
+  bar.innerHTML = sauts.map(([id, texte, couleur]) =>
+    `<button type="button" class="chip saut" data-cible="${id}" style="--c:${couleur}">${texte}</button>`).join('');
+  bar.querySelectorAll('[data-cible]').forEach(b => b.addEventListener('click', () => {
+    const cible = document.getElementById(b.dataset.cible);
+    if (cible) corps.scrollTo({ left:cible.offsetLeft - corps.offsetLeft - 4,
+      behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+  }));
   document.title = titre + ' — Ma Batterie';
 }
+// à la souris, la molette fait aussi défiler la bande de gauche à droite
+$('#liste-corps').addEventListener('wheel', e => {
+  const corps = e.currentTarget;
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || e.ctrlKey) return;
+  const bloc = e.target.closest('.bloc-defile');
+  if (bloc && bloc.scrollHeight > bloc.clientHeight) return;   // un bloc qui défile en hauteur garde la molette
+  corps.scrollLeft += e.deltaY;
+  e.preventDefault();
+}, { passive:false });
 
 const points = n => `<span class="niveau-points" aria-label="Niveau ${n}">${[1, 2, 3, 4, 5, 6].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 
@@ -201,15 +220,21 @@ function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat 
   </a>`;
 }
 
-const groupeTitre = (texte, couleur, compte = '') =>
-  `<h2 class="groupe-titre" style="--c:${couleur || 'var(--laiton)'}"><i></i>${texte}${compte ? `<span>${compte}</span>` : ''}</h2>`;
+/* un groupe de la bande : une carte-titre, puis ses cartes */
+const groupe = (id, n, lot, carte, unite = 'titre') => `<section class="groupe" id="${id}" style="--c:${NIVEAUX[n - 1].couleur}">
+    <div class="groupe-tete"><span class="g-num">${n}</span><b>${NOMS_NIVEAUX[n]}</b><span>${lot.length} ${unite}${lot.length > 1 ? 's' : ''}</span></div>
+    <div class="rangee">${lot.map(carte).join('')}</div>
+  </section>`;
+const sautsNiveaux = (liste, prefixe) => [1, 2, 3, 4, 5, 6]
+  .filter(n => liste.some(x => (x.niveau || 1) === n))
+  .map(n => [prefixe + n, 'N' + n, NIVEAUX[n - 1].couleur]);
 
 /* --- parcours --- */
 function ecranParcours(){
   const suivante = prochaineLecon();
   ecranListe({
     sur:`${P.nbFaites()} / ${LECONS.length} leçons terminées`, titre:'Parcours',
-    html:`<div class="grille-cartes tuiles">${NIVEAUX.map(niv => {
+    html:`<div class="rangee tuiles">${NIVEAUX.map(niv => {
       const lot = LECONS.filter(l => l.niveau === niv.n);
       const ok = lot.filter(l => P.estFaite(l.id)).length;
       const [, sous] = niv.nom.split(' — ');
@@ -229,9 +254,8 @@ function ecranNiveau(n){
   const suivante = prochaineLecon();
   const lot = LECONS.filter(l => l.niveau === n);
   ecranListe({
-    sur:`Parcours · niveau ${n}`, titre:NOMS_NIVEAUX[n], retour:'#/parcours',
-    html:`<p class="muted" style="margin:0 2px 12px">${niv.nom.split(' — ')[1] || ''}</p>
-      <div class="grille-cartes">${lot.map(l => {
+    sur:`Niveau ${n} · ${niv.nom.split(' — ')[1] || ''}`, titre:NOMS_NIVEAUX[n], retour:'#/parcours',
+    html:`<div class="rangee">${lot.map(l => {
         const fait = P.estFaite(l.id);
         const record = P.meilleurTempo(l.pattern.id);
         return itemCarte({
@@ -248,7 +272,7 @@ function ecranNiveau(n){
 function ecranRythmes(){
   ecranListe({
     sur:`${GROOVES.length} grooves`, titre:'Rythmes',
-    html:`<div class="grille-cartes tuiles">${FAMILLES_RYTHMES.map(f => {
+    html:`<div class="rangee tuiles">${FAMILLES_RYTHMES.map(f => {
       const lot = rythmesDe(f.id);
       return tuile({ href:'#/rythmes/' + f.id, illus:miniGroove(lot[0]), titre:f.nom, texte:f.desc, coin:`${lot.length} rythmes` });
     }).join('')}</div>`
@@ -259,7 +283,7 @@ function ecranFamilleRythmes(id){
   if (!f) return ecranRythmes();
   ecranListe({
     sur:'Rythmes', titre:f.nom, retour:'#/rythmes',
-    html:`<div class="grille-cartes">${rythmesDe(id).map(g => itemCarte({
+    html:`<div class="rangee">${rythmesDe(id).map(g => itemCarte({
       href:lienJouer('rythme', g), nom:g.nom, illus:miniGroove(g),
       meta:`${g.style} · ${signature(g)}`, niveau:g.niveau, bpm:`${g.bpm[1]} BPM`
     })).join('')}</div>`
@@ -272,13 +296,12 @@ function ecranMorceaux(){
   for (let n = 1; n <= 6; n++){
     const lot = MORCEAUX.filter(m => m.niveau === n);
     if (!lot.length) continue;
-    html += groupeTitre(`Niveau ${n} · ${NOMS_NIVEAUX[n]}`, NIVEAUX[n - 1].couleur, lot.length) +
-      `<div class="grille-cartes">${lot.map(m => itemCarte({
-        href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
-        niveau:m.niveau, bpm:`${m.bpm} BPM`
-      })).join('')}</div>`;
+    html += groupe('m-niv' + n, n, lot, m => itemCarte({
+      href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
+      niveau:m.niveau, bpm:`${m.bpm} BPM`
+    }));
   }
-  ecranListe({ sur:`${MORCEAUX.length} titres`, titre:'Morceaux', html });
+  ecranListe({ sur:`${MORCEAUX.length} titres`, titre:'Morceaux', html, sauts:sautsNiveaux(MORCEAUX, 'm-niv') });
 }
 
 /* --- breaks --- */
@@ -287,21 +310,20 @@ function ecranBreaks(){
   for (let n = 1; n <= 6; n++){
     const lot = FILLS.filter(f => (f.niveau || 1) === n);
     if (!lot.length) continue;
-    html += groupeTitre(`Niveau ${n} · ${NOMS_NIVEAUX[n]}`, NIVEAUX[n - 1].couleur, lot.length) +
-      `<div class="grille-cartes">${lot.map(f => itemCarte({
-        href:lienJouer('break', f), nom:f.nom,
-        meta:f.res === 3 ? 'Triolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
-        niveau:f.niveau
-      })).join('')}</div>`;
+    html += groupe('b-niv' + n, n, lot, f => itemCarte({
+      href:lienJouer('break', f), nom:f.nom,
+      meta:f.res === 3 ? 'Triolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
+      niveau:f.niveau
+    }), 'break');
   }
-  ecranListe({ sur:`${FILLS.length} fills`, titre:'Breaks', html });
+  ecranListe({ sur:`${FILLS.length} fills`, titre:'Breaks', html, sauts:sautsNiveaux(FILLS, 'b-niv') });
 }
 
 /* --- rudiments et coordination --- */
 function ecranRudiments(){
   ecranListe({
     sur:`${RUDIMENTS.length + EXERCICES.length} exercices`, titre:'Rudiments',
-    html:`<div class="grille-cartes tuiles">${FAMILLES_TRAVAIL.map(f => {
+    html:`<div class="rangee tuiles">${FAMILLES_TRAVAIL.map(f => {
       const lot = f.id === 'coordination' ? EXERCICES : RUDIMENTS.filter(r => r.famille === f.id);
       const illus = f.id === 'coordination' ? miniGroove(EXERCICES[3], '#8ea9c2') : miniDoigte(lot[0].doigte);
       return tuile({ href:'#/rudiments/' + f.id, illus, titre:f.nom.replace(/\s*\(.*\)/, ''), texte:f.desc, coin:`${lot.length} exercices` });
@@ -315,7 +337,7 @@ function ecranFamilleTravail(id){
   const lot = coordination ? EXERCICES : RUDIMENTS.filter(r => r.famille === id);
   ecranListe({
     sur:'Rudiments', titre:f.nom.replace(/\s*\(.*\)/, ''), retour:'#/rudiments',
-    html:`<div class="grille-cartes">${lot.map(r => itemCarte({
+    html:`<div class="rangee">${lot.map(r => itemCarte({
       href:lienJouer(coordination ? 'exercice' : 'rudiment', r), nom:r.nom,
       illus:coordination ? '' : miniDoigte(r.doigte),
       meta:coordination ? r.style : '', niveau:r.niveau, bpm:r.bpm ? `${r.bpm[1]} BPM` : ''
@@ -345,9 +367,8 @@ function ecranProgression(){
 
   ecranListe({
     sur:'Tout est enregistré sur cet appareil', titre:'Progression',
-    html:`<div class="prog">
-      <div>
-        <div class="bloc">
+    html:`
+        <div class="bloc bloc-stats">
           <h3>En chiffres</h3>
           <div class="stats">
             <div class="stat"><span class="stat-n">${faites}/${LECONS.length}</span><span>leçons terminées</span></div>
@@ -356,22 +377,20 @@ function ecranProgression(){
             <div class="stat"><span class="stat-n">${P.minutesTotal()} min</span><span>au total</span></div>
           </div>
         </div>
-        <div class="bloc" style="margin-top:14px">
+        <div class="bloc bloc-histo">
           <h3>3 dernières semaines</h3>
           <div class="barres">${hist.map(h => {
             const d = new Date(h.jour + 'T12:00:00');
-            return `<span class="barre" title="${h.jour} — ${h.minutes} min"><span class="piste">
+            return `<span class="barre" title="${h.jour} — ${h.minutes} min"><span class="fut">
               <i style="height:${h.minutes ? Math.max(4, Math.round(h.minutes / maxi * 100)) : 0}%"></i></span><u>${jours[d.getDay()]}</u></span>`;
           }).join('')}</div>
         </div>
-      </div>
-      <div class="bloc">
+      <div class="bloc bloc-parcours bloc-defile">
         <h3>Parcours</h3>
-        ${niveaux}
+        <div class="niveaux">${niveaux}</div>
         <p class="muted small">Le petit nombre est ton meilleur tempo sur la leçon ; le point doré, un défi réussi.</p>
         <button class="btn-plat" id="btn-reset" type="button">Effacer ma progression</button>
-      </div>
-    </div>`
+      </div>`
   });
   $('#btn-reset').addEventListener('click', () => {
     if (confirm('Effacer toute la progression enregistrée ?')){ P.toutEffacer(); ecranProgression(); }
@@ -526,8 +545,9 @@ function rendrePartition(){
   actifsGrille = [];
 }
 
-/* Découpe la partition en lignes de 1 à 4 mesures : autant de mesures que l'écran
- * en montre sans rapetisser les notes, et jamais plus haut que la feuille. */
+/* Découpe la partition en lignes de 1 à 4 mesures. On montre au moins deux lignes à
+ * la fois (celle qu'on joue et la suivante, pour lire en avance), chacune avec autant
+ * de mesures que la largeur le permet sans rapetisser les notes. */
 function rendreLignes(){
   const box = $('#score-staff');
   box.innerHTML = '';
@@ -537,18 +557,39 @@ function rendreLignes(){
   const a = analyser(motifCourant);
   const { largeurMesure, marge } = dimensions(motifCourant);
   const W = box.clientWidth - 20;
-  const H = box.clientHeight - 10;
+  const H = box.clientHeight - 8;
   if (W <= 0 || H <= 0) return;
-  const hRef = motifCourant.sections && motifCourant.sections.length ? 218 : 196;
-  // grand écran : de la place en hauteur, on préfère des notes plus grosses
+  const ECART = 6;
+
+  // hauteur réelle d'une ligne, sans le blanc autour de la portée
+  const essai = dessinerPortee(tranche(motifCourant, 0, 1), { premiereMesure:0 });
+  if (motifCourant.doigte) dessinerDoigte(essai, tranche(motifCourant, 0, 1));
+  box.appendChild(essai.svg);
+  const bb = essai.svg.getBBox();
+  box.removeChild(essai.svg);
+  const hRef = Math.ceil(bb.height) + 10 + (motifCourant.sections && motifCourant.sections.length && !(motifCourant.sections[0].debut === 0) ? 22 : 0);
+  const largeurDe = k => marge + k * largeurMesure;
+
+  // a) tout sur une seule ligne, si ça tient
   const mini = H / hRef > 2.2 ? 1.05 : 0.87;
   let n = 1, s = 1;
   for (let k = Math.min(4, a.bars); k >= 1; k--){
-    const sk = Math.min(W / (marge + k * largeurMesure), H / hRef);
+    const sk = Math.min(W / largeurDe(k), H / hRef);
     if (sk >= mini || k === 1){ n = k; s = sk; break; }
   }
-  if (n === 3 && a.bars % 3 && a.bars % 2 === 0 && a.bars > 3){ n = 2; s = Math.min(W / (marge + 2 * largeurMesure), H / hRef); }
+  // b) sinon, plusieurs lignes visibles : la hauteur fixe la taille des notes, puis on
+  //    met sur chaque ligne autant de mesures que la largeur en accepte à cette taille
+  if (Math.ceil(a.bars / n) > 1){
+    const nbLignes = Math.max(2, Math.min(4, Math.floor(H / (hRef * 1.05))));
+    const sH = Math.min(1.7, (H - (nbLignes - 1) * ECART) / (nbLignes * hRef));
+    let k = Math.min(4, a.bars);
+    while (k > 1 && W / largeurDe(k) < sH * 0.92) k--;
+    const s2 = Math.min(sH, W / largeurDe(k));
+    if (s2 >= 0.58){ n = k; s = s2; }
+  }
+  if (n === 3 && a.bars % 3 && a.bars % 2 === 0 && a.bars > 3){ n = 2; s = Math.min(s, W / largeurDe(2)); }
   s = Math.min(s, 1.7);
+
   for (let b = 0; b < a.bars; b += n){
     const fin = Math.min(a.bars, b + n);
     const t = tranche(motifCourant, b, fin);
@@ -561,6 +602,7 @@ function rendreLignes(){
     ligne.className = 'systeme-ligne';
     ligne.appendChild(cadre);
     box.appendChild(ligne);
+    rogner(po);
     vue.systemes.push({ po, el:ligne, debut:b * a.parMesure, fin:fin * a.parMesure });
   }
   box.classList.toggle('une-ligne', vue.systemes.length === 1);
@@ -571,6 +613,17 @@ function rendreLignes(){
     box.appendChild(fin);
   }
   allerLigne(Math.max(0, vue.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
+}
+
+/* Recadre la portée sur son contenu : pas de grande marge blanche au-dessus ni dessous */
+function rogner(po){
+  const bb = po.svg.getBBox();
+  if (!bb.height) return;
+  const y0 = Math.floor(bb.y) - 5;
+  const h = Math.ceil(bb.height) + 10;
+  po.svg.setAttribute('viewBox', `0 ${y0} ${po.largeur} ${h}`);
+  po.svg.setAttribute('height', h);
+  po.rogne = y0; po.hVue = h;
 }
 
 function allerLigne(i){
@@ -600,8 +653,11 @@ function echelleDe(po){
     const w = po.svg.getBoundingClientRect().width;
     if (!w) return 0;
     po.echelle = w / po.largeur;
-    po.teteEl.style.top = (po.tete.y0 * po.echelle).toFixed(1) + 'px';
-    po.teteEl.style.height = ((po.tete.y1 - po.tete.y0) * po.echelle).toFixed(1) + 'px';
+    // zone couverte par la tête, ramenée à la partie visible si la portée est recadrée
+    const r = po.rogne || 0, hv = po.hVue || po.hauteur;
+    const y0 = Math.max(po.tete.y0, r), y1 = Math.min(po.tete.y1, r + hv);
+    po.teteEl.style.top = ((y0 - r) * po.echelle).toFixed(1) + 'px';
+    po.teteEl.style.height = ((y1 - y0) * po.echelle).toFixed(1) + 'px';
   }
   return po.echelle;
 }
