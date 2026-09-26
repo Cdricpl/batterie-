@@ -43,6 +43,8 @@ export function initAudio(){
 }
 
 export async function reprendreAudio(){
+  // Safari iOS 16.4+ : sans ça, le son est coupé quand l'iPhone est en mode silencieux
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ancien navigateur */ }
   initAudio();
   if (ctx.state === 'suspended') await ctx.resume();
   return ctx;

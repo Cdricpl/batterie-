@@ -104,6 +104,22 @@ Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue d
 
 ---
 
+## Installer sur un téléphone
+
+Le dossier `site/` (généré par `node build.js --site`) est une **application web
+installable** : icône sur l'écran d'accueil, plein écran, et fonctionnement **hors
+connexion** grâce à un service worker. Il doit être publié en HTTPS (Netlify,
+GitHub Pages…) — `netlify.toml` est prêt pour Netlify.
+
+Une fois le site ouvert sur le téléphone :
+
+- **Android (Chrome)** : bouton **Installer** en haut de l'appli, ou menu ⋮ →
+  *Installer l'application*.
+- **iPhone (Safari)** : bouton **Installer** en haut de l'appli, qui explique :
+  *Partager* → *Sur l'écran d'accueil* → *Ajouter*.
+
+Sur iPhone, le son est joué même quand le téléphone est en mode silencieux.
+
 ## Lancer l'application
 
 **Le plus simple** : double-cliquer sur **`ma-batterie.html`** — tout est dedans, ça
@@ -174,7 +190,11 @@ js/lessons.js         les 31 leçons
 js/kit.js             schéma du kit
 js/progress.js        progression sauvegardée (localStorage)
 js/app.js             assemblage de l'interface
-build.js              fabrique ma-batterie.html (fichier unique autonome)
+build.js              fabrique ma-batterie.html (fichier unique) et site/ (installable)
+manifest.webmanifest  description de l'application pour l'installation
+sw.js                 service worker : fonctionnement hors connexion
+icons/                icônes de l'application
+netlify.toml          publication sur Netlify
 ma-batterie.html      l'application entière en un seul fichier — à double-cliquer
 ```
 

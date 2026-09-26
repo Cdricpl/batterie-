@@ -64,7 +64,9 @@ b,strong{color:#fff;font-weight:700}
 /* ====== barre du haut ====== */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:var(--esp);
-  padding:10px 20px;border-bottom:1px solid var(--chrome);
+  padding:10px max(20px, env(safe-area-inset-right)) 10px max(20px, env(safe-area-inset-left));
+  padding-top:max(10px, env(safe-area-inset-top));
+  border-bottom:1px solid var(--chrome);
   background:rgba(18,16,16,.92);backdrop-filter:blur(8px);
   position:sticky;top:0;z-index:30;
 }
@@ -397,6 +399,9 @@ kbd{
 .keys{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:var(--t-s)}
 .keys td{padding:6px 4px;border-bottom:1px solid var(--chrome)}
 .keys td:first-child{width:130px}
+.etapes{padding-left:1.2em;margin:12px 0}
+.etapes li{margin:.6em 0}
+#btn-installer{background:var(--laiton);border-color:var(--laiton);color:var(--encre);font-weight:700}
 
 /* ====== adaptations ====== */
 @media (max-width:1080px){
@@ -408,6 +413,8 @@ kbd{
   :root{--t-3xl:30px;--t-2xl:24px;--esp:12px}
   .topbar{padding:10px 12px}
   .brand-sub,.streak{display:none}
+  .wordmark{font-size:22px}
+  #btn-help{display:none}
   .card{padding:14px}
   .player-head{flex-direction:column;gap:10px}
   .tempo{min-width:100%;flex-wrap:wrap;row-gap:10px}

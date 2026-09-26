@@ -790,4 +790,42 @@ if (derniere && LECONS.some(l => l.id === derniere)) ouvrirLecon(derniere);
 else ouvrirLecon(LECONS[0].id);
 
 document.addEventListener('pointerdown', () => initAudio(), { once:true });
+
+/* ================= installation sur le téléphone ================= */
+const enApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const surIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// seulement sur le site publié (le fichier ouvert en local ou la page hébergée n'ont pas de manifest)
+const installable = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
+
+if (installable && 'serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(() => { /* hors ligne ou non pris en charge */ });
+}
+
+let demandeInstallation = null;
+window.addEventListener('beforeinstallprompt', e => {      // Android, Chrome, Edge
+  e.preventDefault();
+  demandeInstallation = e;
+  if (!enApp) $('#btn-installer').hidden = false;
+});
+window.addEventListener('appinstalled', () => { $('#btn-installer').hidden = true; });
+if (installable && surIOS && !enApp) $('#btn-installer').hidden = false;   // iPhone : on explique
+
+$('#btn-installer').addEventListener('click', async () => {
+  if (demandeInstallation){
+    demandeInstallation.prompt();
+    await demandeInstallation.userChoice;
+    demandeInstallation = null;
+    $('#btn-installer').hidden = true;
+  } else {
+    $('#ios-modal').classList.remove('hidden');
+    $('#btn-ios-close').focus();
+  }
+});
+const fermerIOS = () => { $('#ios-modal').classList.add('hidden'); $('#btn-installer').focus(); };
+$('#btn-ios-close').addEventListener('click', fermerIOS);
+$('#ios-modal').addEventListener('click', e => { if (e.target.id === 'ios-modal') fermerIOS(); });
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('#ios-modal').classList.contains('hidden')) fermerIOS();
+});
 demarre = true;

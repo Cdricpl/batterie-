@@ -1,5 +1,7 @@
 /* Assemble l'application en un seul fichier HTML autonome.
- * Usage : node build.js   ->  ma-batterie.html
+ * Usage : node build.js                 ->  ma-batterie.html (à double-cliquer)
+ *         node build.js --site          ->  site/ (à publier, installable sur téléphone)
+ *         node build.js <fichier> --artefact  ->  variante pour une page hébergée
  */
 const fs = require('fs');
 
@@ -56,11 +58,31 @@ html = html.replace('<link rel="stylesheet" href="css/styles.css">', () => `<sty
 html = html.replace('<script type="module" src="js/app.js"></script>', () => `<script type="module">\n${js}\n</script>`);
 html = html.replace('<title>', '<!-- Fichier autonome généré par build.js : ne pas modifier à la main -->\n<title>');
 
-const sortie = process.argv[2] || 'ma-batterie.html';
+const args = process.argv.slice(2);
+const options = new Set(args.filter(a => a.startsWith('--')));
+const chemins = args.filter(a => !a.startsWith('--'));
+
+/* Variante « site » : dossier prêt à publier (Netlify, GitHub Pages…), installable
+ * sur un téléphone : index.html + manifest + service worker (hors ligne) + icônes. */
+if (options.has('--site')){
+  const dossier = chemins[0] || 'site';
+  fs.rmSync(dossier, { recursive:true, force:true });
+  fs.mkdirSync(dossier + '/icons', { recursive:true });
+  fs.writeFileSync(dossier + '/index.html', html.replace(/ data-pwa/g, ''));
+  for (const f of ['manifest.webmanifest', 'sw.js']) fs.copyFileSync(f, dossier + '/' + f);
+  for (const f of fs.readdirSync('icons')) fs.copyFileSync('icons/' + f, dossier + '/icons/' + f);
+  console.log(`${dossier}/ écrit — site installable (${fs.readdirSync(dossier).join(', ')})`);
+  process.exit(0);
+}
+
+/* Fichier seul : il n'y a ni manifest ni icônes à côté, on retire ces balises. */
+html = html.replace(/^.*data-pwa.*\n/gm, '');
+
+const sortie = chemins[0] || 'ma-batterie.html';
 
 /* Variante « artefact » : la page est publiée dans un squelette existant,
- * on ne garde donc que le titre, le style et le contenu du body. */
-if (process.argv.includes('--artefact')){
+ * on ne garde donc que le titre, les polices, le style et le contenu du body. */
+if (options.has('--artefact')){
   const titre = html.match(/<title>[\s\S]*?<\/title>/)[0];
   const style = html.match(/<style>[\s\S]*?<\/style>/)[0];
   const corps = html.match(/<body>([\s\S]*)<\/body>/)[1];

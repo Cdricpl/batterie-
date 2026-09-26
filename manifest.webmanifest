@@ -1,0 +1,17 @@
+{
+  "name": "Ma Batterie",
+  "short_name": "Batterie",
+  "description": "Apprendre la batterie : parcours progressif, rudiments, rythmes et morceaux connus, partitions qui se lisent toutes seules.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121010",
+  "theme_color": "#121010",
+  "categories": ["education", "music"],
+  "icons": [
+    { "src": "icons/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
