@@ -1,5 +1,10 @@
-/* Moteur audio : tous les sons sont synthétisés (aucun fichier à télécharger,
- * l'appli fonctionne donc hors ligne). */
+/* Moteur audio.
+ * Les sons sont de vrais enregistrements de batterie acoustique (Virtuosity Drums,
+ * domaine public), intégrés à l'appli : elle fonctionne donc hors ligne. Plusieurs
+ * forces de frappe et plusieurs prises par élément évitent l'effet « mitraillette »
+ * d'une boîte à rythmes. Tant que les sons ne sont pas décodés (une fraction de
+ * seconde au premier démarrage), un son de synthèse prend le relais. */
+import { SONS } from './sons.js';
 
 let ctx = null;
 let master = null;
@@ -10,8 +15,13 @@ const mutes = {};       // éléments coupés
 let solos = new Set();  // si non vide, seuls ces éléments sont audibles
 
 export const VOLUMES_DEFAUT = {
-  CR: 0.55, CH: 0.7, RD: 0.6, T1: 0.85, T2: 0.85, CC: 0.9, TB: 0.85, GC: 1.0, HP: 0.6
+  CR: 1, CH: 1, RD: 1, T1: 1, T2: 1, CC: 1, TB: 1, GC: 1, HP: 1
 };
+/* équilibre des sons de synthèse de secours (les enregistrements ont le leur) */
+const EQUILIBRE_SYNTHESE = { CR: 0.55, CH: 0.7, CH_OPEN: 0.7, RD: 0.6, T1: 0.85, T2: 0.85, CC: 0.9, TB: 0.85, GC: 1.0, HP: 0.6 };
+
+/* Place de chaque élément dans l'espace, vu du tabouret (comme sur la photo du kit) */
+const PANORAMIQUE = { CH: -0.45, CH_OPEN: -0.45, HP: -0.45, CC: -0.2, CR: -0.3, T1: -0.08, T2: 0.12, TB: 0.4, RD: 0.5, GC: 0 };
 
 export function ctxAudio(){ return ctx; }
 
@@ -20,11 +30,18 @@ export function initAudio(){
   const AC = window.AudioContext || window.webkitAudioContext;
   ctx = new AC();
   master = ctx.createGain();
-  master.gain.value = 0.9;
+  master.gain.value = 1;
+  // compression légère (colle le kit, l'attaque passe grâce aux 5 ms), remontée du
+  // niveau, puis limiteur : ça sonne fort sur un téléphone sans jamais saturer
   const comp = ctx.createDynamicsCompressor();
-  comp.threshold.value = -12; comp.knee.value = 20; comp.ratio.value = 4;
-  comp.attack.value = 0.003; comp.release.value = 0.2;
-  master.connect(comp).connect(ctx.destination);
+  comp.threshold.value = -18; comp.knee.value = 10; comp.ratio.value = 3;
+  comp.attack.value = 0.005; comp.release.value = 0.12;
+  const remontee = ctx.createGain();
+  remontee.gain.value = 1.6;
+  const limiteur = ctx.createDynamicsCompressor();
+  limiteur.threshold.value = -1.5; limiteur.knee.value = 0; limiteur.ratio.value = 20;
+  limiteur.attack.value = 0.001; limiteur.release.value = 0.08;
+  master.connect(comp).connect(remontee).connect(limiteur).connect(ctx.destination);
 
   for (const [id, v] of Object.entries(VOLUMES_DEFAUT)) {
     const g = ctx.createGain();
@@ -39,7 +56,122 @@ export function initAudio(){
   noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
   const d = noiseBuf.getChannelData(0);
   for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  chargerBanque();
   return ctx;
+}
+
+/* ================= banque de sons enregistrés ================= */
+const banque = {};          // élément → { gain, couches: { couche: [{ buf, debut }] } }
+let banquePrete = false;
+
+export function sonsPrets(){ return banquePrete; }
+
+function decoderMp3(b64){
+  const bin = atob(b64);
+  const octets = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) octets[i] = bin.charCodeAt(i);
+  // forme à rappel en plus de la promesse : les anciens Safari ne connaissent que celle-là
+  return new Promise((ok, ko) => {
+    const p = ctx.decodeAudioData(octets.buffer, ok, ko);
+    if (p && p.catch) p.catch(ko);
+  });
+}
+
+/* Début réel de la frappe dans le son décodé. Selon le navigateur, le décodeur MP3
+ * ajoute quelques millisecondes de silence au début : on le saute pour que la
+ * frappe tombe exactement sur le temps. */
+function debutFrappe(buf){
+  const d = buf.getChannelData(0);
+  let pic = 0;
+  for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > pic) pic = a; }
+  const seuil = pic * 0.06;
+  for (let i = 0; i < d.length; i++) if (Math.abs(d[i]) > seuil) return Math.max(0, i / buf.sampleRate - 0.0015);
+  return 0;
+}
+
+async function chargerBanque(){
+  try {
+    const taches = [];
+    for (const [inst, def] of Object.entries(SONS)){
+      banque[inst] = { gain: def.gain, couches: {} };
+      for (const s of def.sons){
+        taches.push(decoderMp3(s.mp3).then(buf => {
+          (banque[inst].couches[s.couche] ||= []).push({ buf, debut: debutFrappe(buf) });
+        }));
+      }
+    }
+    await Promise.all(taches);
+    banquePrete = true;
+  } catch (e) {
+    banquePrete = false;           // décodage impossible : la synthèse reste utilisée
+  }
+}
+
+/* Choix de la couche (force de frappe) selon l'élément et la dynamique de la note */
+function couche(inst, v, opt){
+  const fort = v >= 0.97, fantome = opt.ghost || v < 0.4;
+  switch (inst){
+    case 'GC':  return v >= 0.75 ? ['fort', v] : v >= 0.45 ? ['moyen', 1] : ['doux', 1];
+    case 'CC':  return opt.flam ? ['flam', 1] : fantome ? ['ghost', 1] : fort ? ['fort', 1] : ['moyen', v / 0.85];
+    // la couche « fort » du charleston est enregistrée beaucoup plus fort (+13 dB) :
+    // on la ramène à un accent naturel, 2 à 4 dB au-dessus d'une frappe normale
+    case 'CH':  return fantome ? ['ghost', 1] : fort ? ['fort', 0.3] : ['moyen', v / 0.85];
+    case 'CHO': return fort ? ['fort', 0.25] : ['moyen', 1];
+    case 'HP':  return ['fort', 1];
+    case 'RD':  return v < 0.6 ? ['doux', 1] : ['moyen', fort ? 1.2 : 1];
+    case 'CR':  return v < 0.6 ? ['moyen', 1] : ['fort', 1];
+    default:    return fort ? ['fort', 1] : v < 0.5 ? ['doux', 1] : ['moyen', 1];   // toms
+  }
+}
+
+const dernierePrise = {};    // pour ne jamais rejouer deux fois de suite la même prise
+let charlestonOuvert = null; // son de charleston ouvert en cours, à étouffer
+
+function jouerEnregistrement(id, when, v, opt){
+  // le tom 2 n'existe pas dans la banque : c'est le tom 1, accordé un peu plus grave
+  const inst = id === 'CH_OPEN' || (id === 'CH' && opt.open) ? 'CHO' : id === 'T2' ? 'T1' : id;
+  const b = banque[inst];
+  if (!b) return false;
+  let [nom, facteur] = couche(inst, v, opt);
+  const prises = b.couches[nom] || b.couches.moyen || Object.values(b.couches)[0];
+  if (!prises || !prises.length) return false;
+
+  let i = Math.floor(Math.random() * prises.length);
+  const cle = inst + nom;
+  if (prises.length > 1 && i === dernierePrise[cle]) i = (i + 1) % prises.length;
+  dernierePrise[cle] = i;
+  const prise = prises[i];
+
+  const src = ctx.createBufferSource();
+  src.buffer = prise.buf;
+  // micro-variations de hauteur et de volume : deux coups ne sont jamais identiques
+  src.playbackRate.value = (id === 'T2' ? 0.86 : 1) * (1 + (Math.random() - 0.5) * 0.012);
+  const g = ctx.createGain();
+  g.gain.value = b.gain * facteur * (1 + (Math.random() - 0.5) * 0.08);
+  let fin = g;
+  if (ctx.createStereoPanner){
+    const pan = ctx.createStereoPanner();
+    pan.pan.value = PANORAMIQUE[id] ?? 0;
+    g.connect(pan);
+    fin = pan;
+  }
+  src.connect(g);
+  fin.connect(out(id === 'CH_OPEN' ? 'CH' : id));
+
+  // charleston : un coup fermé ou au pied étouffe le charleston ouvert qui sonne encore
+  if (inst === 'CH' || inst === 'HP' || inst === 'CHO'){
+    if (charlestonOuvert && charlestonOuvert.debut < when){
+      const o = charlestonOuvert;
+      try {
+        o.gain.gain.setTargetAtTime(0, when, 0.015);
+        o.src.stop(when + 0.12);
+      } catch { /* déjà terminé */ }
+    }
+    charlestonOuvert = inst === 'CHO' ? { src, gain: g, debut: when } : null;
+  }
+
+  src.start(when, prise.debut);
+  return true;
 }
 
 export async function reprendreAudio(){
@@ -183,6 +315,24 @@ export function jouer(id, t = 0, opt = {}){
   if (!ctx) return;
   const when = t || ctx.currentTime;
   const v = opt.velo ?? 0.85;
+
+  if (banquePrete){
+    // flam sur la caisse claire : la banque contient de vrais flams enregistrés
+    const flamEnregistre = opt.flam && id === 'CC';
+    if (!flamEnregistre){
+      if (opt.drag){
+        jouerEnregistrement(id, Math.max(0, when - 0.062), 0.3, { ghost:true });
+        jouerEnregistrement(id, Math.max(0, when - 0.031), 0.34, { ghost:true });
+      }
+      if (opt.flam) jouerEnregistrement(id, Math.max(0, when - 0.03), 0.35, { ghost:true });
+    }
+    if (jouerEnregistrement(id, when, v, { ...opt, flam: flamEnregistre })) return;
+  }
+  jouerSynthese(id, when, v * (EQUILIBRE_SYNTHESE[id] ?? 1), opt);
+}
+
+/* Sons de synthèse : secours tant que la banque n'est pas prête */
+function jouerSynthese(id, when, v, opt){
   switch (id){
     case 'GC': grosseCaisse(when, v); break;
     case 'CC': caisseClaire(when, v, opt); break;
@@ -197,10 +347,10 @@ export function jouer(id, t = 0, opt = {}){
   }
   // notes d'agrément, sur le même élément, jouées juste avant la note principale
   if (opt.drag) {
-    jouer(id, Math.max(0, when - 0.062), { velo: v * 0.32, ghost:true });
-    jouer(id, Math.max(0, when - 0.031), { velo: v * 0.36, ghost:true });
+    jouerSynthese(id, Math.max(0, when - 0.062), v * 0.32, { ghost:true });
+    jouerSynthese(id, Math.max(0, when - 0.031), v * 0.36, { ghost:true });
   }
   if (opt.flam) {
-    jouer(id, Math.max(0, when - 0.035), { velo: v * 0.45, ghost:true });
+    jouerSynthese(id, Math.max(0, when - 0.035), v * 0.45, { ghost:true });
   }
 }

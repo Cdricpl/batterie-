@@ -191,7 +191,8 @@ version.
 index.html            interface
 css/styles.css        thème « salle de répète » (voir plus bas)
 js/instruments.js     définition des éléments (position sur la portée, couleur, touche)
-js/audio.js           synthèse des sons de batterie (Web Audio, aucun échantillon)
+js/audio.js           moteur audio : lecture des enregistrements, mixage, secours en synthèse
+js/sons.js            les sons enregistrés (généré par outils/preparer_sons.py)
 js/notation.js        moteur de partition SVG + vue grille
 js/player.js          lecture audio planifiée + tête de lecture
 js/patterns.js        bibliothèque de rythmes, breaks et exercices
@@ -213,9 +214,17 @@ ma-batterie.html      l'application entière en un seul fichier — à double-cl
 retrouve alors dans la même portée JavaScript, le script refuse de produire un fichier
 où deux modules déclarent le même nom, et indique lequel renommer.
 
-Tous les sons sont **synthétisés** en Web Audio (grosse caisse, caisse claire,
-charleston, toms, cymbales) : l'application fonctionne hors ligne et pèse quelques
-dizaines de kilo-octets.
+Les sons sont de **vrais enregistrements de batterie acoustique** : *Virtuosity
+Drums* de Versilian Studios, publiés dans le domaine public (CC0 1.0,
+[github.com/sfzinstruments/virtuosity_drums](https://github.com/sfzinstruments/virtuosity_drums)).
+Chaque frappe mélange les micros grosse caisse, caisse claire et overheads, comme le
+kit de base de la banque. Plusieurs forces de frappe et plusieurs prises par élément,
+de légères variations de volume et de hauteur, un placement stéréo vu du tabouret et
+l'étouffement du charleston ouvert évitent l'effet « boîte à rythmes ».
+
+Les 36 sons retenus sont intégrés à l'appli (`js/sons.js`, environ 750 Ko en MP3) :
+elle fonctionne toujours hors ligne. `outils/preparer_sons.py` les régénère depuis la
+banque d'origine. Une synthèse Web Audio sert de secours le temps du décodage.
 
 ---
 
