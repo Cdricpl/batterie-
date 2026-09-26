@@ -61,10 +61,25 @@ const GRAD_TRAVAIL = { roulements:['#38bdf8', '#1d4ed8'], diddles:['#a78bfa', '#
   drags:['#fbbf24', '#c2410c'], coordination:['#34d399', '#047857'] };
 const gradStyle = g => `--c1:${g[0]};--c2:${g[1]}`;
 
+/* Morceaux rangés par genre, puis par niveau dans chaque genre */
+const GENRES_MORCEAUX = [
+  { id:'rock',    nom:'Rock',               court:'Rock',    styles:['Rock', 'Grunge', 'Pop rock', 'Rock progressif', 'Rock\'n\'roll', 'Punk'], grad:['#fb923c', '#e11d48'] },
+  { id:'hard',    nom:'Hard rock & métal',  court:'Métal',   styles:['Hard rock', 'Métal'],                 grad:['#94a3b8', '#1e293b'] },
+  { id:'pop',     nom:'Pop',                court:'Pop',     styles:['Pop'],                                grad:['#f472b6', '#be185d'] },
+  { id:'funk',    nom:'Funk, soul & disco', court:'Funk',    styles:['Funk', 'Funk rock', 'Disco', 'Soul'], grad:['#fbbf24', '#c2410c'] },
+  { id:'urbain',  nom:'Hip-hop & électro',  court:'Électro', styles:['Hip-hop', 'Électro'],                 grad:['#818cf8', '#4338ca'] },
+  { id:'variete', nom:'Variété française',  court:'Variété', styles:['Variété'],                            grad:['#38bdf8', '#1d4ed8'] },
+  { id:'monde',   nom:'Reggae & latino',    court:'Latino',  styles:['Reggae', 'Latin'],                    grad:['#34d399', '#0f766e'] },
+  { id:'jazz',    nom:'Blues & jazz',       court:'Jazz',    styles:['Blues', 'Jazz'],                      grad:['#a78bfa', '#6d28d9'] }
+];
+const genreDe = m => GENRES_MORCEAUX.find(g => g.styles.includes(m.style)) || GENRES_MORCEAUX[0];
+const morceauxDe = g => parNiveau(MORCEAUX.filter(m => genreDe(m) === g));
+const MORCEAUX_TRIES = GENRES_MORCEAUX.flatMap(morceauxDe);
+
 const FAMILLES_RYTHMES = [
   { id:'rock',     nom:'Rock & pop',        desc:'Le socle : croches, doubles, ballades.',   styles:['Rock', 'Ballade', 'Country'] },
   { id:'funk',     nom:'Funk & soul',       desc:'Ghost notes, Motown, disco.',              styles:['Funk', 'Soul', 'Disco'] },
-  { id:'urbain',   nom:'Hip-hop & électro', desc:'Boom bap, trap, drum and bass.',           styles:['Hip-hop', 'Électro'] },
+  { id:'urbain',   nom:'Hip-hop & électro', desc:'Boom bap, trap, drum and bass.',           styles:['Hip-hop', 'Électro', 'Reggaeton'] },
   { id:'monde',    nom:'Reggae & monde',    desc:'One drop, ska, bossa, samba, afro.',       styles:['Reggae', 'Ska', 'Latin', 'Afro'] },
   { id:'ternaire', nom:'Blues & jazz',      desc:'Shuffle, swing, valse, 12/8.',             styles:['Blues', 'Blues/Rock', 'Jazz', 'Traditionnel'] },
   { id:'lourd',    nom:'Punk & métal',      desc:'Vitesse, double pédale, blast beat.',      styles:['Punk', 'Métal'] },
@@ -89,7 +104,7 @@ const FAMILLES_TRAVAIL = [
 const LISTES = {
   lecon:    { nom:'Leçon',    items: () => LECONS,                                     retour: it => '#/parcours/' + it.niveau },
   rythme:   { nom:'Rythme',   items: it => rythmesDe(familleRythme(it)),               retour: it => '#/rythmes/' + familleRythme(it) },
-  morceau:  { nom:'Morceau',  items: () => parNiveau(MORCEAUX),                        retour: () => '#/morceaux' },
+  morceau:  { nom:'Morceau',  items: () => MORCEAUX_TRIES,                             retour: () => '#/morceaux' },
   break:    { nom:'Break',    items: () => parNiveau(FILLS),                           retour: () => '#/breaks' },
   rudiment: { nom:'Rudiment', items: it => RUDIMENTS.filter(r => r.famille === it.famille), retour: it => '#/rudiments/' + it.famille },
   exercice: { nom:'Exercice', items: () => EXERCICES,                                  retour: () => '#/rudiments/coordination' }
@@ -149,10 +164,10 @@ function ecranAccueil(){
   $('#parcours-jauge').style.width = Math.round(faites / LECONS.length * 100) + '%';
   $('#cta-continuer').href = lienJouer('lecon', suivante);
   $('#cta-texte').textContent = faites ? `Continuer · Leçon ${idx}` : 'Commencer · Leçon 1';
-  $('#compte-rythmes').textContent = `${GROOVES.length} grooves, du rock au 7/8`;
+  $('#compte-rythmes').textContent = `${GROOVES.length} grooves, du rock au 9/8`;
   $('#compte-morceaux').textContent = `${MORCEAUX.length} titres connus à jouer`;
   $('#compte-breaks').textContent = `${FILLS.length} fills pour relier les parties`;
-  $('#compte-rudiments').textContent = `${RUDIMENTS.length + EXERCICES.length} exercices pour les mains`;
+  $('#compte-rudiments').textContent = `${RUDIMENTS.length} rudiments et ${EXERCICES.length} exercices`;
   majStat();
 
   const derniere = lire(CLE_DERNIERE, null);
@@ -190,8 +205,13 @@ function ecranListe({ sur = '', titre, retour = '#/', html, sauts = [] }){
     `<button type="button" class="chip saut" data-cible="${id}" style="--c:${couleur}">${texte}</button>`).join('');
   bar.querySelectorAll('[data-cible]').forEach(b => b.addEventListener('click', () => {
     const cible = document.getElementById(b.dataset.cible);
-    if (cible) corps.scrollTo({ left:cible.offsetLeft - corps.offsetLeft - 4,
+    if (!cible) return;
+    const depart = corps.scrollLeft;
+    const aller = () => corps.scrollTo({ left:cible.offsetLeft - corps.offsetLeft - 4,
       behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+    aller();
+    // au tout premier toucher, le passage en plein écran peut interrompre le défilement : on relance
+    setTimeout(() => { if (corps.scrollLeft === depart) aller(); }, 350);
   }));
   document.title = titre + ' — Ma Batterie';
 }
@@ -302,15 +322,22 @@ function ecranFamilleRythmes(id){
 /* --- morceaux --- */
 function ecranMorceaux(){
   let html = '';
-  for (let n = 1; n <= 6; n++){
-    const lot = MORCEAUX.filter(m => m.niveau === n);
+  for (const g of GENRES_MORCEAUX){
+    const lot = morceauxDe(g);
     if (!lot.length) continue;
-    html += groupe('m-niv' + n, n, lot, m => itemCarte({
-      href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
-      niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[n - 1]
-    }));
+    html += `<section class="groupe" id="m-${g.id}">
+      <div class="groupe-tete genre" style="${gradStyle(g.grad)}">
+        <div class="g-illus">${miniVinyle()}</div>
+        <b>${g.nom}</b><span>${lot.length} titre${lot.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="rangee">${lot.map(m => itemCarte({
+        href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
+        niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[m.niveau - 1]
+      })).join('')}</div>
+    </section>`;
   }
-  ecranListe({ sur:`${MORCEAUX.length} titres`, titre:'Morceaux', html, sauts:sautsNiveaux(MORCEAUX, 'm-niv') });
+  ecranListe({ sur:`${MORCEAUX.length} titres · par genre, puis par niveau`, titre:'Morceaux', html,
+    sauts:GENRES_MORCEAUX.filter(g => morceauxDe(g).length).map(g => ['m-' + g.id, g.court, g.grad[1]]) });
 }
 
 /* --- breaks --- */

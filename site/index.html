@@ -92,7 +92,7 @@ b,strong{font-weight:700}
 
 /* ====== en-têtes ====== */
 .entete{flex:0 0 var(--haut-entete);display:flex;align-items:center;gap:14px;padding:0 var(--gout)}
-.entete-titres{flex:1;min-width:0}
+.entete-titres{flex:1 0 auto;min-width:0;max-width:45%}
 .entete-titres h1{font-size:30px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .entete-droite{margin-left:auto;display:flex;align-items:center;gap:10px}
 .surtitre{
@@ -219,7 +219,14 @@ a.carte-cat:active,.tuile:active,.item-carte:active{transform:scale(.98)}
 .groupe-tete .g-num{font:800 64px/1 var(--f-titre);margin-bottom:auto;text-shadow:0 3px 12px rgba(0,0,0,.15)}
 .groupe-tete b{font:800 21px/1.05 var(--f-titre);text-transform:uppercase;letter-spacing:.04em}
 .groupe-tete span:last-child{font:600 12px var(--f-chiffres);color:rgba(255,255,255,.9)}
-.sauts{display:flex;gap:6px}
+.sauts{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0;padding:4px 2px}
+.sauts::-webkit-scrollbar{display:none}
+.entete-droite{min-width:0;flex:0 1 auto}
+.sauts{flex:0 1 auto}
+.groupe-tete.genre{flex-basis:150px}
+.groupe-tete .g-illus{margin-bottom:auto;height:62px;--ill-1:#fff;--ill-2:rgba(255,255,255,.7);--ill-3:rgba(255,255,255,.85);--ill-trait:rgba(0,0,0,.18);--ill-txt:var(--c2)}
+.groupe-tete .g-illus svg{height:100%;width:auto;display:block}
+.groupe-tete.genre b{font-size:22px}
 .chip.saut{padding:8px 12px;font-family:var(--f-chiffres);font-weight:600;letter-spacing:0}
 .chip.saut::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:0}
 @media (min-height:600px){ .rangee.tuiles{--rangs:2} }
@@ -913,7 +920,7 @@ kbd{
 /* Numéro de version de l'application : affiché en haut de l'écran, et utilisé par
  * le service worker (build.js --site) pour que les téléphones installés récupèrent
  * chaque nouvelle version. À augmenter à chaque livraison. */
-const VERSION = '2.2.0';
+const VERSION = '2.3.0';
 const DATE_VERSION = '2026-09-26';
 
 
@@ -2549,13 +2556,334 @@ FILLS.push({
   f.tracks.CH = '--x-x-x-x-x-x-x-' + 'x-x-x-x---------';
 }
 
+/* ======================= BIBLIOTHÈQUE ÉTENDUE ======================= */
+const g = (o) => ({ beats:4, bars:1, ...o });
+
+GROOVES.push(
+  /* --- rock & pop --- */
+  g({ id:'rock-ride', nom:'Rock à la ride', style:'Rock', niveau:2, bpm:[60,96,150], res:2,
+    tracks:{ CR:'x-------', RD:'-xxxxxxx', CC:'--x---x-', GC:'x---x---' },
+    desc:"Le rock des refrains : la ride remplace le charleston, la crash marque le début de la mesure.",
+    astuce:"Frappe la ride à mi-chemin entre le bord et la cloche : un « ting » clair, sans que ça gronde." }),
+  g({ id:'rock-crash', nom:'Rock à la crash (refrain qui explose)', style:'Rock', niveau:2, bpm:[60,100,150], res:2,
+    tracks:{ CR:'x-x-x-x-', CC:'--x---x-', GC:'x---x---' },
+    desc:"La crash sur chaque temps : le son massif des fins de morceau et des refrains de stade.",
+    astuce:"Laisse la crash respirer : frappe en glissant, pas en écrasant, sinon elle s'étouffe." }),
+  g({ id:'rock-tom-basse', nom:'Rock au tom basse', style:'Rock', niveau:3, bpm:[60,90,140], res:2,
+    tracks:{ TB:'xxxxxxxx', CC:'--x---x-', GC:'x---x---' },
+    desc:"La main droite quitte le charleston pour le tom basse : un groove sourd et tribal.",
+    astuce:"Joue le tom basse moins fort que la caisse claire, pour garder le backbeat devant." }),
+  g({ id:'rock-ouvert', nom:'Rock avec charleston ouvert', style:'Rock', niveau:3, bpm:[60,100,150], res:2,
+    tracks:{ CH:'xxxxxxxo', CC:'--x---x-', GC:'x---x---' },
+    desc:"Une ouverture sur le dernier « et » de la mesure : le charleston « respire » avant de repartir.",
+    astuce:"Le pied gauche referme le charleston pile sur le 1 suivant : on entend « tsss-tchk »." }),
+  g({ id:'rock-syncope', nom:'Rock syncopé (grosse caisse sur le « et » du 3)', style:'Rock', niveau:3, bpm:[60,96,150], res:2,
+    tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x----x--' },
+    desc:"La grosse caisse arrive entre le 3 et le 4 : le groove pousse vers la mesure suivante.",
+    astuce:"Compte « 1 et 2 et 3 ET 4 et » : le pied tombe sur le ET appuyé." }),
+  g({ id:'rock-half-time', nom:'Rock half-time (caisse claire sur le 3)', style:'Rock', niveau:3, bpm:[60,90,140], res:4,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'--------X-------', GC:'x-----x-------x-' },
+    desc:"Même tempo, mais le backbeat n'arrive qu'une fois par mesure : tout paraît deux fois plus lent et plus lourd.",
+    astuce:"Le charleston garde le vrai tempo : c'est lui qui empêche de ralentir." }),
+  g({ id:'rock-16-accents', nom:'Rock 16 accentué', style:'Rock', niveau:4, bpm:[55,82,120], res:4,
+    tracks:{ CH:'XxxxXxxxXxxxXxxx', CC:'----x-------x---', GC:'x-------x-x-----' },
+    desc:"Charleston en doubles-croches avec un accent sur chaque temps : ça donne du relief et ça stabilise.",
+    astuce:"Accent = baguette qui part de plus haut, pas une main plus crispée." }),
+  g({ id:'pop-16-deux-mains', nom:'Pop 16 à deux mains', style:'Rock', niveau:4, bpm:[60,90,120], res:4,
+    tracks:{ CH:'xxxx-xxxxxxx-xxx', CC:'----x-------x---', GC:'x-------x-x-----' },
+    doigte:'DGDGGGDGDGDGGGDG',
+    desc:"Les deux mains jouent le charleston ; la main gauche quitte le charleston pour la caisse claire sur 2 et 4.",
+    astuce:"Sur 2 et 4, la gauche joue la caisse claire au lieu du charleston : le mouvement reste régulier." }),
+  g({ id:'ballade-pop', nom:'Ballade pop (croches lentes)', style:'Ballade', niveau:2, bpm:[50,68,90], res:2,
+    tracks:{ CH:'xxxxxxxx', CC:'----x---', GC:'x-----x-' },
+    desc:"Une seule caisse claire par mesure, sur le 3 : l'espace idéal pour une chanson lente.",
+    astuce:"Plus c'est lent, plus il faut compter les croches : ne te laisse pas « tomber » entre deux coups." }),
+  g({ id:'country', nom:'Country (boum-tchak)', style:'Country', niveau:2, bpm:[80,110,160], res:2,
+    tracks:{ CC:'--X---X-', GC:'x---x---', HP:'--x---x-' },
+    desc:"Grosse caisse sur 1 et 3, caisse claire et charleston au pied ensemble sur 2 et 4 : le « boum-tchak ».",
+    astuce:"Le charleston au pied se joue avec le talon qui bascule : court et sec." }),
+
+  /* --- funk, soul, disco --- */
+  g({ id:'disco-16', nom:'Disco en doubles-croches', style:'Disco', niveau:3, bpm:[100,118,130], res:4,
+    tracks:{ CH:'xxoxxxoxxxoxxxox', CC:'----x-------x---', GC:'x---x---x---x---' },
+    desc:"Charleston en doubles avec une ouverture sur chaque « et » : le son des pistes de danse de la fin des années 70.",
+    astuce:"L'ouverture dure une double-croche : le pied gauche se lève et se repose aussitôt." }),
+  g({ id:'soul-16', nom:'Soul en doubles-croches', style:'Soul', niveau:3, bpm:[70,96,120], res:4,
+    tracks:{ CH:'xxxxxxxxxxxxxxxx', CC:'----X-------X---', GC:'x-------x--x----' },
+    desc:"Un groove soul serré : charleston continu, backbeat bien appuyé, petite relance du pied.",
+    astuce:"Les doubles au charleston se jouent légères, le backbeat très fort : le contraste fait le groove." }),
+  g({ id:'funk-ouvert', nom:'Funk avec ouvertures', style:'Funk', niveau:4, bpm:[70,96,115], res:4,
+    tracks:{ CH:'x-x-x-xox-x-x-xo', CC:'----X--g-g--X---', GC:'x-x----x--x-----' },
+    desc:"Des ouvertures de charleston juste avant les temps, des ghost notes qui chuchotent : le funk qui respire.",
+    astuce:"Travaille d'abord charleston + pied gauche seuls, jusqu'à ce que les ouvertures soient automatiques." }),
+  g({ id:'funk-syncope', nom:'Funk syncopé (façon James Brown)', style:'Funk', niveau:5, bpm:[80,104,120], res:4,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X--g-g-gX--g', GC:'x-x-----x-x---x-' },
+    desc:"La grosse caisse joue en contretemps, la caisse claire répond par des ghost notes : tout est dans le placement.",
+    astuce:"Chante le groove avant de le jouer : « boum-boum . TCHAK . t . t . boum-boum . TCHAK . t »." }),
+
+  /* --- hip-hop, électro --- */
+  g({ id:'hiphop-lent', nom:'Hip-hop lent (laid-back)', style:'Hip-hop', niveau:2, bpm:[65,80,95], res:2,
+    tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--x-x--' },
+    desc:"Un groove paresseux : la grosse caisse rebondit, la caisse claire se pose lourdement.",
+    astuce:"Joue la caisse claire un poil en retard : c'est ce qui donne le côté « laid-back »." }),
+  g({ id:'techno', nom:'Techno', style:'Électro', niveau:3, bpm:[120,128,140], res:4,
+    tracks:{ GC:'x---x---x---x---', CH:'--o---o---o---o-', CC:'----x-------x---' },
+    desc:"Grosse caisse sur chaque temps, charleston ouvert entre les temps : le moteur des clubs.",
+    astuce:"Régularité absolue : pense « machine ». Le pied ne doit jamais faiblir." }),
+  g({ id:'reggaeton', nom:'Reggaeton (dembow)', style:'Reggaeton', niveau:2, bpm:[85,95,105], res:4,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'---x--x----x--x-', GC:'x---x---x---x---' },
+    desc:"Le rythme « dembow » : grosse caisse sur chaque temps, caisse claire qui boite juste avant et après.",
+    astuce:"Compte « 1 e et A 2 e ET a » : la caisse claire tombe sur le A et sur le ET." }),
+  g({ id:'breakbeat', nom:'Breakbeat (façon Amen)', style:'Électro', niveau:5, bpm:[80,136,170], res:4, bars:2,
+    tracks:{
+      CH:'x-x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-',
+      CC:'----x--x-x--x--x' + '----x--x-x----x-',
+      GC:'x-x-------xx----' + '--xx------x-----' },
+    desc:"Le break découpé de la drum and bass et du hip-hop : grosse caisse et caisse claire se répondent sur deux mesures.",
+    astuce:"Apprends-le très lentement, mesure par mesure. À vitesse réelle, les mains restent souples." }),
+
+  /* --- reggae, latin, afro --- */
+  g({ id:'reggae-rockers', nom:'Reggae rockers', style:'Reggae', niveau:3, bpm:[65,76,90], res:4,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'--------X-------', GC:'x---x---x---x---' },
+    desc:"Entre le one drop et le steppers : grosse caisse sur chaque temps, caisse claire seulement sur le 3.",
+    astuce:"Charleston souple et léger : en reggae, la main droite danse." }),
+  g({ id:'cumbia', nom:'Cumbia', style:'Latin', niveau:3, bpm:[80,95,110], res:4,
+    tracks:{ CH:'x-xxx-xxx-xxx-xx', CC:'----x-------x---', GC:'x-------x-------' },
+    desc:"Le charleston imite la guacharaca (« tchk-tchk-tchk ») sur un balancement à deux temps.",
+    astuce:"Accentue légèrement la première note de chaque groupe au charleston." }),
+  g({ id:'soca', nom:'Calypso / soca', style:'Latin', niveau:3, bpm:[100,120,140], res:4,
+    tracks:{ CH:'xxxxxxxxxxxxxxxx', CC:'--x---x---x---x-', GC:'x---x---x---x---' },
+    desc:"Grosse caisse sur les temps, caisse claire sur tous les contretemps : une fête des Caraïbes.",
+    astuce:"La caisse claire sur les « et » doit rester légère, sinon le groove devient du punk." }),
+  g({ id:'afro-68', nom:'Afro-cubain 6/8 (cloche)', style:'Afro', niveau:4, bpm:[60,80,110], res:3,
+    tracks:{ RD:'x-x-xx-x-x-x', GC:'x-----x-----', HP:'---x-----x--' },
+    desc:"La fameuse ligne de cloche en 6/8 jouée à la ride, sur deux grands temps de pied.",
+    astuce:"Chante la cloche « ta . ta . ta ta . ta . ta . ta » avant de la jouer." }),
+
+  /* --- blues, jazz, ternaire --- */
+  g({ id:'shuffle-ride', nom:'Shuffle à la ride', style:'Blues', niveau:3, bpm:[70,100,140], res:3,
+    tracks:{ RD:'x-xx-xx-xx-x', CC:'---x-----x--', GC:'x-----x-----' },
+    desc:"Le shuffle joué à la ride : plus large, plus ouvert, parfait pour les refrains de blues.",
+    astuce:"La note courte (le « li ») doit rester plus douce que la longue." }),
+  g({ id:'double-shuffle', nom:'Double shuffle (texan)', style:'Blues', niveau:4, bpm:[80,120,160], res:3,
+    tracks:{ CH:'x-xx-xx-xx-x', CC:'x-xX-xx-xX-x', GC:'x-----x-----' },
+    desc:"Les deux mains jouent le shuffle ensemble, la caisse claire accentuée sur 2 et 4 : le moteur du blues texan.",
+    astuce:"Main gauche légère sur les notes non accentuées : elle chuchote, puis claque sur 2 et 4." }),
+  g({ id:'swing-2', nom:'Swing « two-feel »', style:'Jazz', niveau:4, bpm:[80,120,180], res:3,
+    tracks:{ RD:'x--x-xx--x-x', HP:'---x-----x--', GC:'x-----x-----' },
+    desc:"Le swing de jazz avec la grosse caisse sur 1 et 3 : la contrebasse joue deux notes par mesure.",
+    astuce:"La grosse caisse se joue à peine, on la sent plus qu'on ne l'entend (« feathering »)." }),
+  g({ id:'valse-jazz', nom:'Valse jazz', style:'Jazz', niveau:4, bpm:[90,140,200], beats:3, res:3,
+    tracks:{ RD:'x--x-xx--', HP:'---x--x--', GC:'x--------' },
+    desc:"Le swing à trois temps : ride « ding ding-ga ding », charleston au pied sur 2 et 3.",
+    astuce:"Pense la mesure comme une grande boucle de trois temps, sans appuyer le 1 trop fort." }),
+  g({ id:'purdie', nom:'Half-time shuffle (façon Purdie)', style:'Blues', niveau:6, bpm:[60,80,100], res:3,
+    tracks:{ CH:'x-xx-xx-xx-x', CC:'-g--g-X-g--g', GC:'x-----x--x--' },
+    desc:"Le shuffle en demi-tempo rendu célèbre par Bernard Purdie : backbeat sur le 3, ghost notes dans les triolets.",
+    astuce:"Les ghost notes se jouent sur les notes muettes du charleston : les deux mains s'emboîtent." }),
+
+  /* --- punk, métal --- */
+  g({ id:'thrash', nom:'Thrash « skank beat »', style:'Métal', niveau:4, bpm:[140,180,230], res:2,
+    tracks:{ CH:'xxxxxxxx', CC:'-x-x-x-x', GC:'x-x-x-x-' },
+    desc:"Grosse caisse sur les temps, caisse claire sur tous les contretemps, très vite : le moteur du thrash.",
+    astuce:"À haute vitesse, les poignets travaillent, les bras restent détendus." }),
+  g({ id:'metal-galop', nom:'Galop métal', style:'Métal', niveau:4, bpm:[80,120,170], res:4,
+    tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-xxx-xxx-xxx-xx' },
+    desc:"La grosse caisse « galope » : une croche et deux doubles, sur chaque temps.",
+    astuce:"Travaille le galop au pied seul, avec le métronome, avant d'ajouter les mains." }),
+  g({ id:'metal-lourd', nom:'Métal lourd half-time', style:'Métal', niveau:3, bpm:[60,80,110], res:4,
+    tracks:{ CR:'x-------x-------', CC:'--------X-------', GC:'xx--xx--xx--xx--' },
+    desc:"Crash lente, caisse claire sur le 3, doubles au pied : le groove écrasant des riffs lourds.",
+    astuce:"Chaque double au pied doit être aussi fort que le premier coup." }),
+  g({ id:'metal-toms', nom:'Métal aux toms et double pédale', style:'Métal', niveau:5, bpm:[70,100,140], res:4,
+    tracks:{ TB:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'xxxxxxxxxxxxxxxx' },
+    desc:"Pieds en doubles-croches continues, tom basse en croches : un mur de son.",
+    astuce:"Si tu n'as qu'une pédale, commence à 60 BPM avec un seul pied : talon levé, cheville souple." }),
+
+  /* --- mesures impaires --- */
+  g({ id:'rock-5-8', nom:'Rock en 5/8 (3+2)', style:'Mesures composées', niveau:5, bpm:[120,160,220], beats:5, unite:8, res:1,
+    tracks:{ CH:'xxxxx', CC:'---x-', GC:'x----' },
+    desc:"Cinq croches, groupées 3 + 2 : une mesure qui semble toujours s'arrêter trop tôt.",
+    astuce:"Compte « 1-2-3, 1-2 » : grosse caisse sur le premier groupe, caisse claire sur le second." }),
+  g({ id:'rock-7-8-322', nom:'Rock en 7/8 (3+2+2)', style:'Mesures composées', niveau:5, bpm:[140,180,220], beats:7, unite:8, res:1,
+    tracks:{ CH:'xxxxxxx', CC:'---x---', GC:'x----x-' },
+    desc:"Le même 7/8, mais le groupe de trois vient en premier : « 1-2-3, 1-2, 1-2 ».",
+    astuce:"Joue les deux 7/8 à la suite : tu sentiras que l'ordre des groupes change tout." }),
+  g({ id:'rock-9-8', nom:'Rock en 9/8 (2+2+2+3)', style:'Mesures composées', niveau:6, bpm:[150,190,240], beats:9, unite:8, res:1,
+    tracks:{ CH:'xxxxxxxxx', CC:'--x---x--', GC:'x---x----' },
+    desc:"Neuf croches, trois groupes de deux puis un de trois : très utilisé dans les musiques des Balkans.",
+    astuce:"Le groupe de trois final est le plus long : laisse-le respirer avant de reprendre." })
+);
+
+FILLS.push(
+  avecGroove('fill-cc-4', 'Fill sur le 4 à la caisse claire', 2,
+    { CH:'x-x-x-x-x-x-----', CC:'----x-------xxxx', GC:'x-------x-------' },
+    "Le groove continue, seul le dernier temps se remplit de quatre doubles-croches à la caisse claire.",
+    "Le fill le plus simple à placer : garde le groove et remplace juste le 4.", [55,80,130], '------------DGDG'),
+  avecGroove('fill-flam-4', 'Un flam sur le 4', 2,
+    { CH:'x-x-x-x-x-x-----', CC:'----x-------f---', GC:'x-------x-------' },
+    "Un seul flam sur le dernier temps : minimaliste mais très efficace pour annoncer une nouvelle partie.",
+    "Les deux baguettes tombent presque ensemble, la main gauche un poil avant la droite."),
+  avecGroove('fill-motown', 'Fill Motown (croches à la caisse claire)', 2,
+    { CH:'x-x-x-x-x-------', CC:'----x---x-x-x-x-', GC:'x-------x-------' },
+    "Des croches à la caisse claire sur les deux derniers temps : le fill des classiques soul.",
+    "Mains alternées, volume égal, et retour pile sur le 1."),
+  avecGroove('fill-stop', 'Arrêt sur la crash (stop)', 2,
+    { CR:'x---------------', GC:'x---------------' },
+    "Un coup de crash et de grosse caisse sur le 1, puis trois temps de silence avant de repartir.",
+    "Le plus dur est le silence : continue de compter « 2, 3, 4 » dans ta tête, le groove reprend pile sur le 1."),
+  avecGroove('fill-tb-gc', 'Fill tom basse et grosse caisse', 3,
+    { CH:'x-x-x-x---------', CC:'----x-----------', TB:'--------x-x-x-x-', GC:'x--------x-x-x-x' },
+    "Tom basse et grosse caisse s'alternent en doubles-croches sur les deux derniers temps : grave et puissant.",
+    "Main, pied, main, pied : pense à une marche régulière."),
+  avecGroove('fill-montant', 'Fill qui monte (du grave vers l\'aigu)', 3,
+    { TB:'xxxx------------', T2:'----xxxx--------', T1:'--------xxxx----', CC:'------------xxxx' },
+    "L'inverse du fill classique : on part du tom basse et on remonte jusqu'à la caisse claire.",
+    "Ça crée une tension qui appelle la suite : idéal avant un pont.", [55,80,130], 'DGDGDGDGDGDGDGDG'),
+  avecGroove('fill-rock-2t', 'Fill rock classique (caisse claire puis toms)', 3,
+    { CH:'x-x-x-x---------', CC:'----x---xxxx----', T1:'------------xx--', TB:'--------------xx', GC:'x---------------' },
+    "Un temps de doubles à la caisse claire, puis on descend les toms : le fill qu'on entend dans des milliers de chansons.",
+    "Commence le fill avec la main droite : D-G-D-G sur la caisse claire, puis D-G sur chaque tom.", [55,84,140], '--------DGDGDGDG'),
+  avecGroove('fill-silences', 'Fill avec silences', 3,
+    { CH:'x-x-x-x---------', CC:'----x---x--x----', T1:'--------------x-', TB:'---------------x' },
+    "Un fill troué : les silences comptent autant que les notes.",
+    "Compte toutes les doubles-croches, même celles que tu ne joues pas."),
+  avecGroove('fill-unisson', 'Coups à l\'unisson (crash + grosse caisse)', 3,
+    { CR:'x-----x-----x---', GC:'x-----x-----x---' },
+    "Trois coups groupés crash + grosse caisse, que tout le groupe joue ensemble : les « hits ».",
+    "Les silences entre les coups doivent être parfaitement comptés : « 1 e et A . e ET a 4 »."),
+  avecGroove('fill-ouvert', 'Relance au charleston ouvert', 3,
+    { CH:'x-x-x-x-x-x-x-o-', CC:'----x-------x---', GC:'x-------x-----x-' },
+    "Pas un vrai fill : une ouverture de charleston et un coup de pied sur le dernier « et » pour relancer.",
+    "La relance la plus discrète : parfaite dans un couplet calme."),
+  avecGroove('fill-3-temps', 'Fill de trois temps', 4,
+    { CH:'x-x-------------', CC:'----xxxx--------', T1:'--------xxxx----', TB:'------------xxxx' },
+    "Le fill démarre dès le temps 2 : trois temps pleins, un fût par temps.",
+    "Plus le fill est long, plus il faut penser au retour sur le 1.", [55,78,130], '----DGDGDGDGDGDG'),
+  avecGroove('fill-332', 'Fill 3-3-2 accentué', 4,
+    { CC:'XxxXxxXxXxxXxxXx' },
+    "Seize doubles-croches, avec des accents groupés par 3, 3 puis 2 : ça sonne comme un rythme latin.",
+    "Joue d'abord les accents seuls, puis ajoute les notes douces entre eux.", [55,76,120], 'DGDGDGDGDGDGDGDG'),
+  avecGroove('fill-accents-cc', 'Accents à la caisse claire, puis toms', 4,
+    { CC:'X-xxX-xx--------', T1:'--------X-xx----', TB:'------------X-xx' },
+    "Un motif « croche, deux doubles » avec l'accent devant, qui descend de la caisse claire au tom basse.",
+    "Le motif s'appelle le « galop » : un grand, deux petits."),
+  avecGroove('fill-zigzag', 'Fill en zigzag (caisse claire / tom basse)', 4,
+    { CC:'x-x-x-x-x-x-x-x-', TB:'-x-x-x-x-x-x-x-x' },
+    "La main gauche reste à la caisse claire, la droite au tom basse : les deux s'alternent en doubles-croches.",
+    "Ne croise pas les bras : chaque main garde son fût.", [55,76,120], 'GDGDGDGDGDGDGDGD'),
+  avecGroove('fill-tom-gc', 'Toms et grosse caisse en alternance', 4,
+    { T1:'x-x-x-x---------', TB:'--------x-x-x-x-', GC:'-x-x-x-x-x-x-x-x' },
+    "Main et pied se relaient sur chaque double-croche : un fill lourd, très rock.",
+    "Commence à 50 BPM : le pied doit être aussi régulier que la main."),
+  avecGroove('fill-doubles-toms', 'Roulement double sur les toms', 5,
+    { T1:'xxxx------------', T2:'----xxxx--------', TB:'--------xxxx----', CC:'------------XxXx' },
+    "Des coups doublés (D-D-G-G) qui descendent les fûts : un fill très fluide.",
+    "Le 2e coup de chaque main vient du rebond : laisse la baguette faire le travail.", [50,70,110], 'DDGGDDGGDDGGDDGG'),
+  avecGroove('fill-pied-main', 'Fill main-main-pied', 5,
+    { CC:'x--x--x--x--x--x', TB:'-x--x--x--x--x--', GC:'--x--x--x--x--x-' },
+    "Caisse claire, tom basse, grosse caisse, en boucle sur des doubles-croches : le groupe de trois se décale sur les temps.",
+    "Pense « main-main-pied » et laisse les temps tomber où ils veulent.", [50,70,110], 'DG-DG-DG-DG-DG-D'),
+  avecGroove('fill-flam-doubles', 'Flams et doubles sur les toms', 5,
+    { CC:'f-xxf-xx--------', T1:'--------f-xx----', TB:'------------f-xx' },
+    "Un flam puis deux doubles-croches, sur chaque temps, en descendant : épais et rapide.",
+    "Le flam se joue en premier de chaque groupe, les deux doubles restent plus légères.")
+);
+
+/* fills ternaires et en sextolets */
+FILLS.push({
+  id:'fill-shuffle', nom:'Fill shuffle (triolets sur deux temps)', niveau:4, style:'Fill', bpm:[60,90,130],
+  beats:4, res:3, bars:2,
+  tracks:{
+    CH:'x-xx-xx-xx-x' + 'x-xx-x------',
+    CC:'---x-----x--' + '---x--xxx---',
+    T1:R(12)         + '---------xx-',
+    TB:R(12)         + '-----------x',
+    GC:'x-----x-----' + 'x-----------'
+  },
+  doigte: R(12) + '------DGDGDG',
+  desc:"Deux temps de shuffle, puis un fill en triolets qui descend : la relance naturelle d'un blues.",
+  astuce:"Les triolets du fill ont exactement la vitesse du shuffle : rien ne change, sauf les fûts."
+});
+FILLS.push({
+  id:'fill-sextolets', nom:'Fill en sextolets', niveau:5, style:'Fill', bpm:[50,66,100],
+  beats:4, res:6, bars:2,
+  tracks:{
+    CH:'x--x--'.repeat(4) + R(24),
+    CC:'------x-----------x-----' + 'xxxxxx' + R(18),
+    T1:R(24) + R(6) + 'xxxxxx' + R(12),
+    T2:R(24) + R(12) + 'xxxxxx' + R(6),
+    TB:R(24) + R(18) + 'xxxxxx',
+    GC:'x-----------x-----------' + R(24)
+  },
+  doigte: R(24) + 'DGDGDG'.repeat(4),
+  desc:"Six notes par temps (deux triolets) sur chaque fût : un fill qui roule, très utilisé en rock et en métal.",
+  astuce:"Compte « 1-la-li-et-la-li » : six notes égales, mains alternées."
+});
+
+EXERCICES.push(
+  g({ id:'ex-8-8', nom:'8 droite / 8 gauche', niveau:1, style:'Mains', bpm:[50,80,160], res:2, bars:2,
+    tracks:{ CC:'xxxxxxxx' + 'xxxxxxxx' }, doigte:'DDDDDDDD' + 'GGGGGGGG',
+    desc:"Huit frappes de la main droite, puis huit de la gauche : pour équilibrer les deux mains.",
+    astuce:"La main gauche doit sonner exactement comme la droite. Écoute les différences et corrige." }),
+  g({ id:'ex-doubles-lentes', nom:'Doubles lentes (contrôle du rebond)', niveau:2, style:'Mains', bpm:[40,60,120], res:2,
+    tracks:{ CC:'xxxxxxxx' }, doigte:'DDGGDDGG',
+    desc:"Deux coups par main en croches : le premier pas vers le roulement double.",
+    astuce:"Les deux coups d'une même main doivent avoir le même volume : le 2e est souvent trop faible." }),
+  g({ id:'ex-triolets-mains', nom:'Triolets aux mains', niveau:2, style:'Mains', bpm:[40,70,130], res:3,
+    tracks:{ CC:'XxxXxxXxxXxx' }, doigte:'DGDGDGDGDGDG',
+    desc:"Trois frappes par temps en alternant : le premier accent tombe une fois à droite, une fois à gauche.",
+    astuce:"Compte « 1-la-li 2-la-li » et accentue chaque « 1 », « 2 »…" }),
+  g({ id:'ex-accent-deplace', nom:'L\'accent qui se déplace', niveau:2, style:'Mains', bpm:[40,66,120], res:4,
+    tracks:{ CC:'XxxxxXxxxxXxxxxX' }, doigte:'DGDGDGDGDGDGDGDG',
+    desc:"L'accent passe de la 1re à la 2e, puis 3e, puis 4e double-croche du temps.",
+    astuce:"Les notes non accentuées restent très basses : baguette à 2 cm de la peau." }),
+  g({ id:'ex-nuances', nom:'Nuances : accents et ghost notes', niveau:3, style:'Mains', bpm:[50,70,110], res:4,
+    tracks:{ CC:'XgggXgggXgggXggg' }, doigte:'DGDGDGDGDGDGDGDG',
+    desc:"Un accent, trois ghost notes : l'exercice qui prépare au funk.",
+    astuce:"Deux hauteurs de baguette seulement : très haut pour l'accent, très bas pour les ghosts." }),
+  g({ id:'ex-hp-2-4', nom:'Charleston au pied sur 2 et 4', niveau:2, style:'Pied', bpm:[50,80,140], res:2,
+    tracks:{ RD:'xxxxxxxx', HP:'--x---x-', GC:'x---x---' },
+    desc:"La main droite à la ride, le pied gauche ferme le charleston sur 2 et 4 : la base du jazz et des refrains rock.",
+    astuce:"Le « tchk » du pied gauche doit être net : talon au sol, la pointe frappe." }),
+  g({ id:'ex-pieds-alternes', nom:'Pieds alternés', niveau:3, style:'Pied', bpm:[50,70,120], res:2,
+    tracks:{ GC:'x-x-x-x-', HP:'-x-x-x-x' },
+    desc:"Grosse caisse sur les temps, charleston au pied entre les temps : les deux pieds se relaient.",
+    astuce:"Assieds-toi bien au centre : les deux jambes doivent pouvoir bouger sans que le buste bouge." }),
+  g({ id:'ex-gc-contretemps', nom:'Grosse caisse sur les contretemps', niveau:3, style:'Coordination', bpm:[50,70,110], res:2,
+    tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'-x-x-x-x' },
+    desc:"Le pied joue entre les temps, jamais avec la caisse claire : ça déstabilise, et c'est voulu.",
+    astuce:"Joue d'abord charleston + pied seuls ; la caisse claire vient quand c'est automatique." }),
+  g({ id:'ex-lecture-croches', nom:'Lecture : croches et silences', niveau:2, style:'Lecture', bpm:[50,70,110], res:2, bars:2,
+    tracks:{ CC:'x-xx--x-' + 'xx-x-xx-', CH:'x-x-x-x-' + 'x-x-x-x-' }, doigte:'D-GD--D-' + 'DG-D-GD-',
+    desc:"Lis la partition : croches, noires et silences mélangés, sous un charleston en noires.",
+    astuce:"Dis le rythme à voix haute (« ta – ta-ta – . – ta ») avant de le jouer." }),
+  g({ id:'ex-lecture-doubles', nom:'Lecture : figures de doubles-croches', niveau:3, style:'Lecture', bpm:[50,66,100], res:4, bars:2,
+    tracks:{ CC:'x-xxxxx-xx--xxxx' + 'x--xx-x-xxxxx---' },
+    doigte:'D-GDDGD-DG--DGDG' + 'D--DG-D-DGDGD---',
+    desc:"Les figures de base en doubles-croches : galop, galop inversé, syncope, quatre doubles.",
+    astuce:"Garde la main droite sur les temps et les « et » : elle sert de repère." }),
+  g({ id:'ex-tempo-lent', nom:'Tenir un tempo très lent', niveau:2, style:'Tempo', bpm:[30,40,60], res:2, bars:2,
+    tracks:{ CH:'xxxxxxxx' + 'xxxxxxxx', CC:'--x---x-' + '--x---x-', GC:'x---x---' + 'x---x---' },
+    desc:"Le groove de base à 40 BPM : beaucoup plus dur qu'il n'y paraît, il n'y a rien pour se raccrocher.",
+    astuce:"Compte toutes les doubles-croches dans ta tête : « 1 e et a 2 e et a »." }),
+  g({ id:'ex-mesure-silencieuse', nom:'Mesure silencieuse', niveau:3, style:'Tempo', bpm:[50,80,130], res:2, bars:2,
+    tracks:{ CH:'xxxxxxxx' + R(8), CC:'--x---x-' + R(8), GC:'x---x---' + R(8) },
+    desc:"Une mesure de groove, une mesure de silence : tu dois retomber pile sur le 1 après le silence.",
+    astuce:"Active le métronome au début, puis coupe-le quand tu te sens prêt : le vrai test." }),
+  g({ id:'ex-polyrythme-3-2', nom:'Polyrythme 3 contre 2', niveau:5, style:'Coordination', bpm:[40,60,100], res:6,
+    tracks:{ RD:'x-x-x-'.repeat(4), CC:'x--x--'.repeat(4), GC:'x-----'.repeat(4) },
+    desc:"La ride joue trois notes par temps, la caisse claire deux : deux rythmes en même temps.",
+    astuce:"Les deux mains ne tombent ensemble que sur le temps ; entre deux temps, l'ordre est ride – caisse claire – ride." })
+);
+
 const TOUS = [...GROOVES, ...FILLS, ...EXERCICES];
 function parId(id){ return TOUS.find(p => p.id === id) || LECONS_PATTERNS[id]; }
 const LECONS_PATTERNS = {};
 
 
 /* ================= js/rudiments.js ================= */
-/* Rudiments : les « gammes » de la batterie, d'après la liste des 40 rudiments
+/* Rudiments : les « gammes » de la batterie — les 40 rudiments
  * internationaux de la Percussive Arts Society (roulements, diddles, flams, drags).
  * D = main droite, G = main gauche. Tout se joue à la caisse claire.
  */
@@ -2662,6 +2990,89 @@ rud({ id:'r-ratamacue', famille:'drags', niveau:5, nom:'Ratamacue simple', res:3
   desc:"Un drag sur un triolet, puis un accent sur le temps suivant : « ra-ta-ma-CUE ».",
   astuce:"Le rythme est celui des « quatre coups simples », avec un drag en plus." })
 ];
+
+/* ---- les 19 rudiments qui complètent la liste des 40 ---- */
+RUDIMENTS.push(
+/* roulements */
+rud({ id:'r-buzz', famille:'roulements', niveau:3, nom:'Roulement multi-rebonds (buzz)', res:4,
+  tracks:{ CC:'xxxxxxxxxxxxxxxx' }, doigte:'DGDGDGDGDGDGDGDG',
+  desc:"Chaque frappe laisse rebondir la baguette plusieurs fois (« bzzz ») : les rebonds se fondent en un son continu. Écrit ici en doubles-croches, joue-les écrasées.",
+  astuce:"Appuie légèrement la baguette dans la peau au lieu de la laisser repartir : elle rebondit toute seule." }),
+rud({ id:'r-triple', famille:'roulements', niveau:3, nom:'Roulement triple', res:3,
+  tracks:{ CC:'XxxXxxXxxXxx' }, doigte:'DDDGGGDDDGGG',
+  desc:"Trois coups par main : un triolet de la droite, un triolet de la gauche.",
+  astuce:"Le 1er coup du poignet, les deux suivants des doigts : c'est la base du jeu rapide." }),
+rud({ id:'r-dix', famille:'roulements', niveau:4, nom:'Roulement de 10', res:4,
+  tracks:{ CC:'xxxxxxxxX---X---' }, doigte:'DDGGDDGGD---G---',
+  desc:"Quatre doubles, puis deux coups simples accentués.",
+  astuce:"Les deux accents finaux tombent sur des temps : ne les précipite pas." }),
+rud({ id:'r-onze', famille:'roulements', niveau:4, nom:'Roulement de 11', res:4,
+  tracks:{ CC:'xxxxxxxxxxX-----' }, doigte:'DDGGDDGGDDG-----',
+  desc:"Cinq doubles et un coup final accentué.",
+  astuce:"Compte le roulement en doubles-croches : l'accent arrive sur le « et » du 3." }),
+rud({ id:'r-treize', famille:'roulements', niveau:4, nom:'Roulement de 13', res:4,
+  tracks:{ CC:'xxxxxxxxxxxxX---' }, doigte:'DDGGDDGGDDGGD---',
+  desc:"Six doubles et un coup final accentué sur le 4.",
+  astuce:"Plus le roulement est long, plus il faut rester détendu : épaules basses." }),
+rud({ id:'r-quinze', famille:'roulements', niveau:5, nom:'Roulement de 15', res:4,
+  tracks:{ CC:'xxxxxxxxxxxxxxX-' }, doigte:'DDGGDDGGDDGGDDG-',
+  desc:"Sept doubles et un coup final accentué sur le « et » du 4.",
+  astuce:"Si les doubles se déforment, reviens aux doubles lentes (exercices) puis réaccélère." }),
+rud({ id:'r-dix-sept', famille:'roulements', niveau:5, nom:'Roulement de 17', res:4, bars:2,
+  tracks:{ CC:'xxxxxxxxxxxxxxxx' + 'X---------------' }, doigte:'DDGGDDGGDDGGDDGG' + 'D---------------',
+  desc:"Huit doubles sur une mesure entière, puis l'accent sur le 1 suivant.",
+  astuce:"Le plus long des roulements « à compter » : garde la même vitesse du début à la fin." }),
+/* diddles et flams */
+rud({ id:'r-moulin-flam', famille:'flams', niveau:5, nom:'Moulin flammé (single flammed mill)', res:4,
+  tracks:{ CC:'fxxxfxxxfxxxfxxx' }, doigte:'DDGDGGDGDDGDGGDG',
+  desc:"Un flam sur la 1re note d'un « moulin » (D-D-G-D) : deux coups de la même main tout de suite après le flam.",
+  astuce:"Le flam et le coup suivant sont joués par la même main : prépare-la haut." }),
+rud({ id:'r-flam-paradiddle-diddle', famille:'flams', niveau:5, nom:'Flam paradiddle-diddle', res:6,
+  tracks:{ CC:'fxxxxxfxxxxxfxxxxxfxxxxx' }, doigte:'DGDDGGGDGGDDDGDDGGGDGGDD',
+  desc:"Un paradiddle-diddle en sextolets, avec un flam sur la première note.",
+  astuce:"Les deux doubles à la fin du groupe restent légères : seul le flam ressort." }),
+rud({ id:'r-pataflafla', famille:'flams', niveau:5, nom:'Pataflafla', res:4,
+  tracks:{ CC:'fxxffxxffxxffxxf' }, doigte:'DGDGDGDGDGDGDGDG',
+  desc:"Flam, deux coups simples, flam : les flams tombent sur la 1re et la 4e note de chaque temps.",
+  astuce:"Au début, joue-le sans flams (simple alternance), puis ajoute les notes d'agrément." }),
+rud({ id:'r-flam-tap-inverse', famille:'flams', niveau:5, nom:'Flam tap inversé', res:4,
+  tracks:{ CC:'fxfxfxfxfxfxfxfx' }, doigte:'DGGDDGGDDGGDDGGD',
+  desc:"Chaque flam est suivi d'un coup de l'autre main (et non de la même, comme dans le flam tap).",
+  astuce:"La main qui vient de jouer le coup simple prépare aussitôt la note d'agrément suivante." }),
+rud({ id:'r-flam-drag', famille:'flams', niveau:5, nom:'Flam drag', res:6,
+  tracks:{ CC:'f-xxx-f-xxx-f-xxx-f-xxx-' }, doigte:'D-GGD-G-DDG-D-GGD-G-DDG-',
+  desc:"Un flam, deux notes rapides de l'autre main, puis un coup simple : « FLA – ta-ta – ta ».",
+  astuce:"Les deux notes rapides sont des doubles jouées par la même main : laisse rebondir." }),
+/* drags */
+rud({ id:'r-double-drag-tap', famille:'drags', niveau:5, nom:'Double drag tap', res:3,
+  tracks:{ CC:'ddxddxddxddx' }, doigte:'DDGGGDDDGGGD',
+  desc:"Deux drags de la même main, puis un coup simple de l'autre : « rrra – rrra – ta ».",
+  astuce:"Les notes d'agrément restent basses : ce sont les notes principales qui donnent le rythme." }),
+rud({ id:'r-lesson-25', famille:'drags', niveau:4, nom:'Leçon 25 (lesson 25)', res:4,
+  tracks:{ CC:'dxX-dxX-dxX-dxX-' }, doigte:'DGD-GDG-DGD-GDG-',
+  desc:"Un drag, une note, puis une note accentuée : le rudiment porte le nom de la leçon où il est apparu.",
+  astuce:"L'accent tombe sur la 3e note : elle doit claquer nettement plus que les deux premières." }),
+rud({ id:'r-dragadiddle', famille:'drags', niveau:5, nom:'Dragadiddle simple', res:4,
+  tracks:{ CC:'dxxxdxxxdxxxdxxx' }, doigte:'DGDDGDGGDGDDGDGG',
+  desc:"Un paradiddle dont la première note est un drag.",
+  astuce:"Maîtrise d'abord le paradiddle à 80 BPM, puis ajoute les notes d'agrément." }),
+rud({ id:'r-drag-paradiddle-1', famille:'drags', niveau:5, nom:'Drag paradiddle n° 1', res:4,
+  tracks:{ CC:'X-dxxx--X-dxxx--' }, doigte:'D-DGDD--G-GDGG--',
+  desc:"Un coup accentué, puis un paradiddle dont la première note porte un drag.",
+  astuce:"L'accent et le drag sont joués par la même main : relève-la vite après l'accent." }),
+rud({ id:'r-drag-paradiddle-2', famille:'drags', niveau:6, nom:'Drag paradiddle n° 2', res:4,
+  tracks:{ CC:'X-d-dxxxX-d-dxxx' }, doigte:'D-D-DGDDG-G-GDGG',
+  desc:"Comme le n° 1, avec un drag de plus avant le paradiddle.",
+  astuce:"Travaille-le à 50 BPM : trois gestes différents s'enchaînent dans la même main." }),
+rud({ id:'r-double-ratamacue', famille:'drags', niveau:6, nom:'Ratamacue double', res:3,
+  tracks:{ CC:'d--dxxX-----' }, doigte:'D--DGDG-----',
+  desc:"Un drag seul, puis un ratamacue complet : « rrra – rrra-ta-ta-TA ».",
+  astuce:"Même rythme que le ratamacue simple, avec un drag en préparation sur le temps d'avant." }),
+rud({ id:'r-triple-ratamacue', famille:'drags', niveau:6, nom:'Ratamacue triple', res:3,
+  tracks:{ CC:'d--d--dxxX--' }, doigte:'D--D--DGDG--',
+  desc:"Deux drags de préparation, puis le ratamacue : le plus long de la famille.",
+  astuce:"Les trois drags sont joués par la même main : garde-la souple et basse." })
+);
 
 
 /* ================= js/songs.js ================= */
@@ -2936,6 +3347,287 @@ const MORCEAUX = [
 }
 ];
 
+/* ======================= MORCEAUX SUPPLÉMENTAIRES =======================
+ * Tempos relevés sur SongBPM, GetSongBPM et Tunebat. Sauf mention contraire,
+ * ce sont des grooves d'accompagnement (à jouer par-dessus le disque). */
+const M8 = { CH:'xxxxxxxx', CC:'--x---x-', GC:'x---x---' };           // rock en croches
+const M8_4 = { CH:'xxxxxxxx', CC:'--x---x-', GC:'x-x-x-x-' };         // pied sur les 4 temps
+const M16 = { CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-------x-------' };
+const M_CRASH8 = t => ({ ...t, CR:'x-------', CH:'-' + t.CH.slice(1) });
+const M_SHUFFLE = { CH:'x-xx-xx-xx-x', CC:'---x-----x--', GC:'x-----x-----' };
+const morceau = o => ({ beats:4, fidelite:'accompagnement', ...o });
+
+MORCEAUX.push(
+/* ------------------------------ rock ------------------------------ */
+morceau({ id:'m-another-brick', titre:'Another Brick in the Wall (Part 2)', artiste:'Pink Floyd', annee:1979,
+  niveau:1, style:'Rock', bpm:104, res:2,
+  desc:"Un groove disco-rock d'une régularité parfaite, sans aucun break : idéal pour tenir la distance.",
+  astuce:"Le charleston reste léger, grosse caisse et caisse claire font tout le travail.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 }, { nom:'Refrain', fois:8, tracks:M8_4 } ] }),
+morceau({ id:'m-come-as-you-are', titre:'Come as You Are', artiste:'Nirvana', annee:1991,
+  niveau:2, style:'Grunge', bpm:120, res:2,
+  desc:"Un couplet posé, un refrain qui s'ouvre sur les cymbales, un petit fill pour relancer.",
+  astuce:"Au refrain, joue la crash sur les temps 1 et 3, pas plus : sinon ça devient brouillon.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x---x-x-' } },
+    { nom:'Refrain', fois:4, tracks:{ CR:'x---x---', CC:'--x---x-', GC:'x---x-x-' } },
+    { nom:'Fill', fois:1, tracks:{ CC:'xx------', T1:'--xx----', T2:'----xx--', TB:'------xx' } } ] }),
+morceau({ id:'m-should-i-stay', titre:'Should I Stay or Should I Go', artiste:'The Clash', annee:1982,
+  niveau:2, style:'Rock', bpm:113, res:2,
+  desc:"Un rock carré avec des arrêts francs : parfait pour travailler les départs et les silences.",
+  astuce:"Après l'arrêt, le groupe repart ensemble : le compte doit être dans ta tête, pas dans tes bras.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 }, { nom:'Refrain', fois:4, tracks:M8_4 },
+    { nom:'Arrêt', fois:1, tracks:{ CR:'x-------', GC:'x-------' } } ] }),
+morceau({ id:'m-sunshine', titre:'Sunshine of Your Love', artiste:'Cream', annee:1967,
+  niveau:3, style:'Rock', bpm:116, res:2,
+  desc:"Ginger Baker remplace le backbeat par les toms : un groove tribal sous le riff de guitare.",
+  astuce:"Tom et grosse caisse tombent ensemble sur les temps : cherche un seul son, grave et rond.",
+  sections:[
+    { nom:'Riff (toms)', fois:8, tracks:{ CH:'xxxxxxxx', T1:'--x---x-', TB:'x---x---', GC:'x---x---' } },
+    { nom:'Refrain', fois:4, tracks:M_CRASH8(M8) } ] }),
+morceau({ id:'m-rock-and-roll', titre:'Rock and Roll', artiste:'Led Zeppelin', annee:1971,
+  niveau:3, style:'Rock', bpm:170, res:2,
+  desc:"Un rock très rapide en croches, avec une grosse caisse qui rebondit sur les « et ».",
+  astuce:"À ce tempo, le charleston se joue en noires si les croches se crispent.",
+  sections:[ { nom:'Groove', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--x-x--' } },
+    { nom:'Final (crash)', fois:2, tracks:{ CR:'x---x---', CC:'--x---x-', GC:'x---x---' } } ] }),
+morceau({ id:'m-johnny-b-goode', titre:'Johnny B. Goode', artiste:'Chuck Berry', annee:1958,
+  niveau:3, style:'Rock\'n\'roll', bpm:168, res:2,
+  desc:"Le rock'n'roll des origines : caisse claire en croches continues, backbeat accentué.",
+  astuce:"Les croches à la caisse claire se jouent main à main, les accents tombent sur 2 et 4.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CC:'xxXxxxXx', GC:'x---x---', HP:'--x---x-' } },
+    { nom:'Refrain', fois:4, tracks:M8 } ] }),
+morceau({ id:'m-wonderwall', titre:'Wonderwall', artiste:'Oasis', annee:1995,
+  niveau:3, style:'Rock', bpm:87, res:4,
+  desc:"Charleston en doubles-croches et grosse caisse syncopée : un groove souple sous les guitares acoustiques.",
+  astuce:"Les doubles au charleston se jouent d'une seule main, légères, en bougeant l'avant-bras.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxxxxxxxxxx', CC:'----x-------x---', GC:'x-----x-x-------' } },
+    { nom:'Refrain', fois:4, tracks:{ CR:'x---------------', CH:'-xxxxxxxxxxxxxxx', CC:'----x-------x---', GC:'x-----x-x-----x-' } } ] }),
+morceau({ id:'m-mr-brightside', titre:'Mr. Brightside', artiste:'The Killers', annee:2003,
+  niveau:3, style:'Rock', bpm:148, res:2,
+  desc:"Un rock nerveux : couplet syncopé au pied, refrain avec la grosse caisse sur tous les temps.",
+  astuce:"Au refrain, la crash et le pied tombent ensemble sur le 1 : un seul gros son.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x-xx-x--' } },
+    { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+morceau({ id:'m-everlong', titre:'Everlong', artiste:'Foo Fighters', annee:1997,
+  niveau:4, style:'Rock', bpm:158, res:2,
+  desc:"Un rock rapide et puissant, avec un refrain où la crash et la grosse caisse ne s'arrêtent jamais.",
+  astuce:"Garde de l'énergie pour le refrain : le couplet se joue plus retenu.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x-xx--x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---x---', CC:'--x---x-', GC:'xx-xx-x-' } } ] }),
+morceau({ id:'m-the-pretender', titre:'The Pretender', artiste:'Foo Fighters', annee:2007,
+  niveau:4, style:'Rock', bpm:173, res:2,
+  desc:"Très rapide et très direct : une montée en croches à la caisse claire, puis un refrain à la ride.",
+  astuce:"À 173 BPM, reste détendu : les croches viennent des poignets, pas des épaules.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 },
+    { nom:'Montée', fois:2, tracks:{ CC:'xxxxxxxx', GC:'x-x-x-x-' } },
+    { nom:'Refrain', fois:8, tracks:{ RD:'xxxxxxxx', CC:'--x---x-', GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-blitzkrieg-bop', titre:'Blitzkrieg Bop', artiste:'Ramones', annee:1976,
+  niveau:3, style:'Punk', bpm:177, res:2,
+  desc:"« Hey! Ho! Let's go! » : un intro au tom basse, puis des croches à fond, sans jamais ralentir.",
+  astuce:"Endurance avant tout : joue tout le morceau d'une traite, sans pause.",
+  sections:[ { nom:'Intro (tom basse)', fois:4, tracks:{ TB:'x-x-x-x-', GC:'x-x-x-x-' } },
+    { nom:'Groove', fois:16, tracks:M8_4 } ] }),
+morceau({ id:'m-basket-case', titre:'Basket Case', artiste:'Green Day', annee:1994,
+  niveau:4, style:'Punk', bpm:175, res:2,
+  desc:"Un punk-pop rapide : couplet syncopé, refrain avec crash et pied sur les temps.",
+  astuce:"Si 175 BPM est trop rapide, travaille-le à 88 BPM en doubles-croches : c'est le même geste.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--xx-x-' } },
+    { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+
+/* ------------------------- hard rock & métal ------------------------- */
+morceau({ id:'m-thunderstruck', titre:'Thunderstruck', artiste:'AC/DC', annee:1990,
+  niveau:2, style:'Hard rock', bpm:134, res:2,
+  desc:"La batterie entre sur une montée au tom basse, puis un rock en croches d'une efficacité totale.",
+  astuce:"Pendant la montée, le tom basse est régulier comme un métronome : c'est lui qui crée la tension.",
+  sections:[ { nom:'Montée', fois:4, tracks:{ TB:'x-x-x-x-' } }, { nom:'Couplet', fois:8, tracks:M8 },
+    { nom:'Refrain', fois:4, tracks:M_CRASH8(M8) } ] }),
+morceau({ id:'m-you-shook-me', titre:'You Shook Me All Night Long', artiste:'AC/DC', annee:1980,
+  niveau:2, style:'Hard rock', bpm:127, res:2,
+  desc:"Le groove rock parfait : simple, lourd, avec une petite ouverture de charleston au refrain.",
+  astuce:"Phil Rudd ne joue presque rien de plus que le groove de base : tout est dans la régularité.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 },
+    { nom:'Refrain', fois:8, tracks:{ CH:'xxxxxxxo', CC:'--x---x-', GC:'x---x---' } } ] }),
+morceau({ id:'m-paranoid', titre:'Paranoid', artiste:'Black Sabbath', annee:1970,
+  niveau:3, style:'Hard rock', bpm:163, res:2,
+  desc:"Un hard rock rapide et sans répit, la grosse caisse qui pousse sous le riff.",
+  astuce:"Le pied joue « 1, 2-et, 3 » : garde-le léger pour tenir le tempo.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--xx---' } },
+    { nom:'Final', fois:2, tracks:{ CR:'x---x---', CC:'--x---x-', GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-crazy-train', titre:'Crazy Train', artiste:'Ozzy Osbourne', annee:1980,
+  niveau:3, style:'Métal', bpm:138, res:2,
+  desc:"Pied sur les quatre temps au couplet, refrain à la crash avec la grosse caisse qui galope.",
+  astuce:"Le galop du refrain (« boum-boum-boum . ») se prépare au pied seul.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8_4 },
+    { nom:'Refrain', fois:4, tracks:{ CR:'x---x---', CC:'--x---x-', GC:'xxx-xxx-' } } ] }),
+morceau({ id:'m-killing-in-the-name', titre:'Killing in the Name', artiste:'Rage Against the Machine', annee:1992,
+  niveau:3, style:'Hard rock', bpm:88, res:4,
+  desc:"Un groove lourd et funky en doubles, puis des coups de crash qui suivent le riff.",
+  astuce:"Sur le riff, la grosse caisse suit exactement la guitare : écoute le disque et cale-toi dessus.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-x-----x-x-----' } },
+    { nom:'Riff', fois:4, tracks:{ CR:'x-------x-------', CC:'----x-------x---', GC:'x--x--x-x--x--x-' } } ] }),
+morceau({ id:'m-master-of-puppets', titre:'Master of Puppets', artiste:'Metallica', annee:1986,
+  niveau:5, style:'Métal', bpm:212, res:2,
+  desc:"Le thrash à pleine vitesse : caisse claire sur tous les contretemps, grosse caisse sur tous les temps.",
+  astuce:"Commence à 120 BPM avec le tempo progressif. Le secret : des mains basses et détendues.",
+  sections:[ { nom:'Riff (skank)', fois:8, tracks:{ CH:'xxxxxxxx', CC:'-x-x-x-x', GC:'x-x-x-x-' } },
+    { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x-xxx-xx' } } ] }),
+
+/* ------------------------------ pop ------------------------------ */
+morceau({ id:'m-beat-it', titre:'Beat It', artiste:'Michael Jackson', annee:1982,
+  niveau:2, style:'Pop', bpm:139, res:2,
+  desc:"Une pop-rock qui avance : grosse caisse relancée au couplet, sur tous les temps au refrain.",
+  astuce:"Le groove doit rester sec et précis, comme une boîte à rythmes.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--xx---' } },
+    { nom:'Refrain', fois:8, tracks:M8_4 } ] }),
+morceau({ id:'m-every-breath', titre:'Every Breath You Take', artiste:'The Police', annee:1983,
+  niveau:2, style:'Pop', bpm:117, res:2,
+  desc:"Un groove épuré, où chaque note compte : Stewart Copeland joue très peu, très juste.",
+  astuce:"Joue doucement : la chanson est calme, la batterie accompagne sans pousser.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x---x-x-' } },
+    { nom:'Pont', fois:4, tracks:M_CRASH8(M8) } ] }),
+morceau({ id:'m-rolling-in-the-deep', titre:'Rolling in the Deep', artiste:'Adele', annee:2010,
+  niveau:2, style:'Pop', bpm:105, res:2,
+  desc:"Un couplet porté par la grosse caisse sur chaque temps, puis un refrain complet et puissant.",
+  astuce:"Au couplet, pas de charleston : pied et caisse claire, comme des pas et des claps.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CC:'--x---x-', GC:'x-x-x-x-' } },
+    { nom:'Refrain', fois:8, tracks:M8_4 } ] }),
+morceau({ id:'m-blinding-lights', titre:'Blinding Lights', artiste:'The Weeknd', annee:2019,
+  niveau:3, style:'Pop', bpm:171, res:2,
+  desc:"Une boîte à rythmes façon années 80 : pied sur chaque temps, charleston entre les temps, très rapide.",
+  astuce:"Si 171 BPM est trop rapide, pense-le à 86 BPM en doubles-croches.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ GC:'x-x-x-x-', CC:'--x---x-', CH:'-x-x-x-x' } } ] }),
+morceau({ id:'m-dont-stop-me-now', titre:'Don\'t Stop Me Now', artiste:'Queen', annee:1978,
+  niveau:3, style:'Pop rock', bpm:156, res:2,
+  desc:"Un couplet au piano, puis la batterie arrive et ne lâche plus : pied sur tous les temps au refrain.",
+  astuce:"Tempo vif et joyeux : souris en jouant, ça s'entend (vraiment).",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x---x-x-' } },
+    { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+
+/* ------------------------ funk, soul, disco ------------------------ */
+morceau({ id:'m-stayin-alive', titre:'Stayin\' Alive', artiste:'Bee Gees', annee:1977,
+  niveau:2, style:'Disco', bpm:104, res:4, fidelite:'origine',
+  desc:"Le disco par excellence : grosse caisse sur chaque temps, backbeat, charleston qui s'ouvre au refrain.",
+  astuce:"Le tempo sert de référence aux secouristes pour le massage cardiaque : il doit être parfaitement stable.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-o-x-o-x-o-x-o-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-le-freak', titre:'Le Freak', artiste:'Chic', annee:1978,
+  niveau:3, style:'Disco', bpm:118, res:4,
+  desc:"Charleston en doubles avec une ouverture sur chaque « et » : le son de Chic.",
+  astuce:"L'ouverture est très courte : pied gauche qui se lève et se repose sur la double suivante.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'xxoxxxoxxxoxxxox', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-september', titre:'September', artiste:'Earth, Wind & Fire', annee:1978,
+  niveau:3, style:'Funk', bpm:126, res:4,
+  desc:"Un funk dansant : couplet en croches, refrain avec ouvertures de charleston et une ghost note.",
+  astuce:"La ghost note avant le 3 se joue à peine : elle se sent plus qu'elle ne s'entend.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-o-x-o-x-o-x-o-', CC:'----x--g----x---', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-i-want-you-back', titre:'I Want You Back', artiste:'The Jackson 5', annee:1969,
+  niveau:3, style:'Soul', bpm:103, res:4,
+  desc:"La soul Motown : backbeat puissant, grosse caisse qui chaloupe, et des coups d'arrêt pour le break.",
+  astuce:"Au break, compte bien les silences : les coups de caisse claire répondent au chant.",
+  sections:[
+    { nom:'Groove', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-------x-x-----' } },
+    { nom:'Break', fois:2, tracks:{ CC:'----X---X-X-X---', GC:'x---------------' } } ] }),
+
+/* ----------------------- hip-hop & électro ----------------------- */
+morceau({ id:'m-lose-yourself', titre:'Lose Yourself', artiste:'Eminem', annee:2002,
+  niveau:2, style:'Hip-hop', bpm:86, res:4,
+  desc:"Un hip-hop tendu : caisse claire lourde, grosse caisse qui relance à la fin de chaque mesure.",
+  astuce:"Le morceau est souvent noté 171 BPM : ici on le joue à 86, en doubles-croches, c'est pareil.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-------x-x-----' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---------------', CH:'--x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-x-----' } } ] }),
+morceau({ id:'m-in-da-club', titre:'In da Club', artiste:'50 Cent', annee:2003,
+  niveau:2, style:'Hip-hop', bpm:90, res:4,
+  desc:"Un beat hip-hop rebondissant : la grosse caisse joue un petit motif syncopé.",
+  astuce:"Joue en retrait, sans forcer : le hip-hop se joue « derrière » le temps.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x----x-xx----' } } ] }),
+morceau({ id:'m-around-the-world', titre:'Around the World', artiste:'Daft Punk', annee:1997,
+  niveau:1, style:'Électro', bpm:121, res:2,
+  desc:"La house filtrée de Daft Punk : pied sur chaque temps, charleston ouvert entre les temps.",
+  astuce:"Le morceau répète la même boucle 7 minutes : défi d'endurance et de régularité.",
+  sections:[ { nom:'Boucle', fois:16, tracks:{ GC:'x-x-x-x-', CH:'-o-o-o-o', CC:'--x---x-' } } ] }),
+morceau({ id:'m-one-more-time', titre:'One More Time', artiste:'Daft Punk', annee:2000,
+  niveau:1, style:'Électro', bpm:123, res:2,
+  desc:"Un four on the floor joyeux, et un long pont où il ne reste que la grosse caisse.",
+  astuce:"Pendant le pont, garde le pied parfaitement régulier : tout le monde danse dessus.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ GC:'x-x-x-x-', CC:'--x---x-', CH:'-x-x-x-x' } },
+    { nom:'Pont (pied seul)', fois:4, tracks:{ GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-papaoutai', titre:'Papaoutai', artiste:'Stromae', annee:2013,
+  niveau:2, style:'Électro', bpm:116, res:4,
+  desc:"Un couplet hip-hop léger, puis un refrain dansant avec la grosse caisse sur chaque temps.",
+  astuce:"Au refrain, le charleston s'ouvre sur les « et » : un balancier « boum-tsss ».",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x---x-----' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-o-x-o-x-o-x-o-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+
+/* ------------------------- variété française ------------------------- */
+morceau({ id:'m-ca-plane-pour-moi', titre:'Ça plane pour moi', artiste:'Plastic Bertrand', annee:1977,
+  niveau:3, style:'Variété', bpm:166, res:2,
+  desc:"Le punk version belge : un rock en croches très rapide et un refrain à la crash.",
+  astuce:"Pense en demi-tempo (83 BPM) si ça va trop vite : le pied reste sur 1 et 3.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 }, { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+morceau({ id:'m-l-aventurier', titre:'L\'Aventurier', artiste:'Indochine', annee:1982,
+  niveau:3, style:'Variété', bpm:167, res:2,
+  desc:"La new wave d'Indochine : grosse caisse sur tous les temps, charleston qui s'ouvre en fin de mesure.",
+  astuce:"Le groove est très rapide mais très simple : garde les bras relâchés.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8_4 },
+    { nom:'Refrain', fois:8, tracks:{ CH:'xxxxxxxo', CC:'--x---x-', GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-derniere-danse', titre:'Dernière danse', artiste:'Indila', annee:2013,
+  niveau:2, style:'Variété', bpm:116, res:4,
+  desc:"Une pop française dramatique : couplet retenu, refrain qui s'emballe avec le pied sur chaque temps.",
+  astuce:"Joue le couplet doucement et garde de l'énergie pour le refrain.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M16 },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+
+/* -------------------------- reggae & latino -------------------------- */
+morceau({ id:'m-could-you-be-loved', titre:'Could You Be Loved', artiste:'Bob Marley & The Wailers', annee:1980,
+  niveau:2, style:'Reggae', bpm:103, res:4,
+  desc:"Un reggae dansant : grosse caisse sur chaque temps (steppers), charleston léger.",
+  astuce:"Main droite souple : le charleston doit « danser » et non marteler.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-despacito', titre:'Despacito', artiste:'Luis Fonsi feat. Daddy Yankee', annee:2017,
+  niveau:2, style:'Latin', bpm:89, res:4,
+  desc:"Le reggaeton : grosse caisse sur chaque temps et la caisse claire « dembow » qui boite.",
+  astuce:"Compte « 1 e et A 2 e ET a » : la caisse claire tombe sur le A et sur le ET.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'---x--x----x--x-', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-smooth', titre:'Smooth', artiste:'Santana feat. Rob Thomas', annee:1999,
+  niveau:3, style:'Latin', bpm:116, res:4,
+  desc:"Un rock latin : grosse caisse qui dessine un motif latin sous un backbeat bien rock.",
+  astuce:"Le pied suit le motif « 1 . . A . . 3 . e . . A » : chante-le avant de le jouer.",
+  sections:[
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x--x---x--x--' } },
+    { nom:'Refrain', fois:8, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x--x---x--x--' } } ] }),
+morceau({ id:'m-oye-como-va', titre:'Oye Como Va', artiste:'Santana', annee:1970,
+  niveau:3, style:'Latin', bpm:128, res:4,
+  desc:"Le cha-cha-cha de Tito Puente, version Santana : la ride remplace la cloche, la caisse claire joue « cha-cha » sur le 4.",
+  astuce:"Le « cha-cha » (4 et) est léger et sec, jamais appuyé.",
+  sections:[ { nom:'Cha-cha', fois:16, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'------------x-x-', GC:'x-------x-------' } } ] }),
+
+/* --------------------------- blues & jazz --------------------------- */
+morceau({ id:'m-pride-and-joy', titre:'Pride and Joy', artiste:'Stevie Ray Vaughan', annee:1983,
+  niveau:3, style:'Blues', bpm:126, res:3,
+  desc:"Le shuffle texan de Double Trouble : balancement ternaire, backbeat solide.",
+  astuce:"Le shuffle est « long-court » : la première note du triolet dure deux fois plus que la seconde.",
+  sections:[ { nom:'Shuffle', fois:12, tracks:M_SHUFFLE }, { nom:'Fin', fois:1, tracks:{ CR:'x-----------', GC:'x-----------' } } ] }),
+morceau({ id:'m-la-grange', titre:'La Grange', artiste:'ZZ Top', annee:1973,
+  niveau:4, style:'Blues', bpm:162, res:3,
+  desc:"Un boogie qui démarre au charleston seul, puis un shuffle rapide avec le pied sur chaque temps.",
+  astuce:"Rapide et ternaire : laisse les baguettes rebondir, ne force pas les triolets.",
+  sections:[ { nom:'Intro (charleston)', fois:4, tracks:{ CH:'x-xx-xx-xx-x' } },
+    { nom:'Boogie', fois:8, tracks:{ CH:'x-xx-xx-xx-x', CC:'---x-----x--', GC:'x--x--x--x--' } } ] }),
+morceau({ id:'m-fly-me-to-the-moon', titre:'Fly Me to the Moon', artiste:'Frank Sinatra & Count Basie', annee:1964,
+  niveau:4, style:'Jazz', bpm:120, res:3,
+  desc:"Le swing d'un grand orchestre : ride « ding ding-ga », charleston au pied sur 2 et 4, grosse caisse effleurée.",
+  astuce:"La ride mène tout. La grosse caisse sur les 4 temps doit être à peine audible.",
+  sections:[ { nom:'Swing', fois:16, tracks:{ RD:'x--x-xx--x-x', HP:'---x-----x--', GC:'x--x--x--x--' } } ] })
+);
+
 /* Transforme un morceau en un motif unique (sections dépliées) que le
  * lecteur, la partition et la grille savent afficher. */
 function compilerMorceau(m){
@@ -2972,7 +3664,7 @@ function compilerMorceau(m){
 
 
 /* ================= js/lessons.js ================= */
-/* Parcours pédagogique : 25 leçons progressives, de zéro au premier morceau. */
+/* Parcours pédagogique : 50 leçons progressives, du tout premier coup à l'improvisation. */
 
 const p = (o) => ({ beats:4, res:4, bars:1, bpm:[50,80,140], ...o });
 
@@ -3380,7 +4072,7 @@ const LECONS = [
     <p>Une <b>triple-croche</b> vaut la moitié d'une double : <b>8 par temps</b>, notées avec trois barres.
     On les utilise pour les roulements qui lancent un refrain.</p>
     <p>Mains alternées, poignets très souples, mouvements minuscules. Travaille-les d'abord à 50 BPM.</p>
-    <p>Tu as fini le parcours. La suite : les <b>morceaux</b>, et les <b>rudiments</b> jusqu'au dernier.</p>`,
+    <p>Encore quelques leçons et tu auras fini le parcours. Travaille aussi les <b>morceaux</b> et les <b>rudiments</b>.</p>`,
   pattern: p({ id:'l31-p', nom:'Groove + roulement', res:8, bars:2, bpm:[45,60,95],
     tracks:{
       CR:'x' + '-'.repeat(31) + '-'.repeat(32),
@@ -3392,6 +4084,250 @@ const LECONS = [
   conseils:["Si les triples-croches se tassent, reviens aux doubles-croches au même tempo × 2."]
 }
 ];
+
+const R16 = () => '-'.repeat(16);
+
+/* ======================= LEÇONS SUPPLÉMENTAIRES =======================
+ * Rangées dans leur niveau au moment du tri, à la fin de ce fichier. */
+LECONS.push(
+/* ---------------------------- niveau 1 ---------------------------- */
+{
+  id:'l32', niveau:1, titre:'Tenir les baguettes et laisser rebondir', duree:'10 min',
+  objectif:"Frapper sans crispation, en laissant la baguette rebondir.",
+  contenu:`
+    <p>La baguette se tient au <b>point d'équilibre</b>, à environ un tiers de son extrémité : c'est là qu'elle rebondit le mieux.
+    Pouce et index pincent, les trois autres doigts accompagnent sans serrer.</p>
+    <p>Le geste : la baguette part du haut, frappe, et <b>remonte toute seule</b> grâce au rebond. Tu ne « tapes » pas,
+    tu lâches la baguette et tu la rattrapes.</p>
+    <p>Joue des noires à la caisse claire, mains alternées (D = droite, G = gauche).</p>`,
+  pattern: p({ id:'l32-p', nom:'Noires main à main', res:1, bars:2, bpm:[40,60,100],
+    tracks:{ CC:'xxxx'.repeat(2) }, doigte:'DGDG'.repeat(2) }),
+  conseils:["Si tes mains fatiguent vite, tu serres trop : desserre les trois derniers doigts.",
+            "Regarde tes deux baguettes : elles doivent monter à la même hauteur."]
+},
+{
+  id:'l33', niveau:1, titre:'Compter les silences', duree:'15 min',
+  objectif:"Jouer des noires et des soupirs (silences) au bon moment.",
+  contenu:`
+    <p>Un <b>soupir</b> est un silence d'un temps. Il se compte exactement comme une note : on ne le joue pas, mais il occupe sa place.</p>
+    <p>Compte à voix haute « 1 – 2 – 3 – 4 » et ne frappe que là où il y a une note. Les silences sont le vrai exercice.</p>`,
+  pattern: p({ id:'l33-p', nom:'Noires et silences', res:1, bars:2, bpm:[40,60,100],
+    tracks:{ CC:'x-x-' + 'xx-x', CH:'xxxx' + 'xxxx' } }),
+  conseils:["Tape du pied sur chaque temps pendant les silences : ton corps garde le compte.",
+            "Passe en vue « Grille » pour voir les cases vides."]
+},
+{
+  id:'l34', niveau:1, titre:'La crash pour marquer le départ', duree:'15 min',
+  objectif:"Frapper la crash avec la grosse caisse sur le 1.",
+  contenu:`
+    <p>La <b>crash</b> sert à marquer un départ : le début d'un refrain, la fin d'un break. Elle se joue <b>toujours avec la grosse caisse</b>
+    pour que le son soit plein.</p>
+    <p>Ici : le groove de base pendant deux mesures, avec la crash (et le pied) sur le 1 de la première.</p>`,
+  pattern: p({ id:'l34-p', nom:'Groove + crash', res:1, bars:2, bpm:[45,70,120],
+    tracks:{ CR:'x---' + '----', CH:'-xxx' + 'xxxx', CC:'-x-x' + '-x-x', GC:'x-x-' + 'x-x-' } }),
+  conseils:["La main droite quitte le charleston pour la crash, puis revient aussitôt : prépare le trajet.",
+            "Frappe la crash en glissant sur le bord, sans l'écraser."]
+},
+/* ---------------------------- niveau 2 ---------------------------- */
+{
+  id:'l35', niveau:2, titre:'Les croches main à main', duree:'15 min',
+  objectif:"Jouer des croches régulières à la caisse claire, en alternant.",
+  contenu:`
+    <p>Deux notes par temps, mains alternées. Compte « <b>1 et 2 et 3 et 4 et</b> » : la main droite joue les chiffres, la gauche les « et ».</p>
+    <p>Les deux mains doivent sonner pareil : même hauteur, même endroit sur la peau.</p>`,
+  pattern: p({ id:'l35-p', nom:'Croches alternées', res:2, bars:2, bpm:[45,70,140],
+    tracks:{ CC:'xxxxxxxx'.repeat(2) }, doigte:'DGDGDGDG'.repeat(2) }),
+  conseils:["Enregistre-toi avec le téléphone : la main faible s'entend tout de suite."]
+},
+{
+  id:'l36', niveau:2, titre:'La grosse caisse sur le « et »', duree:'20 min',
+  objectif:"Placer un coup de pied entre deux temps.",
+  contenu:`
+    <p>Jusqu'ici, la grosse caisse jouait sur les temps. On ajoute un coup sur le <b>« et » du 2</b> : le groove prend de l'élan.</p>
+    <p>Ce coup tombe <b>avec une croche du charleston</b> : main droite et pied ensemble, sans caisse claire.</p>`,
+  pattern: p({ id:'l36-p', nom:'Rock avec pied sur le « et »', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-'.repeat(2), GC:'x--xx---'.repeat(2) } }),
+  defi:{ bpm:100, texte:"Tenir 1 minute à 100 BPM, sans que le pied du « et » ne se décale." },
+  conseils:["Joue d'abord charleston + pied seuls, sans la caisse claire."]
+},
+{
+  id:'l37', niveau:2, titre:'Le rock à la ride', duree:'15 min',
+  objectif:"Passer du charleston à la ride pour changer de couleur.",
+  contenu:`
+    <p>La <b>ride</b> (grande cymbale à droite) remplace le charleston dans les refrains : le son s'ouvre et grossit.</p>
+    <p>Joue une mesure au charleston, une mesure à la ride : la main droite fait l'aller-retour sans perdre une croche.</p>`,
+  pattern: p({ id:'l37-p', nom:'Charleston puis ride', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ CH:'xxxxxxxx' + '--------', RD:'--------' + 'xxxxxxxx', CC:'--x---x-'.repeat(2), GC:'x---x---'.repeat(2) } }),
+  conseils:["Frappe la ride avec la pointe de la baguette, à mi-chemin entre le bord et la cloche."]
+},
+/* ---------------------------- niveau 3 ---------------------------- */
+{
+  id:'l38', niveau:3, titre:'Le charleston au pied', duree:'20 min',
+  objectif:"Fermer le charleston au pied sur 2 et 4 pendant que la main joue la ride.",
+  contenu:`
+    <p>Le pied gauche n'est pas qu'un support : en fermant le charleston, il produit un « <b>tchk</b> » sec.
+    Sur 2 et 4, il double le backbeat.</p>
+    <p>Talon au sol, la pointe du pied appuie d'un coup sec, puis remonte.</p>`,
+  pattern: p({ id:'l38-p', nom:'Ride + charleston au pied', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ RD:'xxxxxxxx'.repeat(2), CC:'--x---x-'.repeat(2), GC:'x---x---'.repeat(2), HP:'--x---x-'.repeat(2) } }),
+  conseils:["Travaille d'abord les deux pieds seuls : droit sur 1 et 3, gauche sur 2 et 4."]
+},
+{
+  id:'l39', niveau:3, titre:'Les accents dans les doubles-croches', duree:'20 min',
+  objectif:"Faire ressortir une note sur quatre sans accélérer.",
+  contenu:`
+    <p>Un <b>accent</b> (&gt;) est une note plus forte. Ici, la première double-croche de chaque temps est accentuée,
+    les trois autres restent douces.</p>
+    <p>Le secret : <b>la hauteur de la baguette</b>. Haute pour l'accent, basse pour les autres. Pas de force en plus.</p>`,
+  pattern: p({ id:'l39-p', nom:'Accents sur les temps', res:4, bars:2, bpm:[45,65,110],
+    tracks:{ CC:'XxxxXxxxXxxxXxxx'.repeat(2), GC:'x---x---x---x---'.repeat(2) }, doigte:'DGDGDGDGDGDGDGDG'.repeat(2) }),
+  conseils:["Après l'accent, la baguette doit s'arrêter bas : c'est le « coup arrêté » (downstroke)."]
+},
+{
+  id:'l40', niveau:3, cle:true, titre:'Le fill en situation', duree:'25 min',
+  objectif:"Enchaîner trois mesures de groove et une mesure de break, sans perdre le tempo.",
+  contenu:`
+    <p>Dans une chanson, les breaks arrivent <b>toutes les 4 ou 8 mesures</b>. Il faut compter les mesures en jouant.</p>
+    <p>Ici : trois mesures de groove, puis un fill d'un temps à la fin de la 4<sup>e</sup>, et la crash sur le 1 qui suit (écoute la boucle).</p>
+    <p>Compte « <b>1</b>-2-3-4, <b>2</b>-2-3-4, <b>3</b>-2-3-4, <b>4</b>-2-3-FILL ».</p>`,
+  pattern: p({ id:'l40-p', nom:'3 mesures + fill', res:4, bars:4, bpm:[50,80,130],
+    tracks:{
+      CR:'x---------------' + R16() + R16() + R16(),
+      CH:'--x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-----',
+      CC:'----x-------x---' + '----x-------x---' + '----x-------x---' + '----x-------xx--',
+      T1:R16() + R16() + R16() + '--------------x-',
+      TB:R16() + R16() + R16() + '---------------x',
+      GC:'x-------x-------' + 'x-------x-------' + 'x-------x-------' + 'x-------x-------' } }),
+  defi:{ bpm:100, texte:"Enchaîner 4 cycles complets à 100 BPM, crash pile sur le 1 à chaque fois." },
+  conseils:["Le fill ne doit ni accélérer ni ralentir : c'est l'erreur la plus fréquente."]
+},
+/* ---------------------------- niveau 4 ---------------------------- */
+{
+  id:'l41', niveau:4, titre:'Le shuffle', duree:'25 min',
+  objectif:"Jouer le balancement « long-court » du blues.",
+  contenu:`
+    <p>Le <b>shuffle</b> découpe chaque temps en triolet, mais ne joue que la 1<sup>re</sup> et la 3<sup>e</sup> note :
+    « <b>DOUM</b>-da <b>DOUM</b>-da ». On obtient un balancement long-court.</p>
+    <p>Le charleston joue ce balancement, la caisse claire le backbeat sur 2 et 4, le pied sur 1 et 3.</p>`,
+  pattern: p({ id:'l41-p', nom:'Shuffle', res:3, bars:2, bpm:[60,90,140],
+    tracks:{ CH:'x-xx-xx-xx-x'.repeat(2), CC:'---x-----x--'.repeat(2), GC:'x-----x-----'.repeat(2) } }),
+  conseils:["Chante « DOUM-da DOUM-da » en jouant : le balancement vient de la voix."]
+},
+{
+  id:'l42', niveau:4, titre:'Le reggae : le one drop', duree:'25 min',
+  objectif:"Jouer le groove où le 1 est vide.",
+  contenu:`
+    <p>En reggae <b>one drop</b>, il n'y a <b>rien sur le 1</b> : grosse caisse et caisse claire tombent ensemble sur le <b>3</b>.
+    C'est ce trou qui donne l'impression de flotter.</p>
+    <p>Le charleston joue des croches légères, parfois en balancement ternaire.</p>`,
+  pattern: p({ id:'l42-p', nom:'One drop', res:2, bars:2, bpm:[60,72,90],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'----x---'.repeat(2), GC:'----x---'.repeat(2) } }),
+  conseils:["Résiste à l'envie de jouer le 1 : écoute le vide, c'est lui qui groove."]
+},
+{
+  id:'l43', niveau:4, titre:'La bossa nova', duree:'30 min',
+  objectif:"Jouer le motif brésilien avec les deux mains et le pied.",
+  contenu:`
+    <p>La <b>bossa nova</b> repose sur un pied qui joue « <b>1 . . et 2</b> » en boucle (comme un cœur qui bat),
+    un charleston en croches régulières, et la main gauche qui joue la « clave » à la caisse claire (souvent en cross-stick).</p>
+    <p>Joue doucement : c'est une musique feutrée.</p>`,
+  pattern: p({ id:'l43-p', nom:'Bossa nova', res:4, bars:2, bpm:[60,80,120],
+    tracks:{
+      CH:'x-x-x-x-x-x-x-x-'.repeat(2),
+      CC:'x--x--x---x--x--' + '--x--x--x--x----',
+      GC:'x--xx--xx--xx--x'.repeat(2) } }),
+  conseils:["Travaille le pied seul pendant 2 minutes avant d'ajouter les mains."]
+},
+/* ---------------------------- niveau 5 ---------------------------- */
+{
+  id:'l44', niveau:5, titre:'Le half-time', duree:'25 min',
+  objectif:"Donner l'impression que le tempo ralentit de moitié, sans ralentir.",
+  contenu:`
+    <p>En <b>half-time</b>, la caisse claire ne joue plus que sur le <b>3</b>. Le tempo n'a pas changé, mais la musique paraît deux fois plus lente.</p>
+    <p>C'est l'effet idéal pour un pont ou un refrain lourd. Le charleston garde les croches : c'est lui qui tient le vrai tempo.</p>`,
+  pattern: p({ id:'l44-p', nom:'Normal puis half-time', res:2, bars:2, bpm:[60,90,140],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-' + '----x---', GC:'x---x---' + 'x-----x-' } }),
+  conseils:["Joue 4 mesures normales, 4 mesures half-time, en boucle."]
+},
+{
+  id:'l45', niveau:5, titre:'Le double-time', duree:'25 min',
+  objectif:"Doubler l'énergie en jouant la caisse claire sur tous les contretemps.",
+  contenu:`
+    <p>En <b>double-time</b>, la caisse claire joue deux fois plus souvent : sur chaque « et ». Le tempo reste le même,
+    mais la musique paraît deux fois plus rapide. C'est le moteur du punk et du thrash.</p>`,
+  pattern: p({ id:'l45-p', nom:'Normal puis double-time', res:2, bars:2, bpm:[60,100,160],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-' + '-x-x-x-x', GC:'x---x---' + 'x-x-x-x-' } }),
+  conseils:["En double-time, allège la main droite : c'est la caisse claire qui porte l'énergie."]
+},
+{
+  id:'l46', niveau:5, titre:'Les ouvertures de charleston en doubles', duree:'30 min',
+  objectif:"Ouvrir et fermer le charleston au rythme des doubles-croches.",
+  contenu:`
+    <p>En disco et en funk, le charleston s'<b>ouvre sur les « et »</b> et se referme aussitôt. Le pied gauche travaille sur des doubles-croches :
+    il se lève juste avant l'ouverture et se repose sur la note suivante.</p>`,
+  pattern: p({ id:'l46-p', nom:'Ouvertures sur les « et »', res:4, bars:2, bpm:[60,90,120],
+    tracks:{ CH:'xxoxxxoxxxoxxxox'.repeat(2), CC:'----x-------x---'.repeat(2), GC:'x---x---x---x---'.repeat(2) } }),
+  defi:{ bpm:112, texte:"Tenir 1 minute à 112 BPM avec des ouvertures toutes égales." },
+  conseils:["Pied gauche seul d'abord : « haut-bas » sur chaque « et », sans les mains."]
+},
+/* ---------------------------- niveau 6 ---------------------------- */
+{
+  id:'l47', niveau:6, titre:'Les doubles au pied', duree:'35 min',
+  objectif:"Jouer deux coups de grosse caisse rapides, réguliers et égaux.",
+  contenu:`
+    <p>Deux doubles-croches au pied : le premier coup vient de la jambe, le second de la <b>cheville</b> qui rebondit
+    (technique « heel-toe » ou « slide » selon les batteurs).</p>
+    <p>Les deux coups doivent avoir le même volume : c'est le second qui est souvent trop faible.</p>`,
+  pattern: p({ id:'l47-p', nom:'Doubles au pied', res:4, bars:2, bpm:[50,70,110],
+    tracks:{ CH:'x-x-x-x-x-x-x-x-'.repeat(2), CC:'----x-------x---'.repeat(2), GC:'xx----xxxx------'.repeat(2) } }),
+  conseils:["Batte proche de la peau au repos : moins de trajet, plus de vitesse."]
+},
+{
+  id:'l48', niveau:6, titre:'Le polyrythme 3 contre 2', duree:'35 min',
+  objectif:"Jouer trois notes d'un côté pendant que l'autre en joue deux.",
+  contenu:`
+    <p>Un <b>polyrythme</b> superpose deux découpages du temps. Ici, la main droite joue des triolets (3 notes par temps)
+    à la ride, la main gauche des croches (2 notes par temps) à la caisse claire.</p>
+    <p>Les deux mains ne tombent ensemble que sur le temps. Entre deux temps : ride, caisse claire, ride.</p>`,
+  pattern: p({ id:'l48-p', nom:'3 contre 2', res:6, bars:2, bpm:[40,55,90],
+    tracks:{ RD:'x-x-x-'.repeat(8), CC:'x--x--'.repeat(8), GC:'x-----'.repeat(8) } }),
+  conseils:["Commence à 40 BPM, en disant « en-sem-ble – ri-de – claire – ri-de »."]
+},
+{
+  id:'l49', niveau:6, titre:'Déplacer le backbeat', duree:'35 min',
+  objectif:"Décaler le groove d'une double-croche pour surprendre l'oreille.",
+  contenu:`
+    <p>Le <b>déplacement</b> consiste à jouer un groove connu, mais une double-croche plus tard (ou plus tôt).
+    Le même motif sonne tout à coup complètement différent.</p>
+    <p>Mesure 1 : le groove normal. Mesure 2 : la caisse claire et la grosse caisse décalées d'une double-croche.</p>`,
+  pattern: p({ id:'l49-p', nom:'Groove puis groove décalé', res:4, bars:2, bpm:[50,75,110],
+    tracks:{ CH:'x-x-x-x-x-x-x-x-'.repeat(2), CC:'----x-------x---' + '-----x-------x--', GC:'x-------x-------' + '-x-------x------' } }),
+  conseils:["Garde le charleston absolument fixe : c'est ta seule référence."]
+},
+{
+  id:'l50', niveau:6, cle:true, titre:'Improviser : échanger quatre mesures', duree:'40 min',
+  objectif:"Alterner groove et solo sans jamais perdre la forme.",
+  contenu:`
+    <p>En jazz comme en rock, on « <b>échange des quatre</b> » : 4 mesures de groove, puis 4 mesures de solo.
+    Ici, la partition te donne un exemple : 2 mesures de groove, 2 mesures de solo sur les toms.</p>
+    <p>Une fois à l'aise, coupe la batterie (bouton en bas à gauche), garde le métronome, et <b>invente ton propre solo</b>
+    pendant les mesures 3 et 4. Le seul impératif : retomber sur le 1.</p>
+    <p>Tu as fini le parcours. La suite : les morceaux, les 40 rudiments… et tes propres idées.</p>`,
+  pattern: p({ id:'l50-p', nom:'Groove + solo', res:4, bars:4, bpm:[60,90,130],
+    tracks:{
+      CR:'x---------------' + R16() + R16() + R16(),
+      CH:'--x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + R16() + R16(),
+      CC:'----x-------x---' + '----x-------x---' + 'x-x-X---xxxx----' + 'X--X--X-xxxx----',
+      T1:R16() + R16() + '----x-x-----x-x-' + '------------xx--',
+      TB:R16() + R16() + '--------------xx' + '--------------xx',
+      GC:'x-------x-------' + 'x-------x-------' + 'x-------x-------' + 'x--x--x---------' } }),
+  defi:{ bpm:110, texte:"Improviser 4 cycles complets à 110 BPM, en retombant toujours sur la crash." },
+  conseils:["Un bon solo raconte une histoire : commence simple, monte en intensité, termine clairement."]
+}
+);
+
+/* Les leçons ajoutées se rangent dans leur niveau (tri stable : l'ordre d'origine est conservé) */
+LECONS.sort((a, b) => a.niveau - b.niveau);
 
 function leconParId(id){ return LECONS.find(l => l.id === id); }
 
@@ -3835,10 +4771,25 @@ const GRAD_TRAVAIL = { roulements:['#38bdf8', '#1d4ed8'], diddles:['#a78bfa', '#
   drags:['#fbbf24', '#c2410c'], coordination:['#34d399', '#047857'] };
 const gradStyle = g => `--c1:${g[0]};--c2:${g[1]}`;
 
+/* Morceaux rangés par genre, puis par niveau dans chaque genre */
+const GENRES_MORCEAUX = [
+  { id:'rock',    nom:'Rock',               court:'Rock',    styles:['Rock', 'Grunge', 'Pop rock', 'Rock progressif', 'Rock\'n\'roll', 'Punk'], grad:['#fb923c', '#e11d48'] },
+  { id:'hard',    nom:'Hard rock & métal',  court:'Métal',   styles:['Hard rock', 'Métal'],                 grad:['#94a3b8', '#1e293b'] },
+  { id:'pop',     nom:'Pop',                court:'Pop',     styles:['Pop'],                                grad:['#f472b6', '#be185d'] },
+  { id:'funk',    nom:'Funk, soul & disco', court:'Funk',    styles:['Funk', 'Funk rock', 'Disco', 'Soul'], grad:['#fbbf24', '#c2410c'] },
+  { id:'urbain',  nom:'Hip-hop & électro',  court:'Électro', styles:['Hip-hop', 'Électro'],                 grad:['#818cf8', '#4338ca'] },
+  { id:'variete', nom:'Variété française',  court:'Variété', styles:['Variété'],                            grad:['#38bdf8', '#1d4ed8'] },
+  { id:'monde',   nom:'Reggae & latino',    court:'Latino',  styles:['Reggae', 'Latin'],                    grad:['#34d399', '#0f766e'] },
+  { id:'jazz',    nom:'Blues & jazz',       court:'Jazz',    styles:['Blues', 'Jazz'],                      grad:['#a78bfa', '#6d28d9'] }
+];
+const genreDe = m => GENRES_MORCEAUX.find(g => g.styles.includes(m.style)) || GENRES_MORCEAUX[0];
+const morceauxDe = g => parNiveau(MORCEAUX.filter(m => genreDe(m) === g));
+const MORCEAUX_TRIES = GENRES_MORCEAUX.flatMap(morceauxDe);
+
 const FAMILLES_RYTHMES = [
   { id:'rock',     nom:'Rock & pop',        desc:'Le socle : croches, doubles, ballades.',   styles:['Rock', 'Ballade', 'Country'] },
   { id:'funk',     nom:'Funk & soul',       desc:'Ghost notes, Motown, disco.',              styles:['Funk', 'Soul', 'Disco'] },
-  { id:'urbain',   nom:'Hip-hop & électro', desc:'Boom bap, trap, drum and bass.',           styles:['Hip-hop', 'Électro'] },
+  { id:'urbain',   nom:'Hip-hop & électro', desc:'Boom bap, trap, drum and bass.',           styles:['Hip-hop', 'Électro', 'Reggaeton'] },
   { id:'monde',    nom:'Reggae & monde',    desc:'One drop, ska, bossa, samba, afro.',       styles:['Reggae', 'Ska', 'Latin', 'Afro'] },
   { id:'ternaire', nom:'Blues & jazz',      desc:'Shuffle, swing, valse, 12/8.',             styles:['Blues', 'Blues/Rock', 'Jazz', 'Traditionnel'] },
   { id:'lourd',    nom:'Punk & métal',      desc:'Vitesse, double pédale, blast beat.',      styles:['Punk', 'Métal'] },
@@ -3863,7 +4814,7 @@ const FAMILLES_TRAVAIL = [
 const LISTES = {
   lecon:    { nom:'Leçon',    items: () => LECONS,                                     retour: it => '#/parcours/' + it.niveau },
   rythme:   { nom:'Rythme',   items: it => rythmesDe(familleRythme(it)),               retour: it => '#/rythmes/' + familleRythme(it) },
-  morceau:  { nom:'Morceau',  items: () => parNiveau(MORCEAUX),                        retour: () => '#/morceaux' },
+  morceau:  { nom:'Morceau',  items: () => MORCEAUX_TRIES,                             retour: () => '#/morceaux' },
   break:    { nom:'Break',    items: () => parNiveau(FILLS),                           retour: () => '#/breaks' },
   rudiment: { nom:'Rudiment', items: it => RUDIMENTS.filter(r => r.famille === it.famille), retour: it => '#/rudiments/' + it.famille },
   exercice: { nom:'Exercice', items: () => EXERCICES,                                  retour: () => '#/rudiments/coordination' }
@@ -3923,10 +4874,10 @@ function ecranAccueil(){
   $('#parcours-jauge').style.width = Math.round(faites / LECONS.length * 100) + '%';
   $('#cta-continuer').href = lienJouer('lecon', suivante);
   $('#cta-texte').textContent = faites ? `Continuer · Leçon ${idx}` : 'Commencer · Leçon 1';
-  $('#compte-rythmes').textContent = `${GROOVES.length} grooves, du rock au 7/8`;
+  $('#compte-rythmes').textContent = `${GROOVES.length} grooves, du rock au 9/8`;
   $('#compte-morceaux').textContent = `${MORCEAUX.length} titres connus à jouer`;
   $('#compte-breaks').textContent = `${FILLS.length} fills pour relier les parties`;
-  $('#compte-rudiments').textContent = `${RUDIMENTS.length + EXERCICES.length} exercices pour les mains`;
+  $('#compte-rudiments').textContent = `${RUDIMENTS.length} rudiments et ${EXERCICES.length} exercices`;
   majStat();
 
   const derniere = lire(CLE_DERNIERE, null);
@@ -3964,8 +4915,13 @@ function ecranListe({ sur = '', titre, retour = '#/', html, sauts = [] }){
     `<button type="button" class="chip saut" data-cible="${id}" style="--c:${couleur}">${texte}</button>`).join('');
   bar.querySelectorAll('[data-cible]').forEach(b => b.addEventListener('click', () => {
     const cible = document.getElementById(b.dataset.cible);
-    if (cible) corps.scrollTo({ left:cible.offsetLeft - corps.offsetLeft - 4,
+    if (!cible) return;
+    const depart = corps.scrollLeft;
+    const aller = () => corps.scrollTo({ left:cible.offsetLeft - corps.offsetLeft - 4,
       behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+    aller();
+    // au tout premier toucher, le passage en plein écran peut interrompre le défilement : on relance
+    setTimeout(() => { if (corps.scrollLeft === depart) aller(); }, 350);
   }));
   document.title = titre + ' — Ma Batterie';
 }
@@ -4076,15 +5032,22 @@ function ecranFamilleRythmes(id){
 /* --- morceaux --- */
 function ecranMorceaux(){
   let html = '';
-  for (let n = 1; n <= 6; n++){
-    const lot = MORCEAUX.filter(m => m.niveau === n);
+  for (const g of GENRES_MORCEAUX){
+    const lot = morceauxDe(g);
     if (!lot.length) continue;
-    html += groupe('m-niv' + n, n, lot, m => itemCarte({
-      href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
-      niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[n - 1]
-    }));
+    html += `<section class="groupe" id="m-${g.id}">
+      <div class="groupe-tete genre" style="${gradStyle(g.grad)}">
+        <div class="g-illus">${miniVinyle()}</div>
+        <b>${g.nom}</b><span>${lot.length} titre${lot.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="rangee">${lot.map(m => itemCarte({
+        href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
+        niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[m.niveau - 1]
+      })).join('')}</div>
+    </section>`;
   }
-  ecranListe({ sur:`${MORCEAUX.length} titres`, titre:'Morceaux', html, sauts:sautsNiveaux(MORCEAUX, 'm-niv') });
+  ecranListe({ sur:`${MORCEAUX.length} titres · par genre, puis par niveau`, titre:'Morceaux', html,
+    sauts:GENRES_MORCEAUX.filter(g => morceauxDe(g).length).map(g => ['m-' + g.id, g.court, g.grad[1]]) });
 }
 
 /* --- breaks --- */

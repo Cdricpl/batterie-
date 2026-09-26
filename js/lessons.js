@@ -1,4 +1,4 @@
-/* Parcours pédagogique : 25 leçons progressives, de zéro au premier morceau. */
+/* Parcours pédagogique : 50 leçons progressives, du tout premier coup à l'improvisation. */
 
 const p = (o) => ({ beats:4, res:4, bars:1, bpm:[50,80,140], ...o });
 
@@ -406,7 +406,7 @@ export const LECONS = [
     <p>Une <b>triple-croche</b> vaut la moitié d'une double : <b>8 par temps</b>, notées avec trois barres.
     On les utilise pour les roulements qui lancent un refrain.</p>
     <p>Mains alternées, poignets très souples, mouvements minuscules. Travaille-les d'abord à 50 BPM.</p>
-    <p>Tu as fini le parcours. La suite : les <b>morceaux</b>, et les <b>rudiments</b> jusqu'au dernier.</p>`,
+    <p>Encore quelques leçons et tu auras fini le parcours. Travaille aussi les <b>morceaux</b> et les <b>rudiments</b>.</p>`,
   pattern: p({ id:'l31-p', nom:'Groove + roulement', res:8, bars:2, bpm:[45,60,95],
     tracks:{
       CR:'x' + '-'.repeat(31) + '-'.repeat(32),
@@ -418,5 +418,249 @@ export const LECONS = [
   conseils:["Si les triples-croches se tassent, reviens aux doubles-croches au même tempo × 2."]
 }
 ];
+
+const R16 = () => '-'.repeat(16);
+
+/* ======================= LEÇONS SUPPLÉMENTAIRES =======================
+ * Rangées dans leur niveau au moment du tri, à la fin de ce fichier. */
+LECONS.push(
+/* ---------------------------- niveau 1 ---------------------------- */
+{
+  id:'l32', niveau:1, titre:'Tenir les baguettes et laisser rebondir', duree:'10 min',
+  objectif:"Frapper sans crispation, en laissant la baguette rebondir.",
+  contenu:`
+    <p>La baguette se tient au <b>point d'équilibre</b>, à environ un tiers de son extrémité : c'est là qu'elle rebondit le mieux.
+    Pouce et index pincent, les trois autres doigts accompagnent sans serrer.</p>
+    <p>Le geste : la baguette part du haut, frappe, et <b>remonte toute seule</b> grâce au rebond. Tu ne « tapes » pas,
+    tu lâches la baguette et tu la rattrapes.</p>
+    <p>Joue des noires à la caisse claire, mains alternées (D = droite, G = gauche).</p>`,
+  pattern: p({ id:'l32-p', nom:'Noires main à main', res:1, bars:2, bpm:[40,60,100],
+    tracks:{ CC:'xxxx'.repeat(2) }, doigte:'DGDG'.repeat(2) }),
+  conseils:["Si tes mains fatiguent vite, tu serres trop : desserre les trois derniers doigts.",
+            "Regarde tes deux baguettes : elles doivent monter à la même hauteur."]
+},
+{
+  id:'l33', niveau:1, titre:'Compter les silences', duree:'15 min',
+  objectif:"Jouer des noires et des soupirs (silences) au bon moment.",
+  contenu:`
+    <p>Un <b>soupir</b> est un silence d'un temps. Il se compte exactement comme une note : on ne le joue pas, mais il occupe sa place.</p>
+    <p>Compte à voix haute « 1 – 2 – 3 – 4 » et ne frappe que là où il y a une note. Les silences sont le vrai exercice.</p>`,
+  pattern: p({ id:'l33-p', nom:'Noires et silences', res:1, bars:2, bpm:[40,60,100],
+    tracks:{ CC:'x-x-' + 'xx-x', CH:'xxxx' + 'xxxx' } }),
+  conseils:["Tape du pied sur chaque temps pendant les silences : ton corps garde le compte.",
+            "Passe en vue « Grille » pour voir les cases vides."]
+},
+{
+  id:'l34', niveau:1, titre:'La crash pour marquer le départ', duree:'15 min',
+  objectif:"Frapper la crash avec la grosse caisse sur le 1.",
+  contenu:`
+    <p>La <b>crash</b> sert à marquer un départ : le début d'un refrain, la fin d'un break. Elle se joue <b>toujours avec la grosse caisse</b>
+    pour que le son soit plein.</p>
+    <p>Ici : le groove de base pendant deux mesures, avec la crash (et le pied) sur le 1 de la première.</p>`,
+  pattern: p({ id:'l34-p', nom:'Groove + crash', res:1, bars:2, bpm:[45,70,120],
+    tracks:{ CR:'x---' + '----', CH:'-xxx' + 'xxxx', CC:'-x-x' + '-x-x', GC:'x-x-' + 'x-x-' } }),
+  conseils:["La main droite quitte le charleston pour la crash, puis revient aussitôt : prépare le trajet.",
+            "Frappe la crash en glissant sur le bord, sans l'écraser."]
+},
+/* ---------------------------- niveau 2 ---------------------------- */
+{
+  id:'l35', niveau:2, titre:'Les croches main à main', duree:'15 min',
+  objectif:"Jouer des croches régulières à la caisse claire, en alternant.",
+  contenu:`
+    <p>Deux notes par temps, mains alternées. Compte « <b>1 et 2 et 3 et 4 et</b> » : la main droite joue les chiffres, la gauche les « et ».</p>
+    <p>Les deux mains doivent sonner pareil : même hauteur, même endroit sur la peau.</p>`,
+  pattern: p({ id:'l35-p', nom:'Croches alternées', res:2, bars:2, bpm:[45,70,140],
+    tracks:{ CC:'xxxxxxxx'.repeat(2) }, doigte:'DGDGDGDG'.repeat(2) }),
+  conseils:["Enregistre-toi avec le téléphone : la main faible s'entend tout de suite."]
+},
+{
+  id:'l36', niveau:2, titre:'La grosse caisse sur le « et »', duree:'20 min',
+  objectif:"Placer un coup de pied entre deux temps.",
+  contenu:`
+    <p>Jusqu'ici, la grosse caisse jouait sur les temps. On ajoute un coup sur le <b>« et » du 2</b> : le groove prend de l'élan.</p>
+    <p>Ce coup tombe <b>avec une croche du charleston</b> : main droite et pied ensemble, sans caisse claire.</p>`,
+  pattern: p({ id:'l36-p', nom:'Rock avec pied sur le « et »', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-'.repeat(2), GC:'x--xx---'.repeat(2) } }),
+  defi:{ bpm:100, texte:"Tenir 1 minute à 100 BPM, sans que le pied du « et » ne se décale." },
+  conseils:["Joue d'abord charleston + pied seuls, sans la caisse claire."]
+},
+{
+  id:'l37', niveau:2, titre:'Le rock à la ride', duree:'15 min',
+  objectif:"Passer du charleston à la ride pour changer de couleur.",
+  contenu:`
+    <p>La <b>ride</b> (grande cymbale à droite) remplace le charleston dans les refrains : le son s'ouvre et grossit.</p>
+    <p>Joue une mesure au charleston, une mesure à la ride : la main droite fait l'aller-retour sans perdre une croche.</p>`,
+  pattern: p({ id:'l37-p', nom:'Charleston puis ride', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ CH:'xxxxxxxx' + '--------', RD:'--------' + 'xxxxxxxx', CC:'--x---x-'.repeat(2), GC:'x---x---'.repeat(2) } }),
+  conseils:["Frappe la ride avec la pointe de la baguette, à mi-chemin entre le bord et la cloche."]
+},
+/* ---------------------------- niveau 3 ---------------------------- */
+{
+  id:'l38', niveau:3, titre:'Le charleston au pied', duree:'20 min',
+  objectif:"Fermer le charleston au pied sur 2 et 4 pendant que la main joue la ride.",
+  contenu:`
+    <p>Le pied gauche n'est pas qu'un support : en fermant le charleston, il produit un « <b>tchk</b> » sec.
+    Sur 2 et 4, il double le backbeat.</p>
+    <p>Talon au sol, la pointe du pied appuie d'un coup sec, puis remonte.</p>`,
+  pattern: p({ id:'l38-p', nom:'Ride + charleston au pied', res:2, bars:2, bpm:[50,80,140],
+    tracks:{ RD:'xxxxxxxx'.repeat(2), CC:'--x---x-'.repeat(2), GC:'x---x---'.repeat(2), HP:'--x---x-'.repeat(2) } }),
+  conseils:["Travaille d'abord les deux pieds seuls : droit sur 1 et 3, gauche sur 2 et 4."]
+},
+{
+  id:'l39', niveau:3, titre:'Les accents dans les doubles-croches', duree:'20 min',
+  objectif:"Faire ressortir une note sur quatre sans accélérer.",
+  contenu:`
+    <p>Un <b>accent</b> (&gt;) est une note plus forte. Ici, la première double-croche de chaque temps est accentuée,
+    les trois autres restent douces.</p>
+    <p>Le secret : <b>la hauteur de la baguette</b>. Haute pour l'accent, basse pour les autres. Pas de force en plus.</p>`,
+  pattern: p({ id:'l39-p', nom:'Accents sur les temps', res:4, bars:2, bpm:[45,65,110],
+    tracks:{ CC:'XxxxXxxxXxxxXxxx'.repeat(2), GC:'x---x---x---x---'.repeat(2) }, doigte:'DGDGDGDGDGDGDGDG'.repeat(2) }),
+  conseils:["Après l'accent, la baguette doit s'arrêter bas : c'est le « coup arrêté » (downstroke)."]
+},
+{
+  id:'l40', niveau:3, cle:true, titre:'Le fill en situation', duree:'25 min',
+  objectif:"Enchaîner trois mesures de groove et une mesure de break, sans perdre le tempo.",
+  contenu:`
+    <p>Dans une chanson, les breaks arrivent <b>toutes les 4 ou 8 mesures</b>. Il faut compter les mesures en jouant.</p>
+    <p>Ici : trois mesures de groove, puis un fill d'un temps à la fin de la 4<sup>e</sup>, et la crash sur le 1 qui suit (écoute la boucle).</p>
+    <p>Compte « <b>1</b>-2-3-4, <b>2</b>-2-3-4, <b>3</b>-2-3-4, <b>4</b>-2-3-FILL ».</p>`,
+  pattern: p({ id:'l40-p', nom:'3 mesures + fill', res:4, bars:4, bpm:[50,80,130],
+    tracks:{
+      CR:'x---------------' + R16() + R16() + R16(),
+      CH:'--x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-----',
+      CC:'----x-------x---' + '----x-------x---' + '----x-------x---' + '----x-------xx--',
+      T1:R16() + R16() + R16() + '--------------x-',
+      TB:R16() + R16() + R16() + '---------------x',
+      GC:'x-------x-------' + 'x-------x-------' + 'x-------x-------' + 'x-------x-------' } }),
+  defi:{ bpm:100, texte:"Enchaîner 4 cycles complets à 100 BPM, crash pile sur le 1 à chaque fois." },
+  conseils:["Le fill ne doit ni accélérer ni ralentir : c'est l'erreur la plus fréquente."]
+},
+/* ---------------------------- niveau 4 ---------------------------- */
+{
+  id:'l41', niveau:4, titre:'Le shuffle', duree:'25 min',
+  objectif:"Jouer le balancement « long-court » du blues.",
+  contenu:`
+    <p>Le <b>shuffle</b> découpe chaque temps en triolet, mais ne joue que la 1<sup>re</sup> et la 3<sup>e</sup> note :
+    « <b>DOUM</b>-da <b>DOUM</b>-da ». On obtient un balancement long-court.</p>
+    <p>Le charleston joue ce balancement, la caisse claire le backbeat sur 2 et 4, le pied sur 1 et 3.</p>`,
+  pattern: p({ id:'l41-p', nom:'Shuffle', res:3, bars:2, bpm:[60,90,140],
+    tracks:{ CH:'x-xx-xx-xx-x'.repeat(2), CC:'---x-----x--'.repeat(2), GC:'x-----x-----'.repeat(2) } }),
+  conseils:["Chante « DOUM-da DOUM-da » en jouant : le balancement vient de la voix."]
+},
+{
+  id:'l42', niveau:4, titre:'Le reggae : le one drop', duree:'25 min',
+  objectif:"Jouer le groove où le 1 est vide.",
+  contenu:`
+    <p>En reggae <b>one drop</b>, il n'y a <b>rien sur le 1</b> : grosse caisse et caisse claire tombent ensemble sur le <b>3</b>.
+    C'est ce trou qui donne l'impression de flotter.</p>
+    <p>Le charleston joue des croches légères, parfois en balancement ternaire.</p>`,
+  pattern: p({ id:'l42-p', nom:'One drop', res:2, bars:2, bpm:[60,72,90],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'----x---'.repeat(2), GC:'----x---'.repeat(2) } }),
+  conseils:["Résiste à l'envie de jouer le 1 : écoute le vide, c'est lui qui groove."]
+},
+{
+  id:'l43', niveau:4, titre:'La bossa nova', duree:'30 min',
+  objectif:"Jouer le motif brésilien avec les deux mains et le pied.",
+  contenu:`
+    <p>La <b>bossa nova</b> repose sur un pied qui joue « <b>1 . . et 2</b> » en boucle (comme un cœur qui bat),
+    un charleston en croches régulières, et la main gauche qui joue la « clave » à la caisse claire (souvent en cross-stick).</p>
+    <p>Joue doucement : c'est une musique feutrée.</p>`,
+  pattern: p({ id:'l43-p', nom:'Bossa nova', res:4, bars:2, bpm:[60,80,120],
+    tracks:{
+      CH:'x-x-x-x-x-x-x-x-'.repeat(2),
+      CC:'x--x--x---x--x--' + '--x--x--x--x----',
+      GC:'x--xx--xx--xx--x'.repeat(2) } }),
+  conseils:["Travaille le pied seul pendant 2 minutes avant d'ajouter les mains."]
+},
+/* ---------------------------- niveau 5 ---------------------------- */
+{
+  id:'l44', niveau:5, titre:'Le half-time', duree:'25 min',
+  objectif:"Donner l'impression que le tempo ralentit de moitié, sans ralentir.",
+  contenu:`
+    <p>En <b>half-time</b>, la caisse claire ne joue plus que sur le <b>3</b>. Le tempo n'a pas changé, mais la musique paraît deux fois plus lente.</p>
+    <p>C'est l'effet idéal pour un pont ou un refrain lourd. Le charleston garde les croches : c'est lui qui tient le vrai tempo.</p>`,
+  pattern: p({ id:'l44-p', nom:'Normal puis half-time', res:2, bars:2, bpm:[60,90,140],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-' + '----x---', GC:'x---x---' + 'x-----x-' } }),
+  conseils:["Joue 4 mesures normales, 4 mesures half-time, en boucle."]
+},
+{
+  id:'l45', niveau:5, titre:'Le double-time', duree:'25 min',
+  objectif:"Doubler l'énergie en jouant la caisse claire sur tous les contretemps.",
+  contenu:`
+    <p>En <b>double-time</b>, la caisse claire joue deux fois plus souvent : sur chaque « et ». Le tempo reste le même,
+    mais la musique paraît deux fois plus rapide. C'est le moteur du punk et du thrash.</p>`,
+  pattern: p({ id:'l45-p', nom:'Normal puis double-time', res:2, bars:2, bpm:[60,100,160],
+    tracks:{ CH:'xxxxxxxx'.repeat(2), CC:'--x---x-' + '-x-x-x-x', GC:'x---x---' + 'x-x-x-x-' } }),
+  conseils:["En double-time, allège la main droite : c'est la caisse claire qui porte l'énergie."]
+},
+{
+  id:'l46', niveau:5, titre:'Les ouvertures de charleston en doubles', duree:'30 min',
+  objectif:"Ouvrir et fermer le charleston au rythme des doubles-croches.",
+  contenu:`
+    <p>En disco et en funk, le charleston s'<b>ouvre sur les « et »</b> et se referme aussitôt. Le pied gauche travaille sur des doubles-croches :
+    il se lève juste avant l'ouverture et se repose sur la note suivante.</p>`,
+  pattern: p({ id:'l46-p', nom:'Ouvertures sur les « et »', res:4, bars:2, bpm:[60,90,120],
+    tracks:{ CH:'xxoxxxoxxxoxxxox'.repeat(2), CC:'----x-------x---'.repeat(2), GC:'x---x---x---x---'.repeat(2) } }),
+  defi:{ bpm:112, texte:"Tenir 1 minute à 112 BPM avec des ouvertures toutes égales." },
+  conseils:["Pied gauche seul d'abord : « haut-bas » sur chaque « et », sans les mains."]
+},
+/* ---------------------------- niveau 6 ---------------------------- */
+{
+  id:'l47', niveau:6, titre:'Les doubles au pied', duree:'35 min',
+  objectif:"Jouer deux coups de grosse caisse rapides, réguliers et égaux.",
+  contenu:`
+    <p>Deux doubles-croches au pied : le premier coup vient de la jambe, le second de la <b>cheville</b> qui rebondit
+    (technique « heel-toe » ou « slide » selon les batteurs).</p>
+    <p>Les deux coups doivent avoir le même volume : c'est le second qui est souvent trop faible.</p>`,
+  pattern: p({ id:'l47-p', nom:'Doubles au pied', res:4, bars:2, bpm:[50,70,110],
+    tracks:{ CH:'x-x-x-x-x-x-x-x-'.repeat(2), CC:'----x-------x---'.repeat(2), GC:'xx----xxxx------'.repeat(2) } }),
+  conseils:["Batte proche de la peau au repos : moins de trajet, plus de vitesse."]
+},
+{
+  id:'l48', niveau:6, titre:'Le polyrythme 3 contre 2', duree:'35 min',
+  objectif:"Jouer trois notes d'un côté pendant que l'autre en joue deux.",
+  contenu:`
+    <p>Un <b>polyrythme</b> superpose deux découpages du temps. Ici, la main droite joue des triolets (3 notes par temps)
+    à la ride, la main gauche des croches (2 notes par temps) à la caisse claire.</p>
+    <p>Les deux mains ne tombent ensemble que sur le temps. Entre deux temps : ride, caisse claire, ride.</p>`,
+  pattern: p({ id:'l48-p', nom:'3 contre 2', res:6, bars:2, bpm:[40,55,90],
+    tracks:{ RD:'x-x-x-'.repeat(8), CC:'x--x--'.repeat(8), GC:'x-----'.repeat(8) } }),
+  conseils:["Commence à 40 BPM, en disant « en-sem-ble – ri-de – claire – ri-de »."]
+},
+{
+  id:'l49', niveau:6, titre:'Déplacer le backbeat', duree:'35 min',
+  objectif:"Décaler le groove d'une double-croche pour surprendre l'oreille.",
+  contenu:`
+    <p>Le <b>déplacement</b> consiste à jouer un groove connu, mais une double-croche plus tard (ou plus tôt).
+    Le même motif sonne tout à coup complètement différent.</p>
+    <p>Mesure 1 : le groove normal. Mesure 2 : la caisse claire et la grosse caisse décalées d'une double-croche.</p>`,
+  pattern: p({ id:'l49-p', nom:'Groove puis groove décalé', res:4, bars:2, bpm:[50,75,110],
+    tracks:{ CH:'x-x-x-x-x-x-x-x-'.repeat(2), CC:'----x-------x---' + '-----x-------x--', GC:'x-------x-------' + '-x-------x------' } }),
+  conseils:["Garde le charleston absolument fixe : c'est ta seule référence."]
+},
+{
+  id:'l50', niveau:6, cle:true, titre:'Improviser : échanger quatre mesures', duree:'40 min',
+  objectif:"Alterner groove et solo sans jamais perdre la forme.",
+  contenu:`
+    <p>En jazz comme en rock, on « <b>échange des quatre</b> » : 4 mesures de groove, puis 4 mesures de solo.
+    Ici, la partition te donne un exemple : 2 mesures de groove, 2 mesures de solo sur les toms.</p>
+    <p>Une fois à l'aise, coupe la batterie (bouton en bas à gauche), garde le métronome, et <b>invente ton propre solo</b>
+    pendant les mesures 3 et 4. Le seul impératif : retomber sur le 1.</p>
+    <p>Tu as fini le parcours. La suite : les morceaux, les 40 rudiments… et tes propres idées.</p>`,
+  pattern: p({ id:'l50-p', nom:'Groove + solo', res:4, bars:4, bpm:[60,90,130],
+    tracks:{
+      CR:'x---------------' + R16() + R16() + R16(),
+      CH:'--x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-' + R16() + R16(),
+      CC:'----x-------x---' + '----x-------x---' + 'x-x-X---xxxx----' + 'X--X--X-xxxx----',
+      T1:R16() + R16() + '----x-x-----x-x-' + '------------xx--',
+      TB:R16() + R16() + '--------------xx' + '--------------xx',
+      GC:'x-------x-------' + 'x-------x-------' + 'x-------x-------' + 'x--x--x---------' } }),
+  defi:{ bpm:110, texte:"Improviser 4 cycles complets à 110 BPM, en retombant toujours sur la crash." },
+  conseils:["Un bon solo raconte une histoire : commence simple, monte en intensité, termine clairement."]
+}
+);
+
+/* Les leçons ajoutées se rangent dans leur niveau (tri stable : l'ordre d'origine est conservé) */
+LECONS.sort((a, b) => a.niveau - b.niveau);
 
 export function leconParId(id){ return LECONS.find(l => l.id === id); }

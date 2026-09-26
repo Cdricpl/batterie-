@@ -11,34 +11,44 @@ Il suffit d'ouvrir `index.html` dans un navigateur récent.
 
 ## Ce que contient l'application
 
-### 📚 Parcours — 31 leçons progressives
+### 📚 Parcours — 50 leçons progressives
 Six niveaux, dans l'ordre, avec pour chaque leçon un objectif, une explication,
 une partition jouable, des conseils et parfois un défi de tempo :
 
 | Niveau | Contenu |
 |---|---|
-| 1 | Découverte du kit, pulsation, grosse caisse sur 1-3, backbeat, **premier groove complet** |
-| 2 | Croches, **groove rock 8 temps**, variantes de grosse caisse, syncope, premier break |
-| 3 | Doubles-croches, charleston ouvert, ghost notes, funk 16 temps, breaks courts |
+| 1 | Découverte du kit, tenue des baguettes, pulsation, silences, grosse caisse sur 1-3, backbeat, crash, **premier groove complet** |
+| 2 | Croches main à main, **groove rock 8 temps**, pied sur le « et », ride, syncope, premier break |
+| 3 | Doubles-croches, accents, charleston au pied, charleston ouvert, ghost notes, funk 16 temps, **fill en situation** |
 | 4 | Triolets, shuffle, reggae one drop, ride jazz, bossa nova |
-| 5 | Doubles au pied, half-time, tempos rapides, nuances, **construire un morceau** |
-| 6 | Paradiddle en groove, flams et drags, jeu linéaire, 7/8 et 5/4, 12/8, triples-croches |
+| 5 | Doubles au pied, half-time, double-time, ouvertures en doubles, tempos rapides, **construire un morceau** |
+| 6 | Paradiddle en groove, flams et drags, linéaire, 7/8, 5/4, 12/8, triples-croches, doubles au pied, polyrythme 3:2, déplacement, **improvisation** |
 
-La progression est enregistrée dans le navigateur, et l'onglet **📈 Ma progression**
+La progression est enregistrée dans le navigateur, et l'écran **Progression**
 en fait le bilan : leçons terminées, pourcentage du parcours, temps de pratique des
 trois dernières semaines, jours d'affilée, meilleur tempo atteint sur chaque leçon et
 défis réussis. Un clic sur le numéro d'une leçon la rouvre.
 
-### 🎵 Rythmes — 40 grooves
+### 🎵 Rythmes — 74 grooves, en 7 familles
 Rock, rock 16 temps, rythme de stade, four on the floor, Motown, funk, boom bap,
 Bo Diddley, shuffle, half-time shuffle, reggae (one drop et steppers), ska, bossa,
 ride jazz, train beat, punk, d-beat, métal, blast beat, valse, 6/8, groove aux toms,
-second line, samba, afrobeat, drum'n'bass, trap, linéaire, 7/8, 5/4, 12/8…
+second line, samba, afrobeat, drum'n'bass, trap, linéaire, 7/8, 5/4, 12/8, ride,
+half-time, disco 16, funk syncopé, techno, reggaeton, breakbeat, cumbia, soca,
+6/8 afro-cubain, double shuffle, swing two-feel, valse jazz, shuffle Purdie,
+thrash, galop métal, double pédale, 5/8, 9/8…
 
-### 💿 Morceaux connus — 23 titres
+### 💿 Morceaux connus — 65 titres, rangés par genre puis par niveau
 We Will Rock You, Seven Nation Army, Billie Jean, Back in Black, Another One Bites
 the Dust, Smells Like Teen Spirit, Zombie, Walk This Way, Superstition, Rosanna,
-Money (7/4), Take Five (5/4), Alors on danse, Get Lucky…
+Money (7/4), Take Five (5/4), Alors on danse, Get Lucky, Thunderstruck, Paranoid,
+Master of Puppets, Beat It, Blinding Lights, Stayin' Alive, Le Freak, September,
+Lose Yourself, Papaoutai, Ça plane pour moi, L'Aventurier, Dernière danse,
+Despacito, Oye Como Va, Pride and Joy, La Grange, Fly Me to the Moon…
+
+Huit genres : rock, hard rock & métal, pop, funk-soul-disco, hip-hop & électro,
+variété française, reggae & latino, blues & jazz. Des raccourcis en haut de l'écran
+sautent directement à un genre.
 
 Chaque morceau est découpé en **sections** (intro, couplet, refrain, break) : un clic
 sur une section la joue seule, en boucle. Le tempo est celui du disque (vérifié sur
@@ -46,21 +56,24 @@ les bases de tempo publiques). Chaque titre indique honnêtement ce qu'il contie
 **groove d'origine simplifié**, ou **groove d'accompagnement** qui colle au morceau
 pour jouer par-dessus l'enregistrement — ce ne sont pas des transcriptions intégrales.
 
-### 🥢 Rudiments — 21
-D'après la liste des 40 rudiments de la Percussive Arts Society : roulements (simple,
-double, 5, 6, 7, 9…), paradiddles (simple, double, triple, paradiddle-diddle), flams
-(flam accent, flam tap, flamacue, flam paradiddle, triolet suisse), drags (drag tap,
-ratamacue). Doigté D/G sous chaque note.
+### 🥢 Rudiments — les 40 rudiments internationaux
+La liste complète de la Percussive Arts Society : roulements (simple, multi-rebonds,
+triple, double, 5, 6, 7, 9, 10, 11, 13, 15, 17…), paradiddles (simple, double, triple, paradiddle-diddle), flams
+(flam accent, flam tap, flamacue, flam paradiddle, moulin flammé, pataflafla,
+triolet suisse, flam tap inversé, flam drag…), drags (drag tap, leçon 25,
+dragadiddle, drag paradiddles, ratamacues simple, double et triple). Doigté D/G sous chaque note.
 
-### 🥁 Breaks & fills — 15 breaks
+### 🥁 Breaks & fills — 35 breaks
 Chaque break est présenté sous la forme **1 mesure de groove + 1 mesure de break**,
 en boucle : c'est l'enchaînement qui se travaille, pas le break tout seul.
 
 Dont triolets main-main-pied (style Bonham), paradiddle sur les toms, roulement de 6,
 triples-croches.
 
-### ⏱️ Exercices — 8
-Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue du tempo.
+### ⏱️ Exercices — 21
+Mains (alternées, 8/8, doubles lentes, triolets, accents, nuances), pieds
+(charleston au pied, pieds alternés, doubles), coordination, lecture de rythmes,
+tenue du tempo (tempo très lent, mesure silencieuse), polyrythme 3 contre 2.
 
 ---
 
