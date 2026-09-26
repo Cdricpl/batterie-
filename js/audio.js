@@ -8,6 +8,7 @@ import { SONS } from './sons.js';
 
 let ctx = null;
 let master = null;
+let busBatterie = null;    // tous les éléments passent par ici ; le métronome non
 let noiseBuf = null;
 const gains = {};       // sortie par instrument
 const vols  = {};       // volume choisi
@@ -42,11 +43,14 @@ export function initAudio(){
   limiteur.threshold.value = -1.5; limiteur.knee.value = 0; limiteur.ratio.value = 20;
   limiteur.attack.value = 0.001; limiteur.release.value = 0.08;
   master.connect(comp).connect(remontee).connect(limiteur).connect(ctx.destination);
+  busBatterie = ctx.createGain();
+  busBatterie.gain.value = batterieAudible ? 1 : 0;
+  busBatterie.connect(master);
 
   for (const [id, v] of Object.entries(VOLUMES_DEFAUT)) {
     const g = ctx.createGain();
     g.gain.value = v;
-    g.connect(master);
+    g.connect(busBatterie);
     gains[id] = g;
     vols[id] = v;
     mutes[id] = false;
@@ -192,6 +196,12 @@ export function setMute(id, m){ mutes[id] = m; appliquer(id); }
 export function setSolos(ids){ solos = new Set(ids); for (const id of Object.keys(gains)) appliquer(id); }
 export function estCoupe(id){ return !!mutes[id]; }
 export function setMasterVolume(v){ if (master) master.gain.value = v; }
+let batterieAudible = true;
+/* Batterie coupée : la partition défile et le métronome joue, c'est toi qui joues */
+export function setBatterie(oui){
+  batterieAudible = oui;
+  if (busBatterie) busBatterie.gain.setTargetAtTime(oui ? 1 : 0, ctx.currentTime, 0.01);
+}
 
 function noise(t, dur){
   const s = ctx.createBufferSource();

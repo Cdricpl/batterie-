@@ -124,10 +124,10 @@ function tete(g, x, y, inst, signe){
   const coul = def.couleur;
   if (def.head === 'x'){
     const r = 4.6;
-    el('line', {x1:x-r, y1:y-r, x2:x+r, y2:y+r, stroke:coul, 'stroke-width':2.1, 'stroke-linecap':'round'}, g);
-    el('line', {x1:x-r, y1:y+r, x2:x+r, y2:y-r, stroke:coul, 'stroke-width':2.1, 'stroke-linecap':'round'}, g);
+    el('line', {class:`tete t-${inst}`, x1:x-r, y1:y-r, x2:x+r, y2:y+r, stroke:coul, 'stroke-width':2.1, 'stroke-linecap':'round'}, g);
+    el('line', {class:`tete t-${inst}`, x1:x-r, y1:y+r, x2:x+r, y2:y-r, stroke:coul, 'stroke-width':2.1, 'stroke-linecap':'round'}, g);
   } else {
-    el('ellipse', {cx:x, cy:y, rx:G.teteRx, ry:G.teteRy, fill:coul,
+    el('ellipse', {class:`tete t-${inst}`, cx:x, cy:y, rx:G.teteRx, ry:G.teteRy, fill:coul,
       transform:`rotate(-18 ${x} ${y})`}, g);
   }
   if (signe === 'g'){ // ghost note : entre parenthèses
@@ -344,7 +344,7 @@ export function dessinerPortee(motif, opts = {}){
         const y = yPos(n.pos);
         tete(grp, x, y, n.inst, n.signe);
         if (n.signe === 'o'){ // charleston ouvert
-          el('circle', {cx:x, cy:y - 11, r:3.4, fill:'none', stroke:INSTRUMENTS[n.inst].couleur, 'stroke-width':1.5}, grp);
+          el('circle', {class:`contour t-${n.inst}`, cx:x, cy:y - 11, r:3.4, fill:'none', stroke:INSTRUMENTS[n.inst].couleur, 'stroke-width':1.5}, grp);
         }
         if (n.signe === 'd'){ // drag : deux petites notes d'agrément
           for (const dx of [-17, -11]){

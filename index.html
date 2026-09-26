@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ma Batterie</title>
 <meta name="description" content="Apprendre la batterie : parcours progressif, rudiments, rythmes et morceaux connus, partitions qui se lisent toutes seules.">
-<meta name="theme-color" content="#121010">
+<meta name="theme-color" content="#12151c">
 <link rel="manifest" href="manifest.webmanifest" data-pwa>
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" data-pwa>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,246 +14,248 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;700;800&family=Big+Shoulders+Stencil+Display:wght@800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="css/styles.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='11' rx='13' ry='5' fill='%23d9a441'/><rect x='5' y='13' width='22' height='12' rx='3' fill='%23e5584b'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='11' rx='13' ry='5' fill='%23e0a93b'/><rect x='5' y='13' width='22' height='12' rx='3' fill='%23e5584b'/></svg>">
 </head>
 <body>
 
 <!-- Pictogrammes (un seul jeu de symboles, réutilisé partout) -->
 <svg class="sprite" aria-hidden="true" focusable="false">
-  <symbol id="i-parcours" viewBox="0 0 24 24"><path d="M4 19h4v-4h4v-4h4V7h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-rythmes" viewBox="0 0 24 24"><path d="M3 12h3l2-6 3 12 3-9 2 5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-morceaux" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 5.5a6.5 6.5 0 0 1 6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".6"/></symbol>
-  <symbol id="i-breaks" viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 8v8c0 1.7 3.6 3 8 3s8-1.3 8-3V8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 2l-5 7M19 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-entrainement" viewBox="0 0 24 24"><path d="M8 21h8l-2.5-17h-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 15l5-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-progression" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></symbol>
-  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-maison" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6.5 9.5V20h11V9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-prec" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-suiv" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-aide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .9-1 1.6v.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-reglages" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-metronome" viewBox="0 0 24 24"><path d="M8.5 3.5h7L19 21H5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 16l5-8.5M7 16h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-batterie" viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 8v8c0 1.7 3.6 3 8 3s8-1.3 8-3V8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 3.5l3 4M17 2.5l-4 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-reinit" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.1-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M4.5 3.5V8H9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 4.8v14.4c0 .8.9 1.3 1.6.8l11-7.2c.6-.4.6-1.2 0-1.6l-11-7.2c-.7-.5-1.6 0-1.6.8z" fill="currentColor"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></symbol>
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
-  <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-plein-ecran" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-tourner" viewBox="0 0 48 48"><rect x="15" y="7" width="18" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M21 34h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M38 10a16 16 0 0 1 3 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M37 19l4 5 4-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo" aria-hidden="true">
-      <svg viewBox="0 0 40 40"><ellipse cx="20" cy="12" rx="17" ry="5.5" fill="#d9a441"/><ellipse cx="20" cy="12" rx="4" ry="1.4" fill="#8a6420"/><rect x="6" y="17" width="28" height="16" rx="3" fill="#e5584b"/><rect x="6" y="17" width="28" height="3.2" fill="#efe7d8" opacity=".85"/><rect x="6" y="29.8" width="28" height="3.2" fill="#efe7d8" opacity=".85"/></svg>
-    </span>
-    <div>
-      <p class="wordmark">Ma Batterie <span class="version" id="version"></span></p>
-      <p class="brand-sub">La salle de répète, à la maison</p>
+<!-- ================= Accueil ================= -->
+<section class="ecran" id="ecran-accueil" aria-labelledby="titre-accueil">
+  <header class="entete">
+    <div class="marque">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><ellipse cx="20" cy="12" rx="16" ry="5" fill="#e0a93b"/><rect x="7" y="16" width="26" height="16" rx="4" fill="#e5584b"/></svg>
+      </span>
+      <h1 id="titre-accueil" class="mot">Ma Batterie</h1>
+      <span class="version" id="version"></span>
     </div>
+    <div class="entete-droite">
+      <a class="pastille-stat reprendre" href="#/" id="reprendre" hidden>
+        <svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span id="reprendre-texte"></span>
+      </a>
+      <a class="pastille-stat" href="#/progression" id="stat-jour" title="Ma progression">
+        <svg class="ico" aria-hidden="true"><use href="#i-flamme"/></svg><span id="streak-text">0 min</span>
+      </a>
+      <button class="btn-plat" id="btn-installer" type="button" hidden>
+        <svg class="ico" aria-hidden="true"><use href="#i-installer"/></svg>Installer
+      </button>
+    </div>
+  </header>
+
+  <div class="accueil-grille">
+    <div class="carte-cat grande c-parcours">
+      <div class="cat-illus" id="illus-parcours"></div>
+      <div class="cat-texte">
+        <h2><a href="#/parcours" class="carte-lien">Parcours</a></h2>
+        <p id="parcours-resume">Apprends pas à pas, du premier coup au niveau avancé.</p>
+        <div class="jauge fine" aria-hidden="true"><i id="parcours-jauge"></i></div>
+      </div>
+      <a class="cta" id="cta-continuer" href="#/parcours">
+        <svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span id="cta-texte">Commencer</span>
+      </a>
+    </div>
+    <a class="carte-cat c-rythmes" href="#/rythmes">
+      <div class="cat-illus" id="illus-rythmes"></div>
+      <div class="cat-texte"><h2>Rythmes</h2><p id="compte-rythmes"></p></div>
+    </a>
+    <a class="carte-cat c-morceaux" href="#/morceaux">
+      <div class="cat-illus" id="illus-morceaux"></div>
+      <div class="cat-texte"><h2>Morceaux</h2><p id="compte-morceaux"></p></div>
+    </a>
+    <a class="carte-cat c-breaks" href="#/breaks">
+      <div class="cat-illus" id="illus-breaks"></div>
+      <div class="cat-texte"><h2>Breaks</h2><p id="compte-breaks"></p></div>
+    </a>
+    <a class="carte-cat c-rudiments" href="#/rudiments">
+      <div class="cat-illus" id="illus-rudiments"></div>
+      <div class="cat-texte"><h2>Rudiments</h2><p id="compte-rudiments"></p></div>
+    </a>
   </div>
-  <div class="topbar-right">
-    <div class="streak" id="streak-box" title="Temps de pratique aujourd'hui">
-      <svg class="ico" aria-hidden="true"><use href="#i-flamme"/></svg>
-      <span id="streak-text">0 min aujourd'hui</span>
+</section>
+
+<!-- ================= Listes (catégories, niveaux, familles) ================= -->
+<section class="ecran" id="ecran-liste" hidden aria-labelledby="liste-titre">
+  <header class="entete">
+    <a class="rond" id="liste-retour" href="#/" aria-label="Retour">
+      <svg class="ico" aria-hidden="true"><use href="#i-retour"/></svg>
+    </a>
+    <div class="entete-titres">
+      <p class="surtitre" id="liste-sur"></p>
+      <h1 id="liste-titre"></h1>
     </div>
-    <button class="btn" id="btn-installer" type="button" hidden>
-      <svg class="ico" aria-hidden="true"><use href="#i-installer"/></svg> Installer
+    <div class="entete-droite">
+      <a class="rond" href="#/" aria-label="Accueil"><svg class="ico" aria-hidden="true"><use href="#i-maison"/></svg></a>
+    </div>
+  </header>
+  <div class="liste-corps" id="liste-corps"></div>
+</section>
+
+<!-- ================= Lecteur ================= -->
+<section class="ecran ecran-jouer" id="ecran-jouer" hidden aria-labelledby="j-titre">
+  <header class="barre-jeu">
+    <a class="rond" id="j-retour" href="#/" aria-label="Retour à la liste">
+      <svg class="ico" aria-hidden="true"><use href="#i-retour"/></svg>
+    </a>
+    <div class="j-nav">
+      <a class="rond petit" id="j-prec" href="#/" aria-label="Précédent"><svg class="ico" aria-hidden="true"><use href="#i-prec"/></svg></a>
+      <div class="j-titres">
+        <p class="surtitre" id="j-sur"></p>
+        <h1 id="j-titre"></h1>
+      </div>
+      <a class="rond petit" id="j-suiv" href="#/" aria-label="Suivant"><svg class="ico" aria-hidden="true"><use href="#i-suiv"/></svg></a>
+    </div>
+    <div class="j-droite">
+      <span class="note-jeu" id="practice-score" hidden aria-live="polite"></span>
+      <button class="rond" id="j-aide" type="button" aria-label="Explications" aria-haspopup="dialog">
+        <svg class="ico" aria-hidden="true"><use href="#i-aide"/></svg>
+      </button>
+      <button class="rond" id="j-reglages" type="button" aria-label="Réglages" aria-haspopup="dialog">
+        <svg class="ico" aria-hidden="true"><use href="#i-reglages"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="sections-bar" id="sections-bar" hidden></div>
+
+  <main class="partition-zone">
+    <div class="papier" id="papier">
+      <div class="score-staff" id="score-staff"></div>
+      <div class="score-grid" id="score-grid" hidden></div>
+    </div>
+    <div class="count-overlay" id="count-overlay" hidden aria-live="assertive"><span></span></div>
+  </main>
+
+  <footer class="barre-transport">
+    <div class="t-bascules">
+      <button class="bascule" id="opt-click" type="button" aria-pressed="false" aria-label="Métronome" title="Métronome">
+        <svg class="ico" aria-hidden="true"><use href="#i-metronome"/></svg>
+      </button>
+      <button class="bascule actif" id="opt-kit" type="button" aria-pressed="true" aria-label="Entendre la batterie" title="Entendre la batterie">
+        <svg class="ico" aria-hidden="true"><use href="#i-batterie"/></svg>
+      </button>
+    </div>
+    <div class="t-tempo" role="group" aria-label="Tempo">
+      <button class="rond petit" id="tempo-moins" type="button" aria-label="Ralentir">−</button>
+      <div class="bpm-aff"><output id="bpm-val" for="bpm">80</output><span>BPM</span></div>
+      <button class="rond petit" id="tempo-plus" type="button" aria-label="Accélérer">+</button>
+      <input type="range" id="bpm" min="40" max="200" value="80" aria-label="Tempo en battements par minute">
+      <button class="rond petit" id="tempo-reset" type="button" aria-label="Revenir au tempo conseillé" title="Tempo conseillé">
+        <svg class="ico" aria-hidden="true"><use href="#i-reinit"/></svg>
+      </button>
+    </div>
+    <button class="lecture" id="btn-play" type="button" aria-label="Lecture">
+      <svg class="ico" aria-hidden="true"><use id="play-ico" href="#i-play"/></svg>
     </button>
-    <button class="btn ghost" id="btn-help" type="button" aria-haspopup="dialog">
-      <svg class="ico" aria-hidden="true"><use href="#i-clavier"/></svg> Clavier
-    </button>
+  </footer>
+</section>
+
+<!-- ================= Volet : explications ================= -->
+<div class="voile" id="voile" hidden></div>
+<aside class="volet" id="volet-aide" hidden role="dialog" aria-modal="true" aria-labelledby="aide-titre">
+  <header class="volet-tete">
+    <h2 id="aide-titre">Explications</h2>
+    <button class="rond petit" type="button" data-fermer aria-label="Fermer"><svg class="ico" aria-hidden="true"><use href="#i-fermer"/></svg></button>
+  </header>
+  <div class="volet-corps">
+    <div id="aide-corps" class="texte"></div>
+    <h3>Les éléments joués</h3>
+    <div id="legende"></div>
+    <div id="kit-diagram" class="kit-cadre"></div>
+    <p class="muted small">Touche un élément pour l'entendre.</p>
   </div>
-</header>
+</aside>
 
-<nav class="tabs" id="tabs" role="tablist" aria-label="Sections de l'application">
-  <button class="tab active" data-view="cours" role="tab" aria-selected="true" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-parcours"/></svg>Parcours</button>
-  <button class="tab" data-view="rythmes" role="tab" aria-selected="false" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-rythmes"/></svg>Rythmes</button>
-  <button class="tab" data-view="morceaux" role="tab" aria-selected="false" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-morceaux"/></svg>Morceaux</button>
-  <button class="tab" data-view="fills" role="tab" aria-selected="false" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-breaks"/></svg>Breaks</button>
-  <button class="tab" data-view="entrainement" role="tab" aria-selected="false" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-entrainement"/></svg>Rudiments &amp; exercices</button>
-  <button class="tab" data-view="progression" role="tab" aria-selected="false" aria-controls="sidebar"><svg class="ico" aria-hidden="true"><use href="#i-progression"/></svg>Progression</button>
-</nav>
-
-<main class="layout">
-
-  <aside class="sidebar" id="sidebar">
-    <div class="side-panel" data-panel="cours">
-      <div class="side-head"><h2>Parcours</h2><span class="pill" id="cours-count">0/0</span></div>
-      <div id="lesson-list" class="list"></div>
+<!-- ================= Volet : réglages ================= -->
+<aside class="volet" id="volet-reglages" hidden role="dialog" aria-modal="true" aria-labelledby="reglages-titre">
+  <header class="volet-tete">
+    <h2 id="reglages-titre">Réglages</h2>
+    <button class="rond petit" type="button" data-fermer aria-label="Fermer"><svg class="ico" aria-hidden="true"><use href="#i-fermer"/></svg></button>
+  </header>
+  <div class="volet-corps">
+    <h3>Affichage</h3>
+    <div class="seg" id="view-toggle" role="group" aria-label="Affichage">
+      <button class="seg-btn actif" data-score="staff" type="button" aria-pressed="true">Partition</button>
+      <button class="seg-btn" data-score="grid" type="button" aria-pressed="false">Grille</button>
     </div>
 
-    <div class="side-panel hidden" data-panel="rythmes">
-      <div class="side-head"><h2>Rythmes</h2><span class="pill" id="rythmes-count"></span></div>
-      <input type="search" id="search-grooves" class="search" placeholder="rock, funk, 7/8, ghost…" aria-label="Chercher un rythme">
-      <div id="groove-list" class="list"></div>
+    <h3>Lecture</h3>
+    <label class="inter"><span>Décompte avant de jouer</span><input type="checkbox" id="opt-count" role="switch" checked><i></i></label>
+    <label class="inter"><span>Jouer en boucle</span><input type="checkbox" id="opt-loop" role="switch" checked><i></i></label>
+    <label class="ligne-reglage"><span>Métronome</span>
+      <select id="click-sub" class="choix"><option value="1">à la noire</option></select>
+    </label>
+    <label class="inter"><span>Tempo progressif</span><input type="checkbox" id="opt-ramp" role="switch"><i></i></label>
+    <div class="rampe" id="ramp-row" hidden>
+      +<input type="number" id="ramp-step" min="1" max="20" value="4" aria-label="BPM ajoutés"> BPM
+      toutes les <input type="number" id="ramp-every" min="1" max="16" value="2" aria-label="Nombre de boucles"> boucles,
+      jusqu'à <input type="number" id="ramp-max" min="40" max="260" value="120" aria-label="Tempo maximum">
     </div>
 
-    <div class="side-panel hidden" data-panel="morceaux">
-      <div class="side-head"><h2>Morceaux</h2><span class="pill" id="morceaux-count"></span></div>
-      <input type="search" id="search-songs" class="search" placeholder="titre ou artiste…" aria-label="Chercher un morceau">
-      <p class="side-note">Le groove principal, au tempo du disque, découpé en sections : joue-le par-dessus l'enregistrement.</p>
-      <div id="song-list" class="list"></div>
+    <h3>Tempo</h3>
+    <div class="rang-boutons">
+      <button class="btn-plat" id="btn-half" type="button">÷2</button>
+      <button class="btn-plat" id="btn-double" type="button">×2</button>
+      <button class="btn-plat" id="btn-tap" type="button">Tap</button>
     </div>
 
-    <div class="side-panel hidden" data-panel="fills">
-      <div class="side-head"><h2>Breaks</h2><span class="pill" id="fills-count"></span></div>
-      <div id="fill-list" class="list"></div>
-    </div>
+    <h3>Mixeur</h3>
+    <p class="muted small">M coupe un élément, S n'entend que lui.</p>
+    <div class="mixer" id="mixer"></div>
 
-    <div class="side-panel hidden" data-panel="entrainement">
-      <div class="side-head"><h2>Rudiments &amp; exercices</h2><span class="pill" id="drills-count"></span></div>
-      <div id="drill-list" class="list"></div>
-    </div>
-
-    <div class="side-panel hidden" data-panel="progression">
-      <div class="side-head"><h2>Résumé</h2></div>
-      <div id="progress-side" class="list"></div>
-    </div>
-  </aside>
-
-  <section class="stage" id="stage">
-
-    <div class="card player-card">
-      <div class="player-head">
-        <div class="titres">
-          <p class="eyebrow" id="piece-eyebrow"></p>
-          <h1 id="piece-title">Choisis une leçon pour commencer</h1>
-          <p class="muted" id="piece-sub">Le parcours démarre à zéro : aucune connaissance requise.</p>
-        </div>
-        <div class="badges" id="piece-badges"></div>
-      </div>
-
-      <div class="sections-bar hidden" id="sections-bar" role="group" aria-label="Sections du morceau"></div>
-
-      <div class="score-toolbar">
-        <div class="seg" id="view-toggle" role="group" aria-label="Affichage">
-          <button class="seg-btn active" data-score="staff" type="button" aria-pressed="true">Partition</button>
-          <button class="seg-btn" data-score="grid" type="button" aria-pressed="false">Grille</button>
-          <button class="seg-btn" data-score="both" type="button" aria-pressed="false">Les deux</button>
-        </div>
-        <label class="chk"><input type="checkbox" id="opt-follow" checked> Défilement auto</label>
-        <label class="chk"><input type="checkbox" id="opt-names" checked> Légende</label>
-        <button class="btn tiny ghost" id="btn-print" type="button" title="Imprimer la partition pour la poser sur un pupitre">
-          <svg class="ico" aria-hidden="true"><use href="#i-print"/></svg> Imprimer
-        </button>
-      </div>
-
-      <div class="score-wrap" id="score-wrap">
-        <div id="score-staff" class="score-staff"></div>
-        <div id="score-grid" class="score-grid hidden"></div>
-        <div id="score-print" class="score-print" aria-hidden="true"></div>
-        <p class="empty-hint" id="score-empty">La partition s'affiche ici et défile toute seule pendant la lecture.</p>
-        <div class="count-overlay hidden" id="count-overlay" aria-live="assertive"><span></span></div>
-      </div>
-
-      <div class="transport">
-        <button class="btn play" id="btn-play" type="button" disabled>
-          <svg class="ico" aria-hidden="true"><use id="play-ico" href="#i-play"/></svg><span id="play-label">Écouter</span>
-        </button>
-        <button class="btn ghost" id="btn-stop" type="button" disabled>
-          <svg class="ico" aria-hidden="true"><use href="#i-stop"/></svg> Stop
-        </button>
-        <button class="btn" id="btn-scene" type="button" disabled title="Partition en grand, ligne par ligne">
-          <svg class="ico" aria-hidden="true"><use href="#i-plein-ecran"/></svg> Plein écran
-        </button>
-
-        <div class="tempo">
-          <label for="bpm">Tempo</label>
-          <input type="range" id="bpm" min="40" max="220" value="80" step="1" aria-label="Tempo en battements par minute">
-          <div class="bpm-box">
-            <input type="number" id="bpm-num" min="40" max="220" value="80" aria-label="Tempo exact">
-            <span>BPM</span>
-          </div>
-          <button class="btn tiny" id="btn-tap" type="button" title="Tape le tempo">Tap</button>
-          <button class="btn tiny" id="btn-half" type="button" title="Moitié du tempo — pour déchiffrer" aria-label="Diviser le tempo par deux">÷2</button>
-          <button class="btn tiny" id="btn-double" type="button" title="Tempo doublé" aria-label="Doubler le tempo">×2</button>
-        </div>
-
-        <div class="switches">
-          <label class="chk"><input type="checkbox" id="opt-loop" checked> Boucle</label>
-          <label class="chk"><input type="checkbox" id="opt-count" checked> Décompte</label>
-          <label class="chk"><input type="checkbox" id="opt-click"> Métronome</label>
-          <select id="click-sub" class="mini-select" aria-label="Subdivision du métronome" disabled>
-            <option value="1">à la noire</option>
-          </select>
-          <label class="chk"><input type="checkbox" id="opt-ramp"> Tempo progressif</label>
-        </div>
-      </div>
-
-      <div class="ramp-row hidden" id="ramp-row">
-        <span>+<input type="number" id="ramp-step" value="4" min="1" max="20" aria-label="BPM ajoutés"> BPM toutes les
-        <input type="number" id="ramp-every" value="2" min="1" max="16" aria-label="Nombre de boucles"> boucles, jusqu'à
-        <input type="number" id="ramp-max" value="120" min="40" max="260" aria-label="Tempo maximum"> BPM</span>
-      </div>
-
-      <div class="play-row">
-        <button class="btn ghost" id="btn-practice" type="button" aria-pressed="false">
-          <svg class="ico" aria-hidden="true"><use href="#i-clavier"/></svg> Mode jeu
-        </button>
-        <span class="muted small" id="practice-info">Joue au clavier en rythme : l'appli mesure ta précision.</span>
-        <span class="score-badge hidden" id="practice-score" aria-live="polite"></span>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card kit-card">
-        <div class="card-head"><h2>Ton kit</h2><span class="muted small">clique un élément pour l'entendre</span></div>
-        <div id="kit-diagram"></div>
-        <div class="mixer" id="mixer" aria-label="Mixeur"></div>
-      </div>
-
-      <div class="card lesson-card">
-        <div id="lesson-body"></div>
-      </div>
-    </div>
-
-    <div class="card progress-card hidden" id="progress-card"></div>
-
-  </section>
-</main>
-
-<div class="modal hidden" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
-  <div class="modal-box">
-    <h2 id="help-title">Jouer au clavier</h2>
-    <p class="muted small">Active le mode jeu pour « jouer » les partitions et travailler ton placement.</p>
+    <h3>Jouer au clavier</h3>
+    <label class="inter"><span>Mode jeu : l'appli juge ta précision</span><input type="checkbox" id="btn-practice" role="switch"><i></i></label>
     <table class="keys">
       <tr><td><kbd>Espace</kbd></td><td>Grosse caisse</td></tr>
       <tr><td><kbd>F</kbd> <kbd>J</kbd></td><td>Caisse claire</td></tr>
-      <tr><td><kbd>D</kbd> <kbd>K</kbd></td><td>Charleston</td></tr>
-      <tr><td><kbd>S</kbd></td><td>Charleston ouvert</td></tr>
+      <tr><td><kbd>D</kbd> <kbd>K</kbd> · <kbd>S</kbd></td><td>Charleston · ouvert</td></tr>
       <tr><td><kbd>A</kbd></td><td>Charleston au pied</td></tr>
-      <tr><td><kbd>I</kbd> <kbd>O</kbd> <kbd>P</kbd></td><td>Tom 1, tom 2, tom basse</td></tr>
+      <tr><td><kbd>I</kbd> <kbd>O</kbd> <kbd>P</kbd></td><td>Toms</td></tr>
       <tr><td><kbd>E</kbd> <kbd>R</kbd></td><td>Crash, ride</td></tr>
       <tr><td><kbd>Entrée</kbd></td><td>Lecture / arrêt</td></tr>
-      <tr><td><kbd>Échap</kbd></td><td>Fermer cette fenêtre</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Précédent / suivant</td></tr>
     </table>
+
+    <h3>Plus</h3>
+    <div class="rang-boutons">
+      <button class="btn-plat" id="btn-print" type="button"><svg class="ico" aria-hidden="true"><use href="#i-print"/></svg>Imprimer</button>
+    </div>
     <p class="muted small credit">Sons : vraie batterie acoustique enregistrée — <i>Virtuosity Drums</i>, Versilian Studios, domaine public (CC0).</p>
-    <button class="btn" id="btn-help-close" type="button">Fermer</button>
+    <p class="muted small" id="version-detail"></p>
   </div>
+</aside>
+
+<!-- Téléphone tenu droit : l'appli se joue en paysage -->
+<div class="tourner" id="tourner" aria-live="polite">
+  <svg class="tourner-ico" aria-hidden="true"><use href="#i-tourner"/></svg>
+  <p class="tourner-titre">Tourne ton téléphone</p>
+  <p class="muted">Ma Batterie se joue à l'horizontale : la partition est plus grande et plus lisible.</p>
+  <button class="btn-plat accent" id="btn-paysage" type="button" hidden>Passer en plein écran horizontal</button>
 </div>
 
-<!-- Mode scène : la partition en grand, qui tourne la page à chaque ligne -->
-<div class="scene hidden" id="scene" role="dialog" aria-modal="true" aria-labelledby="scene-titre">
-  <div class="scene-barre">
-    <button class="btn ghost scene-fermer" id="scene-fermer" type="button" aria-label="Quitter le plein écran">
-      <svg class="ico" aria-hidden="true"><use href="#i-fermer"/></svg>
-    </button>
-    <div class="scene-titres">
-      <span class="scene-titre" id="scene-titre"></span>
-      <span class="scene-ligne-info" id="scene-ligne-info" aria-live="polite"></span>
-    </div>
-    <div class="scene-tempo" role="group" aria-label="Tempo">
-      <button class="btn tiny" id="scene-moins" type="button" aria-label="Ralentir de 5 BPM">−5</button>
-      <span class="scene-bpm"><b id="scene-bpm">80</b> BPM</span>
-      <button class="btn tiny" id="scene-plus" type="button" aria-label="Accélérer de 5 BPM">+5</button>
-    </div>
-    <button class="btn play" id="scene-play" type="button">
-      <svg class="ico" aria-hidden="true"><use id="scene-play-ico" href="#i-play"/></svg><span id="scene-play-label">Jouer</span>
-    </button>
-  </div>
-  <div class="scene-partition" id="scene-partition"></div>
-  <div class="scene-compte hidden" id="scene-compte" aria-live="assertive"><span></span></div>
-  <p class="scene-astuce" id="scene-astuce">Tourne ton téléphone : la partition sera plus grande.</p>
-</div>
-
-<div class="modal hidden" id="ios-modal" role="dialog" aria-modal="true" aria-labelledby="ios-title">
+<div class="modal" id="ios-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ios-title">
   <div class="modal-box">
     <h2 id="ios-title">Installer sur l'iPhone</h2>
     <ol class="etapes">
@@ -262,8 +264,15 @@
       <li>Touche <b>Ajouter</b> : l'icône Ma Batterie apparaît avec tes applis.</li>
     </ol>
     <p class="muted small">Ensuite, l'appli s'ouvre en plein écran et fonctionne même sans connexion.</p>
-    <button class="btn" id="btn-ios-close" type="button">Compris</button>
+    <button class="btn-plat accent" id="btn-ios-close" type="button">Compris</button>
   </div>
+</div>
+
+<!-- Impression : la partition découpée en lignes -->
+<div class="impression" id="impression" aria-hidden="true">
+  <h1 id="imp-titre"></h1>
+  <p id="imp-sous"></p>
+  <div id="score-print"></div>
 </div>
 
 <script type="module" src="js/app.js"></script>

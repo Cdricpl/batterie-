@@ -66,14 +66,21 @@ Indépendance main/pied, doubles à la grosse caisse, charleston ouvert, tenue d
 
 ## Comment ça marche
 
-- **Les partitions se lisent toutes seules.** Appuie sur *Écouter* : une tête de
-  lecture orange avance sur les notes, la partition défile, les notes s'allument et
-  le schéma du kit indique quel élément est frappé.
+- **Une appli en écrans, à l'horizontale.** L'accueil présente cinq grandes cartes
+  (Parcours, Rythmes, Morceaux, Breaks, Rudiments) ; chacune ouvre ses niveaux ou ses
+  familles, puis ses exercices. Sur téléphone, l'appli passe en plein écran et se
+  joue couchée : tenu droit, l'écran invite à tourner le téléphone.
+- **Le lecteur occupe tout l'écran** : la partition sur une feuille claire, en haut
+  le titre avec ‹ › pour passer à l'exercice voisin, (?) pour les explications et le
+  schéma du kit, les réglages à droite ; en bas le métronome, la batterie
+  (on peut la couper pour jouer seul sur le clic), le tempo et le gros bouton lecture.
+- **Les partitions se lisent toutes seules.** Une tête de lecture rouge avance à
+  vitesse constante et les notes jouées s'allument.
 - **Deux affichages** : la vraie **partition** (portée, hampes, ligatures, silences,
   accents, ghost notes, triolets, charleston ouvert…) et une **grille** de type
   boîte à rythmes, beaucoup plus simple pour débuter. Ou les deux à la fois.
-- **Plein écran** : la partition en grand, découpée en lignes de 1 à 4 mesures selon
-  la taille de l'écran. Pendant la lecture, **la partition tourne la page** : quand la
+- **Lignes de 1 à 4 mesures** selon la taille de l'écran, sans jamais rapetisser les
+  notes. Pendant la lecture, **la partition tourne la page** : quand la
   phrase est finie, elle saute à la ligne suivante. Un toucher sur la partition lance
   ou arrête la lecture ; l'écran ne se met pas en veille pendant qu'on joue.
 - **Comptage affiché** sous chaque note (`1 e et a`, `1 la li`…).
@@ -189,7 +196,7 @@ version.
 
 ```
 index.html            interface
-css/styles.css        thème « salle de répète » (voir plus bas)
+css/styles.css        thème sombre et épuré, partition sur feuille claire
 js/instruments.js     définition des éléments (position sur la portée, couleur, touche)
 js/audio.js           moteur audio : lecture des enregistrements, mixage, secours en synthèse
 js/sons.js            les sons enregistrés (généré par outils/preparer_sons.py)
@@ -200,6 +207,7 @@ js/rudiments.js       les rudiments
 js/songs.js           les morceaux connus et leur découpage en sections
 js/lessons.js         les 31 leçons
 js/kit.js             schéma du kit
+js/illustrations.js   dessins des cartes (catégories, niveaux, familles)
 js/progress.js        progression sauvegardée (localStorage)
 js/app.js             assemblage de l'interface
 build.js              fabrique ma-batterie.html (fichier unique) et site/ (installable)
@@ -234,22 +242,23 @@ banque d'origine. Une synthèse Web Audio sert de secours le temps du décodage.
 2. Toujours **avec le métronome**, toujours **plus lentement que tu ne le voudrais**.
 3. Une leçon est acquise quand tu tiens **une minute sans erreur**, pas quand tu l'as
    réussie une fois.
-4. 15 minutes tous les jours valent mieux que 2 heures le dimanche — l'onglet
-   *Ma progression* te montre ta régularité.
+4. 15 minutes tous les jours valent mieux que 2 heures le dimanche — l'écran
+   *Progression* (la pastille des minutes, en haut de l'accueil) te montre ta régularité.
 
 ---
 
 ## Design et accessibilité
 
-Le thème reprend la pièce de répétition : fond **mousse acoustique**, surfaces
-**chrome**, accent **laiton** des cymbales, rouge du **tapis** pour la lecture en
-cours. Titres en *Big Shoulders* (lettrage de flight-case), texte en *Atkinson
+Un fond sombre et calme, de grandes cartes arrondies, une seule couleur d'action
+(le **laiton** des cymbales) et une couleur de lecture (**corail**). La partition est
+posée sur une **feuille claire**, encre sombre et couleurs d'éléments assombries,
+pour être lue de loin en jouant. Titres en *Big Shoulders* (lettrage de flight-case), texte en *Atkinson
 Hyperlegible* (lisible à un mètre de l'écran), chiffres en *IBM Plex Mono*. Hors
 connexion, les polices de secours du système prennent le relais.
 
 - Contrastes vérifiés : texte ≥ 4,5:1, éléments graphiques de la partition ≥ 3:1.
-- Navigation complète au clavier, focus visible, onglets et boutons annoncés aux
-  lecteurs d'écran, fenêtre d'aide qui se ferme avec Échap.
+- Navigation complète au clavier, focus visible, boutons et volets annoncés aux
+  lecteurs d'écran, volets qui se ferment avec Échap, ← → pour l'exercice voisin.
 - `prefers-reduced-motion` respecté ; cibles tactiles agrandies sur écran tactile.
 
 Sources des tempos et de la liste des rudiments : [Percussive Arts Society](https://pas.org/rudiments/),
