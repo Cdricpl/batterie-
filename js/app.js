@@ -9,6 +9,7 @@ import { LECONS, NIVEAUX } from './lessons.js';
 import { dessinerKit } from './kit.js';
 import { Lecteur } from './player.js';
 import * as P from './progress.js';
+import { VERSION, DATE_VERSION } from './version.js';
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -24,6 +25,10 @@ let solosActifs = new Set();
 let jugements = [];
 let chronoLecture = null;
 let demarre = false;        // devient vrai une fois l'appli affichée
+
+/* ================= version ================= */
+$('#version').textContent = 'v' + VERSION;
+$('#version').title = `Version ${VERSION} du ${DATE_VERSION.split('-').reverse().join('/')}`;
 
 /* ================= kit ================= */
 const kit = dessinerKit(async id => { await reprendreAudio(); jouer(id, 0, { velo:0.9 }); kit.flash(id); });

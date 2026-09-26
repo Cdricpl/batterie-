@@ -178,6 +178,13 @@ grille, l'audio et la lecture automatique s'en déduisent.
 
 ---
 
+## Version
+
+Le numéro de version est affiché en haut de l'écran, à côté du nom. Il est défini à
+un seul endroit, `js/version.js` : l'augmenter à chaque livraison. Le site installable
+s'en sert pour son cache hors ligne, ce qui oblige les téléphones à prendre la nouvelle
+version.
+
 ## Organisation des fichiers
 
 ```

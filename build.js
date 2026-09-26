@@ -6,7 +6,7 @@
 const fs = require('fs');
 
 const ORDRE = [
-  'js/instruments.js', 'js/audio.js', 'js/notation.js', 'js/patterns.js',
+  'js/version.js', 'js/instruments.js', 'js/audio.js', 'js/notation.js', 'js/patterns.js',
   'js/rudiments.js', 'js/songs.js',
   'js/lessons.js', 'js/kit.js', 'js/player.js', 'js/progress.js', 'js/app.js'
 ];
@@ -69,7 +69,11 @@ if (options.has('--site')){
   fs.rmSync(dossier, { recursive:true, force:true });
   fs.mkdirSync(dossier + '/icons', { recursive:true });
   fs.writeFileSync(dossier + '/index.html', html.replace(/ data-pwa/g, ''));
-  for (const f of ['manifest.webmanifest', 'sw.js']) fs.copyFileSync(f, dossier + '/' + f);
+  fs.copyFileSync('manifest.webmanifest', dossier + '/manifest.webmanifest');
+  // le cache hors ligne porte le numéro de version : une nouvelle version = un nouveau cache
+  const version = fs.readFileSync('js/version.js', 'utf8').match(/VERSION = '([^']+)'/)[1];
+  fs.writeFileSync(dossier + '/sw.js', fs.readFileSync('sw.js', 'utf8')
+    .replace(/const VERSION = '[^']*';/, `const VERSION = 'ma-batterie-${version}';`));
   for (const f of fs.readdirSync('icons')) fs.copyFileSync('icons/' + f, dossier + '/icons/' + f);
   console.log(`${dossier}/ écrit — site installable (${fs.readdirSync(dossier).join(', ')})`);
   process.exit(0);

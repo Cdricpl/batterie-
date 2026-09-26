@@ -52,7 +52,7 @@ li{margin:.3em 0}
 b,strong{color:#fff;font-weight:700}
 .muted{color:var(--peau-2)}
 .small{font-size:var(--t-s)}
-.hidden{display:none !important}
+.hidden,[hidden]{display:none !important}   /* sans ça, .btn{display:inline-flex} annule l'attribut hidden */
 .sprite{position:absolute;width:0;height:0;overflow:hidden}
 .ico{width:18px;height:18px;flex:0 0 18px;fill:currentColor}
 
@@ -75,6 +75,11 @@ b,strong{color:#fff;font-weight:700}
 .wordmark{
   margin:0;font-family:var(--f-logo);font-weight:800;font-size:27px;line-height:1;
   text-transform:uppercase;letter-spacing:.07em;color:var(--peau);
+}
+.version{
+  display:inline-block;margin-left:8px;padding:2px 7px;border-radius:4px;vertical-align:4px;
+  font:600 11px/1.3 var(--f-chiffres);letter-spacing:0;text-transform:none;
+  color:var(--laiton);border:1px solid rgba(217,164,65,.45);
 }
 .brand-sub{margin:2px 0 0;font-size:var(--t-xs);color:var(--peau-3);letter-spacing:.02em}
 .topbar-right{display:flex;align-items:center;gap:10px}
