@@ -8,7 +8,7 @@ import { MORCEAUX, compilerMorceau } from './songs.js';
 import { LECONS, NIVEAUX } from './lessons.js';
 import { dessinerKit } from './kit.js';
 import { Lecteur } from './player.js';
-import { CATEGORIES, kitNiveau, miniGroove, miniDoigte } from './illustrations.js';
+import { CATEGORIES, kitNiveau, miniGroove, miniDoigte, miniVinyle } from './illustrations.js';
 import * as P from './progress.js';
 import { VERSION, DATE_VERSION } from './version.js';
 
@@ -51,6 +51,15 @@ const METHODE = `
     <li><b>Tempo progressif</b> (réglages) : +4 BPM toutes les 2 boucles.</li>
     <li>Note le tempo où ça se dégrade : c'est ta limite du jour. Reviens 10 BPM en dessous pendant 5 minutes.</li>
   </ol>`;
+
+/* Couleurs vives, en dégradé (clair → soutenu), une par niveau et par famille */
+const NIV_GRAD = [['#34d399', '#059669'], ['#38bdf8', '#2563eb'], ['#fbbf24', '#e8590c'],
+                  ['#fb923c', '#dc2626'], ['#f472b6', '#be185d'], ['#a78bfa', '#6d28d9']];
+const GRAD_RYTHMES = { rock:['#fb923c', '#e11d48'], funk:['#f472b6', '#a21caf'], urbain:['#818cf8', '#4338ca'],
+  monde:['#34d399', '#0f766e'], ternaire:['#38bdf8', '#0369a1'], lourd:['#94a3b8', '#1e293b'], impair:['#fbbf24', '#c2410c'] };
+const GRAD_TRAVAIL = { roulements:['#38bdf8', '#1d4ed8'], diddles:['#a78bfa', '#6d28d9'], flams:['#fb7185', '#be123c'],
+  drags:['#fbbf24', '#c2410c'], coordination:['#34d399', '#047857'] };
+const gradStyle = g => `--c1:${g[0]};--c2:${g[1]}`;
 
 const FAMILLES_RYTHMES = [
   { id:'rock',     nom:'Rock & pop',        desc:'Le socle : croches, doubles, ballades.',   styles:['Rock', 'Ballade', 'Country'] },
@@ -198,8 +207,8 @@ $('#liste-corps').addEventListener('wheel', e => {
 
 const points = n => `<span class="niveau-points" aria-label="Niveau ${n}">${[1, 2, 3, 4, 5, 6].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 
-function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null }){
-  return `<a class="tuile" href="${href}">
+function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null, grad }){
+  return `<a class="tuile" href="${href}" style="${gradStyle(grad)}">
     ${coin ? `<span class="t-coin">${coin}</span>` : ''}
     <div class="t-illus">${illus}</div>
     <h2>${titre}</h2>
@@ -208,8 +217,8 @@ function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null })
   </a>`;
 }
 
-function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat = null, classe = '', badge = '', illus = '' }){
-  return `<a class="item-carte ${classe}" href="${href}">
+function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat = null, classe = '', badge = '', illus = '', grad }){
+  return `<a class="item-carte ${classe}${illus ? ' avec-illus' : ''}" href="${href}" style="${gradStyle(grad)}">
     ${illus ? `<div class="i-illus">${illus}</div>` : ''}
     ${num !== '' ? `<span class="i-num">${num}</span>` : ''}
     ${badge}
@@ -221,13 +230,13 @@ function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat 
 }
 
 /* un groupe de la bande : une carte-titre, puis ses cartes */
-const groupe = (id, n, lot, carte, unite = 'titre') => `<section class="groupe" id="${id}" style="--c:${NIVEAUX[n - 1].couleur}">
-    <div class="groupe-tete"><span class="g-num">${n}</span><b>${NOMS_NIVEAUX[n]}</b><span>${lot.length} ${unite}${lot.length > 1 ? 's' : ''}</span></div>
+const groupe = (id, n, lot, carte, unite = 'titre') => `<section class="groupe" id="${id}">
+    <div class="groupe-tete" style="${gradStyle(NIV_GRAD[n - 1])}"><span class="g-num">${n}</span><b>${NOMS_NIVEAUX[n]}</b><span>${lot.length} ${unite}${lot.length > 1 ? 's' : ''}</span></div>
     <div class="rangee">${lot.map(carte).join('')}</div>
   </section>`;
 const sautsNiveaux = (liste, prefixe) => [1, 2, 3, 4, 5, 6]
   .filter(n => liste.some(x => (x.niveau || 1) === n))
-  .map(n => [prefixe + n, 'N' + n, NIVEAUX[n - 1].couleur]);
+  .map(n => [prefixe + n, 'N' + n, NIV_GRAD[n - 1][1]]);
 
 /* --- parcours --- */
 function ecranParcours(){
@@ -242,7 +251,7 @@ function ecranParcours(){
         href:'#/parcours/' + niv.n, illus:kitNiveau(niv.n),
         titre:NOMS_NIVEAUX[niv.n], texte:sous || niv.nom,
         coin:`${ok}/${lot.length}${lot.includes(suivante) && ok < lot.length ? ' · en cours' : ''}`,
-        jauge:Math.round(ok / lot.length * 100)
+        jauge:Math.round(ok / lot.length * 100), grad:NIV_GRAD[niv.n - 1]
       });
     }).join('')}</div>`
   });
@@ -261,7 +270,7 @@ function ecranNiveau(n){
         return itemCarte({
           href:lienJouer('lecon', l), num:LECONS.indexOf(l) + 1, nom:l.titre,
           meta:`${l.duree}${record ? ` · record ${record} BPM` : ''}`,
-          etat:fait, classe:(fait ? 'faite' : '') + (l === suivante && !fait ? ' prochaine' : ''),
+          etat:fait, classe:(fait ? 'faite' : '') + (l === suivante && !fait ? ' prochaine' : ''), grad:NIV_GRAD[n - 1],
           badge:l.cle ? '<span class="cle">étape clé</span>' : ''
         });
       }).join('')}</div>`
@@ -274,7 +283,7 @@ function ecranRythmes(){
     sur:`${GROOVES.length} grooves`, titre:'Rythmes',
     html:`<div class="rangee tuiles">${FAMILLES_RYTHMES.map(f => {
       const lot = rythmesDe(f.id);
-      return tuile({ href:'#/rythmes/' + f.id, illus:miniGroove(lot[0]), titre:f.nom, texte:f.desc, coin:`${lot.length} rythmes` });
+      return tuile({ href:'#/rythmes/' + f.id, illus:miniGroove(lot[0]), titre:f.nom, texte:f.desc, coin:`${lot.length} rythmes`, grad:GRAD_RYTHMES[f.id] });
     }).join('')}</div>`
   });
 }
@@ -285,7 +294,7 @@ function ecranFamilleRythmes(id){
     sur:'Rythmes', titre:f.nom, retour:'#/rythmes',
     html:`<div class="rangee">${rythmesDe(id).map(g => itemCarte({
       href:lienJouer('rythme', g), nom:g.nom, illus:miniGroove(g),
-      meta:`${g.style} · ${signature(g)}`, niveau:g.niveau, bpm:`${g.bpm[1]} BPM`
+      meta:`${g.style} · ${signature(g)}`, niveau:g.niveau, bpm:`${g.bpm[1]} BPM`, grad:GRAD_RYTHMES[id]
     })).join('')}</div>`
   });
 }
@@ -298,7 +307,7 @@ function ecranMorceaux(){
     if (!lot.length) continue;
     html += groupe('m-niv' + n, n, lot, m => itemCarte({
       href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
-      niveau:m.niveau, bpm:`${m.bpm} BPM`
+      niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[n - 1]
     }));
   }
   ecranListe({ sur:`${MORCEAUX.length} titres`, titre:'Morceaux', html, sauts:sautsNiveaux(MORCEAUX, 'm-niv') });
@@ -313,7 +322,7 @@ function ecranBreaks(){
     html += groupe('b-niv' + n, n, lot, f => itemCarte({
       href:lienJouer('break', f), nom:f.nom,
       meta:f.res === 3 ? 'Triolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
-      niveau:f.niveau
+      niveau:f.niveau, illus:miniGroove(f, 1), grad:NIV_GRAD[n - 1]
     }), 'break');
   }
   ecranListe({ sur:`${FILLS.length} fills`, titre:'Breaks', html, sauts:sautsNiveaux(FILLS, 'b-niv') });
@@ -325,8 +334,8 @@ function ecranRudiments(){
     sur:`${RUDIMENTS.length + EXERCICES.length} exercices`, titre:'Rudiments',
     html:`<div class="rangee tuiles">${FAMILLES_TRAVAIL.map(f => {
       const lot = f.id === 'coordination' ? EXERCICES : RUDIMENTS.filter(r => r.famille === f.id);
-      const illus = f.id === 'coordination' ? miniGroove(EXERCICES[3], '#8ea9c2') : miniDoigte(lot[0].doigte);
-      return tuile({ href:'#/rudiments/' + f.id, illus, titre:f.nom.replace(/\s*\(.*\)/, ''), texte:f.desc, coin:`${lot.length} exercices` });
+      const illus = f.id === 'coordination' ? miniGroove(EXERCICES[3]) : miniDoigte(lot[0].doigte);
+      return tuile({ href:'#/rudiments/' + f.id, illus, titre:f.nom.replace(/\s*\(.*\)/, ''), texte:f.desc, coin:`${lot.length} exercices`, grad:GRAD_TRAVAIL[f.id] });
     }).join('')}</div>`
   });
 }
@@ -340,7 +349,7 @@ function ecranFamilleTravail(id){
     html:`<div class="rangee">${lot.map(r => itemCarte({
       href:lienJouer(coordination ? 'exercice' : 'rudiment', r), nom:r.nom,
       illus:coordination ? '' : miniDoigte(r.doigte),
-      meta:coordination ? r.style : '', niveau:r.niveau, bpm:r.bpm ? `${r.bpm[1]} BPM` : ''
+      meta:coordination ? r.style : '', niveau:r.niveau, bpm:r.bpm ? `${r.bpm[1]} BPM` : '', grad:GRAD_TRAVAIL[id]
     })).join('')}</div>`
   });
 }
@@ -355,7 +364,7 @@ function ecranProgression(){
     const lot = LECONS.filter(l => l.niveau === niv.n);
     const ok = lot.filter(l => P.estFaite(l.id)).length;
     return `<div class="niv-bloc">
-      <div class="niv-head"><i style="background:${niv.couleur}"></i><b>${NOMS_NIVEAUX[niv.n]}</b><span class="muted">${ok}/${lot.length}</span></div>
+      <div class="niv-head"><i style="background:${NIV_GRAD[niv.n - 1][1]}"></i><b>${NOMS_NIVEAUX[niv.n]}</b><span class="muted">${ok}/${lot.length}</span></div>
       <div class="niv-lecons">${lot.map(l => {
         const bpm = P.meilleurTempo(l.pattern.id);
         const defi = l.defi && bpm >= l.defi.bpm;

@@ -199,7 +199,7 @@ version.
 
 ```
 index.html            interface
-css/styles.css        thème sombre et épuré, partition sur feuille claire
+css/styles.css        thème clair et coloré, partition sur feuille blanche
 js/instruments.js     définition des éléments (position sur la portée, couleur, touche)
 js/audio.js           moteur audio : lecture des enregistrements, mixage, secours en synthèse
 js/sons.js            les sons enregistrés (généré par outils/preparer_sons.py)
@@ -252,10 +252,12 @@ banque d'origine. Une synthèse Web Audio sert de secours le temps du décodage.
 
 ## Design et accessibilité
 
-Un fond sombre et calme, de grandes cartes arrondies, une seule couleur d'action
-(le **laiton** des cymbales) et une couleur de lecture (**corail**). La partition est
-posée sur une **feuille claire**, encre sombre et couleurs d'éléments assombries,
-pour être lue de loin en jouant. Titres en *Big Shoulders* (lettrage de flight-case), texte en *Atkinson
+Un thème **clair et coloré** : fond gris très pâle, grandes cartes en **dégradés
+vifs** (une couleur par catégorie, par niveau et par famille de rythmes ou de
+rudiments) avec des illustrations blanches, et cartes blanches ombrées pour les
+exercices, marquées de la couleur de leur niveau. Un seul dégradé d'action (orange →
+rose) pour la lecture, les options actives et « Continuer ». La partition est une
+feuille blanche, encre sombre et couleurs d'éléments assombries, lisible de loin. Titres en *Big Shoulders* (lettrage de flight-case), texte en *Atkinson
 Hyperlegible* (lisible à un mètre de l'écran), chiffres en *IBM Plex Mono*. Hors
 connexion, les polices de secours du système prennent le relais.
 

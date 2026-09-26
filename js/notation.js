@@ -533,7 +533,7 @@ export function legende(motif){
   d.innerHTML = ids.map(id => {
     const i = INSTRUMENTS[id];
     const forme = i.head === 'x' ? '✕' : '●';
-    return `<span class="lg"><span class="lg-sym" style="color:${i.couleur}">${forme}</span>${i.nom}</span>`;
+    return `<span class="lg"><span class="lg-sym t-${id}" style="color:${i.couleur}">${forme}</span>${i.nom}</span>`;
   }).join('');
   return d;
 }
