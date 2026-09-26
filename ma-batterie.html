@@ -860,7 +860,7 @@ kbd{
 /* Numéro de version de l'application : affiché en haut de l'écran, et utilisé par
  * le service worker (build.js --site) pour que les téléphones installés récupèrent
  * chaque nouvelle version. À augmenter à chaque livraison. */
-const VERSION = '2.0.0';
+const VERSION = '2.0.1';
 const DATE_VERSION = '2026-09-26';
 
 
@@ -973,7 +973,11 @@ function initAudio(){
   for (const [id, v] of Object.entries(VOLUMES_DEFAUT)) {
     const g = ctx.createGain();
     g.gain.value = v;
-    g.connect(busBatterie);
+    if (id === 'GC'){
+      const ch = chaineGrosseCaisse(ctx);
+      g.connect(ch.entree);
+      ch.sortie.connect(busBatterie);
+    } else g.connect(busBatterie);
     gains[id] = g;
     vols[id] = v;
     mutes[id] = false;
@@ -985,6 +989,42 @@ function initAudio(){
   for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
   chargerBanque();
   return ctx;
+}
+
+/* Grosse caisse audible partout, même sur le petit haut-parleur d'un téléphone.
+ * Presque toute son énergie est sous 150 Hz, là où un téléphone ne sort rien : elle
+ * y était 30 dB sous la caisse claire. Deux remèdes classiques :
+ *  - faire ressortir l'attaque de la batte (vers 3 kHz) ;
+ *  - ajouter, en parallèle, des harmoniques du grave (200 Hz – 1,6 kHz) : l'oreille
+ *    reconstitue la note grave qu'elle n'entend pas (« fondamentale manquante »).
+ * Sur un casque ou une enceinte, le grave d'origine reste là, à peine renforcé. */
+function chaineGrosseCaisse(c){
+  const filtre = (type, f, q, gain = 0) => {
+    const b = c.createBiquadFilter();
+    b.type = type; b.frequency.value = f; b.Q.value = q; b.gain.value = gain;
+    return b;
+  };
+  const entree = c.createGain();
+  const somme = c.createGain();
+  entree.connect(somme);
+  // voie parallèle : le grave seul, saturé en douceur, dont on garde les harmoniques
+  const courbe = new Float32Array(2049);
+  for (let i = 0; i < courbe.length; i++) courbe[i] = Math.tanh(24 * (i / 1024 - 1));
+  const sat = c.createWaveShaper();
+  sat.curve = courbe;
+  sat.oversample = '2x';
+  const dosage = c.createGain();
+  dosage.gain.value = 0.3;
+  // (Q en dB pour les passe-haut / passe-bas : −3 dB = réponse de Butterworth)
+  entree.connect(filtre('lowpass', 120, -3.01))
+    .connect(sat).connect(filtre('highpass', 220, -3.01)).connect(filtre('lowpass', 1600, -3.01))
+    .connect(dosage).connect(somme);
+  const sortie = c.createGain();
+  sortie.gain.value = 1.2;
+  somme.connect(filtre('highpass', 32, -3.01))       // l'infra-grave ne sert qu'à prendre de la place
+    .connect(filtre('peaking', 3200, 0.9, 12))       // attaque de la batte
+    .connect(sortie);
+  return { entree, sortie };
 }
 
 /* ================= banque de sons enregistrés ================= */
