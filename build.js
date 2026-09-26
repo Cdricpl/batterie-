@@ -50,6 +50,12 @@ const morceaux = ORDRE.map(f => {
   return src;
 });
 let js = morceaux.join('\n');
+
+/* sw.js (racine) : son cache porte toujours le numéro de version courant */
+const numeroVersion = fs.readFileSync('js/version.js', 'utf8').match(/VERSION = '([^']+)'/)[1];
+const swSource = fs.readFileSync('sw.js', 'utf8');
+const swAJour = swSource.replace(/const VERSION = '[^']*';/, `const VERSION = 'ma-batterie-${numeroVersion}';`);
+if (swAJour !== swSource) fs.writeFileSync('sw.js', swAJour);
 const css = fs.readFileSync('css/styles.css', 'utf8');
 
 let html = fs.readFileSync('index.html', 'utf8');
@@ -71,9 +77,7 @@ if (options.has('--site')){
   fs.writeFileSync(dossier + '/index.html', html.replace(/ data-pwa/g, ''));
   fs.copyFileSync('manifest.webmanifest', dossier + '/manifest.webmanifest');
   // le cache hors ligne porte le numéro de version : une nouvelle version = un nouveau cache
-  const version = fs.readFileSync('js/version.js', 'utf8').match(/VERSION = '([^']+)'/)[1];
-  fs.writeFileSync(dossier + '/sw.js', fs.readFileSync('sw.js', 'utf8')
-    .replace(/const VERSION = '[^']*';/, `const VERSION = 'ma-batterie-${version}';`));
+  fs.copyFileSync('sw.js', dossier + '/sw.js');
   for (const f of fs.readdirSync('icons')) fs.copyFileSync('icons/' + f, dossier + '/icons/' + f);
   console.log(`${dossier}/ écrit — site installable (${fs.readdirSync(dossier).join(', ')})`);
   process.exit(0);

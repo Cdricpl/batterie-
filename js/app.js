@@ -1005,7 +1005,22 @@ const surIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
 const installable = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
 
 if (installable && 'serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(() => { /* hors ligne ou non pris en charge */ });
+  const avaitDejaUneVersion = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then(reg => {
+      reg.update();                                   // chercher une nouvelle version à chaque ouverture
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update();   // …et au retour dans l'appli
+      });
+    })
+    .catch(() => { /* hors ligne ou non pris en charge */ });
+  // une nouvelle version vient de s'installer : on recharge une fois pour l'afficher
+  let recharge = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!avaitDejaUneVersion || recharge || lecteur.enLecture) return;   // jamais en pleine lecture
+    recharge = true;
+    location.reload();
+  });
 }
 
 let demandeInstallation = null;
