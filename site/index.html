@@ -226,7 +226,16 @@ b,strong{color:#fff;font-weight:700}
 .scroll-x::-webkit-scrollbar,.grille::-webkit-scrollbar{height:8px}
 .scroll-x::-webkit-scrollbar-thumb,.grille::-webkit-scrollbar-thumb{background:var(--chrome-2);border-radius:8px}
 .portee{display:block;height:230px;width:auto;max-width:none}
-.portee .note-grp.actif ellipse,.portee .note-grp.actif line{filter:drop-shadow(0 0 5px currentColor)}
+.portee-cadre{position:relative;display:inline-block;vertical-align:top}
+/* tête de lecture : calque déplacé par transform, sans redessiner la partition */
+.tete-lecture{
+  position:absolute;left:0;top:0;width:3px;height:100%;border-radius:2px;
+  background:var(--tapis);box-shadow:0 0 0 1px rgba(229,88,75,.25);
+  opacity:0;pointer-events:none;will-change:transform;
+}
+/* note en cours : un contour clair, bien moins coûteux qu'une lueur */
+.portee .note-grp.actif ellipse{stroke:#fff;stroke-width:1.6px}
+.portee .note-grp.actif line:not(.hampe):not(.ligne){stroke-width:3px}
 .portee .doigte{fill:var(--peau-2);font:600 11.5px var(--f-chiffres)}
 .legende{display:flex;flex-wrap:wrap;gap:6px 16px;padding:2px 12px 8px;font-size:var(--t-xs);color:var(--peau-2)}
 .lg{display:inline-flex;align-items:center;gap:5px}
@@ -317,11 +326,11 @@ b,strong{color:#fff;font-weight:700}
 .two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:var(--esp)}
 .kit-svg{width:100%;height:auto;display:block;max-height:330px}
 .kit-el{cursor:pointer}
-.kit-el .corps{transition:fill .12s,filter .12s}
+.kit-el .corps{transition:fill .08s}
 .kit-el:hover .corps{filter:brightness(1.5)}
 .kit-el:not(.utilise){opacity:.3}
 .kit-el.frappe{opacity:1}
-.kit-el.frappe .corps{fill:currentColor;filter:drop-shadow(0 0 10px rgba(240,201,105,.75)) brightness(1.9)}
+.kit-el.frappe .corps{fill:rgba(240,201,105,.55);stroke:var(--laiton-2)}
 .kit-label{fill:var(--peau-2);font:600 11px var(--f-texte);pointer-events:none}
 .kit-el.frappe .kit-label{fill:#fff}
 .mixer{display:flex;flex-direction:column;gap:6px;margin-top:12px;border-top:1px solid var(--chrome);padding-top:12px}
@@ -440,7 +449,8 @@ body.en-scene{overflow:hidden}
 .scene-systeme{padding:4px 0 10px;border-bottom:1px dashed var(--chrome);opacity:.42;transition:opacity .15s}
 .scene-systeme.courante{opacity:1}
 .scene-systeme.passee{opacity:.25}
-.scene .portee.systeme{display:block;height:auto;max-width:none}
+.scene .portee-cadre{display:block}
+.scene .portee.systeme{display:block;width:100%;height:auto;max-width:none}
 .scene-compte{
   position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
   background:radial-gradient(circle at center, rgba(18,16,16,.85) 0%, rgba(18,16,16,.35) 55%, transparent 80%);
@@ -504,7 +514,7 @@ body.en-scene{overflow:hidden}
 /* mouvement réduit : pas d'animation, pas de lueur */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
-  .kit-el.frappe .corps{filter:brightness(1.6)}
+  .kit-el.frappe .corps{fill:rgba(240,201,105,.55)}
 }
 
 /* ====== impression : la partition seule, en noir sur blanc ====== */
@@ -522,7 +532,7 @@ body.en-scene{overflow:hidden}
   .eyebrow{color:#555}
   #piece-title{color:#000;font-size:24px}
   #piece-sub{color:#333}
-  .empty-hint,.playhead{display:none}
+  .empty-hint,.tete-lecture{display:none}
   .legende,.doigte-info{color:#222}
   .legende .lg-sym{color:#000 !important}
   .portee{height:auto;width:100%}
@@ -1064,8 +1074,7 @@ const G = {
   hauteur: 196,
   yBase: 100,        // y de la position 0 (ligne du bas)
   demi: 5,           // 1 position = 5 px
-  margeG: 64,
-  padMesure: 14,
+  margeG: 80,
   hampe: 30,
   teteRx: 5.1,
   teteRy: 4.0
@@ -1227,7 +1236,7 @@ function pasLargeur(res){ return res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 
  * sert à choisir combien de mesures tiennent sur une ligne d'écran. */
 function dimensions(motif){
   const a = analyser(motif);
-  return { largeurMesure: a.parMesure * pasLargeur(a.res) + G.padMesure * 2, marge: G.margeG + 26 };
+  return { largeurMesure: a.parMesure * pasLargeur(a.res), marge: G.margeG + 26 };
 }
 
 /* ---------- rendu principal ---------- */
@@ -1238,7 +1247,11 @@ function dessinerPortee(motif, opts = {}){
   const groupe = (unite === 8 && beats % 3 === 0) ? res * 3 : res;
 
   const stepW = pasLargeur(res);
-  const largeurMesure = parMesure * stepW + G.padMesure * 2;
+  // Pas de marge autour des mesures : toutes les notes sont espacées pareil, la barre
+  // de mesure se place au milieu de l'écart. La tête de lecture avance donc à vitesse
+  // constante, sans accélérer au passage des barres de mesure.
+  const largeurMesure = parMesure * stepW;
+  const xBarre = b => G.margeG + b * largeurMesure - stepW / 2;
   const largeur = G.margeG + largeurMesure * bars + 26;
 
   const sections = motif.sections || [];
@@ -1253,7 +1266,7 @@ function dessinerPortee(motif, opts = {}){
   const xDe = (stepFlottant) => {
     const b = Math.min(bars - 1, Math.floor(stepFlottant / parMesure));
     const dans = stepFlottant - b * parMesure;
-    return G.margeG + b * largeurMesure + G.padMesure + dans * stepW;
+    return G.margeG + b * largeurMesure + dans * stepW;
   };
 
   /* portée */
@@ -1265,16 +1278,16 @@ function dessinerPortee(motif, opts = {}){
   el('rect', {class:'ink', x:30, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
   el('rect', {class:'ink', x:38, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
   // chiffrage
-  const sig = el('text', {class:'ink', x:G.margeG - 14, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
+  const sig = el('text', {class:'ink', x:54, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
     'text-anchor':'middle', 'font-family':FONTE_TITRE}, fond);
   sig.textContent = String(motif.beats ?? 4);
-  const sig2 = el('text', {class:'ink', x:G.margeG - 14, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
+  const sig2 = el('text', {class:'ink', x:54, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
     'text-anchor':'middle', 'font-family':FONTE_TITRE}, fond);
   sig2.textContent = String(motif.unite ?? 4);
 
   // barres de mesure + numéros
   for (let b = 0; b <= bars; b++){
-    const x = G.margeG + b * largeurMesure - 6;
+    const x = xBarre(b);
     if (b > 0) el('line', {class:'ligne', x1:x, y1:yPos(8), x2:x, y2:yPos(0), stroke:'#8a806f', 'stroke-width':1.4}, fond);
     if (b < bars){
       const n = el('text', {class:'txt-faible', x:x + 8, y:yPos(8) - 26, fill:'#a39884', 'font-size':10, 'font-weight':600}, fond);
@@ -1282,7 +1295,7 @@ function dessinerPortee(motif, opts = {}){
     }
   }
   // double barre finale
-  const xf = G.margeG + bars * largeurMesure - 6;
+  const xf = xBarre(bars) - 4;
   if (opts.barreFinale !== false)
     el('line', {class:'ligne', x1:xf + 4, y1:yPos(8), x2:xf + 4, y2:yPos(0), stroke:'#8a806f', 'stroke-width':3.5}, fond);
 
@@ -1489,7 +1502,7 @@ function dessinerPortee(motif, opts = {}){
   if (sections.length){
     const gS = el('g', { class:'sections' }, svg);
     for (const sec of sections){
-      const x = G.margeG + sec.debut * largeurMesure - 6;
+      const x = xBarre(sec.debut);
       const lbl = sec.nom + (sec.fois > 1 ? `  ×${sec.fois}` : '');
       const w = Math.max(44, lbl.length * 6.2 + 16);
       el('rect', { class:'sec-boite', x, y:3, width:w, height:17, rx:3,
@@ -1505,10 +1518,10 @@ function dessinerPortee(motif, opts = {}){
     }
   }
 
-  const tete0 = el('rect', {x:0, y:yPos(10) - 22, width:2.5, height: yPos(0) - yPos(10) + 86,
-    fill:'#e5584b', rx:1.2, class:'playhead', opacity:0}, racine);
+  // zone verticale que doit couvrir la tête de lecture (en unités SVG)
+  const zoneTete = { y0: yPos(10) - 22 + decalY, y1: yPos(0) + 64 + decalY };
 
-  return { svg, racine, xDe, largeur, total, notesParStep, playhead: tete0 };
+  return { svg, racine, xDe, largeur, hauteur, total, notesParStep, tete: zoneTete };
 }
 
 /* ---------- vue "grille" (plus simple pour débuter) ---------- */
@@ -3031,10 +3044,9 @@ function dessinerKit(surClic){
   const flash = (id) => {
     const g = map[id] || map[id === 'CH_OPEN' ? 'CH' : null];
     if (!g) return;
-    g.classList.remove('frappe');
-    void g.getBoundingClientRect();
+    clearTimeout(g._minuterie);
     g.classList.add('frappe');
-    setTimeout(() => g.classList.remove('frappe'), 220);
+    g._minuterie = setTimeout(() => g.classList.remove('frappe'), 160);
   };
 
   const surligner = (ids) => {
@@ -3180,11 +3192,35 @@ class Lecteur {
     }
   }
 
+  /* Instant audio réellement entendu, pour l'image affichée à l'instant « image »
+   * (horodatage fourni par requestAnimationFrame).
+   * currentTime avance par paquets (surtout sur téléphone) : on mesure l'écart entre
+   * l'horloge audio et celle de l'écran, on le lisse, puis on place chaque image sur
+   * une droite. Résultat : la tête avance d'autant à chaque image, à vitesse constante. */
+  _tempsVisuel(ctx, image){
+    const maintenant = performance.now();
+    let brut = ctx.currentTime - (ctx.outputLatency || 0) - (maintenant - image) / 1000;
+    if (ctx.getOutputTimestamp){
+      const ts = ctx.getOutputTimestamp();
+      if (ts && ts.performanceTime > 0 && ts.contextTime > 0)
+        brut = ts.contextTime + (image - ts.performanceTime) / 1000;
+    }
+    const ecart = brut - image / 1000;
+    if (this._ecart == null || Math.abs(ecart - this._ecart) > 0.05) this._ecart = ecart;   // départ ou gros décalage : on recale
+    else this._ecart += (ecart - this._ecart) * 0.04;                                         // sinon : lissage doux
+    let t = image / 1000 + this._ecart;
+    if (this._tPrec != null && t < this._tPrec) t = this._tPrec;   // jamais de retour en arrière
+    this._tPrec = t;
+    return t;
+  }
+
   _suivre(){
-    const boucle = () => {
+    this._tPrec = null;
+    this._ecart = null;
+    const boucle = (image) => {
       const ctx = ctxAudio();
       if (!ctx || !this.enLecture) return;
-      const now = ctx.currentTime;
+      const now = this._tVisuel = this._tempsVisuel(ctx, image ?? performance.now());
       let courant = null;
       while (this.file.length && this.file[0].temps <= now){
         courant = this.file.shift();
@@ -3197,7 +3233,10 @@ class Lecteur {
         }
       }
       if (this._dernier){
-        const pos = this._dernier.step + (now - this._dernier.temps) / this._dernier.duree;
+        // progression dans le pas en cours, bornée : si une image est en retard,
+        // la tête attend la note suivante au lieu de la dépasser
+        const frac = Math.min(0.999, Math.max(0, (now - this._dernier.temps) / this._dernier.duree));
+        const pos = this._dernier.step + frac;
         this.cb.onPos && this.cb.onPos(Math.min(pos, this.finPlage));
       }
       this.raf = requestAnimationFrame(boucle);
@@ -3298,8 +3337,10 @@ const $$ = s => [...document.querySelectorAll(s)];
 
 let motifCourant = null;
 let leconCourante = null;
-let portee = null;          // {svg, xDe, playhead, ...}
+let portee = null;          // {svg, xDe, notesParStep, teteEl…}
 let grille = null;
+let casesParStep = new Map();   // pas → cases de la grille
+let actifs = [];                // éléments éclairés au pas en cours
 let modeJeu = false;
 let solosActifs = new Set();
 let jugements = [];
@@ -3313,7 +3354,10 @@ $('#kit-diagram').appendChild(kit.svg);
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
   onPos: pos => { majTeteLecture(pos); if (scene.ouverte) majScene(pos); },
-  onFrappe: notes => { masquerDecompte(); for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst); },
+  onFrappe: notes => {
+    masquerDecompte();
+    if (!scene.ouverte) for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst);
+  },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
   onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; $('#scene-bpm').textContent = bpm; },
@@ -3368,7 +3412,7 @@ function rendrePartition(){
   if ($('#opt-names').checked) wStaff.appendChild(legende(motifCourant));
   const scroller = document.createElement('div');
   scroller.className = 'scroll-x';
-  scroller.appendChild(portee.svg);
+  scroller.appendChild(creerTete(portee));
   if (motifCourant.doigte){
     const d = document.createElement('div');
     d.className = 'doigte-info';
@@ -3382,8 +3426,50 @@ function rendrePartition(){
   wGrid.innerHTML = '';
   grille = dessinerGrille(motifCourant);
   wGrid.appendChild(grille);
+  // index pas → cases, pour ne pas fouiller toute la page à chaque note
+  casesParStep = new Map();
+  grille.querySelectorAll('td[data-step]').forEach(td => {
+    const k = +td.dataset.step;
+    if (!casesParStep.has(k)) casesParStep.set(k, []);
+    casesParStep.get(k).push(td);
+  });
+  actifs = [];
   majVueScore();
 }
+
+/* ---- tête de lecture ----
+ * Un simple calque posé sur la partition, déplacé par « transform » : le navigateur
+ * le fait glisser sans redessiner la partition, donc à vitesse parfaitement régulière. */
+function creerTete(po){
+  const cadre = document.createElement('div');
+  cadre.className = 'portee-cadre';
+  const tete = document.createElement('div');
+  tete.className = 'tete-lecture';
+  tete.setAttribute('aria-hidden', 'true');
+  cadre.append(po.svg, tete);
+  po.cadre = cadre; po.teteEl = tete; po.echelle = 0;
+  return cadre;
+}
+function echelleDe(po){
+  if (!po.echelle){
+    const w = po.svg.getBoundingClientRect().width;
+    if (!w) return 0;
+    po.echelle = w / po.largeur;
+    po.teteEl.style.top = (po.tete.y0 * po.echelle).toFixed(1) + 'px';
+    po.teteEl.style.height = ((po.tete.y1 - po.tete.y0) * po.echelle).toFixed(1) + 'px';
+  }
+  return po.echelle;
+}
+/* place la tête sur le pas (fractionnaire) donné ; renvoie sa position en pixels */
+function placerTete(po, step){
+  const k = echelleDe(po);
+  if (!k) return 0;
+  const px = po.xDe(step) * k;
+  po.teteEl.style.transform = `translate3d(${(px - 1.5).toFixed(2)}px,0,0)`;
+  po.teteEl.style.opacity = '1';
+  return px;
+}
+function cacherTete(po){ if (po && po.teteEl) po.teteEl.style.opacity = '0'; }
 
 function dessinerDoigte(po, motif){
   const a = analyser(motif);
@@ -3405,38 +3491,35 @@ function dessinerDoigte(po, motif){
 let dernierStep = -1;
 function majTeteLecture(pos){
   if (pos == null){
-    if (portee) portee.playhead.setAttribute('opacity', 0);
-    $$('.cel.actif').forEach(e => e.classList.remove('actif'));
-    $$('.note-grp.actif').forEach(e => e.classList.remove('actif'));
+    cacherTete(portee);
+    for (const e of actifs) e.classList.remove('actif');
+    actifs = [];
     dernierStep = -1;
     return;
   }
   if (portee){
-    const x = portee.xDe(Math.min(pos, portee.total - 0.001));
-    portee.playhead.setAttribute('x', x - 1.2);
-    portee.playhead.setAttribute('opacity', 1);
+    const px = placerTete(portee, Math.min(pos, portee.total - 0.001));
     if ($('#opt-follow').checked){
-      // quand la tête de lecture sort de l'écran, on saute : la mesure en cours
-      // se retrouve au début de la vue, comme une page qu'on tourne
+      // quand la tête sort de l'écran, on tourne la page : la mesure en cours
+      // se retrouve au début de la vue
       const box = $('#score-staff .scroll-x');
       if (box && box.scrollWidth > box.clientWidth &&
-          (x > box.scrollLeft + box.clientWidth - 24 || x < box.scrollLeft + 8)){
+          (px > box.scrollLeft + box.clientWidth - 24 || px < box.scrollLeft + 4)){
         const parMesure = analyser(motifCourant).parMesure;
-        box.scrollLeft = Math.max(0, portee.xDe(Math.floor(pos / parMesure) * parMesure) - 40);
+        const debut = portee.xDe(Math.floor(pos / parMesure) * parMesure) * portee.echelle;
+        box.scrollLeft = Math.max(0, debut - 60);
       }
     }
   }
   const step = Math.floor(pos);
   if (step !== dernierStep){
     dernierStep = step;
-    $$('.cel.actif').forEach(e => e.classList.remove('actif'));
-    $$(`.grille-table [data-step="${step}"]`).forEach(e => e.classList.add('actif'));
-    $$('.note-grp.actif').forEach(e => e.classList.remove('actif'));
-    if (portee && portee.notesParStep.has(step))
-      portee.notesParStep.get(step).forEach(g => g.classList.add('actif'));
+    for (const e of actifs) e.classList.remove('actif');
+    actifs = [...(casesParStep.get(step) || []), ...((portee && portee.notesParStep.get(step)) || [])];
+    for (const e of actifs) e.classList.add('actif');
     const g = $('#score-grid .grille');
-    if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth){
-      const cel = g.querySelector(`td[data-step="${step}"]`);
+    if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth && !$('#score-grid').classList.contains('hidden')){
+      const cel = (casesParStep.get(step) || [])[0];
       const lbl = 90;   // colonne des noms, fixe à gauche
       if (cel && (cel.offsetLeft + cel.offsetWidth > g.scrollLeft + g.clientWidth || cel.offsetLeft < g.scrollLeft + lbl))
         g.scrollLeft = Math.max(0, cel.offsetLeft - lbl - 4);
@@ -3887,7 +3970,7 @@ $('#btn-play').addEventListener('click', async () => {
 $('#btn-stop').addEventListener('click', () => { lecteur.arreter(); majBoutonPlay(false); });
 
 /* ================= mode scène : plein écran, ligne par ligne ================= */
-const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1 };
+const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1, actifs:[] };
 
 /* Découpe la partition en lignes de 1 à 4 mesures, selon la largeur de l'écran,
  * en gardant des notes au moins aussi grandes qu'à l'écran normal. */
@@ -3906,16 +3989,18 @@ function rendreScene(){
     const po = dessinerPortee(t, { premiereMesure: b, barreFinale: fin === a.bars });
     if (t.doigte) dessinerDoigte(po, t);
     po.svg.classList.add('systeme');
+    const cadre = creerTete(po);
     // une ligne incomplète garde la même échelle que les autres
-    po.svg.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
+    cadre.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
     const ligne = document.createElement('div');
     ligne.className = 'scene-systeme';
-    ligne.appendChild(po.svg);
+    ligne.appendChild(cadre);
     box.appendChild(ligne);
     scene.systemes.push({ po, el: ligne, debut: b * a.parMesure, fin: fin * a.parMesure });
   }
   scene.ligne = -1;
   scene.dernierStep = -1;
+  scene.actifs = [];
   allerLigne(Math.max(0, scene.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
   // en portrait sur téléphone : conseiller de tourner l'écran
   $('#scene-astuce').classList.toggle('hidden', !(n === 1 && innerHeight > innerWidth && innerWidth < 700));
@@ -3935,27 +4020,27 @@ function allerLigne(i){
 
 function majScene(pos){
   if (pos == null){
-    for (const sy of scene.systemes) sy.po.playhead.setAttribute('opacity', 0);
-    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    for (const sy of scene.systemes) cacherTete(sy.po);
+    for (const e of scene.actifs) e.classList.remove('actif');
+    scene.actifs = [];
     scene.dernierStep = -1;
     return;
   }
   let i = scene.systemes.findIndex(sy => pos < sy.fin);
   if (i < 0) i = scene.systemes.length - 1;
-  allerLigne(i);
-  scene.systemes.forEach((sy, k) => {
-    if (k !== i) { sy.po.playhead.setAttribute('opacity', 0); return; }
-    const local = Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001);
-    sy.po.playhead.setAttribute('x', sy.po.xDe(local) - 1.2);
-    sy.po.playhead.setAttribute('opacity', 1);
-  });
+  if (i !== scene.ligne){
+    const avant = scene.systemes[scene.ligne];
+    if (avant) cacherTete(avant.po);
+    allerLigne(i);
+  }
+  const sy = scene.systemes[i];
+  placerTete(sy.po, Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001));
   const step = Math.floor(pos);
   if (step !== scene.dernierStep){
     scene.dernierStep = step;
-    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
-    const sy = scene.systemes[i];
-    const groupes = sy.po.notesParStep.get(step - sy.debut);
-    if (groupes) groupes.forEach(g => g.classList.add('actif'));
+    for (const e of scene.actifs) e.classList.remove('actif');
+    scene.actifs = sy.po.notesParStep.get(step - sy.debut) || [];
+    for (const e of scene.actifs) e.classList.add('actif');
   }
 }
 
@@ -3999,6 +4084,7 @@ document.addEventListener('fullscreenchange', () => {
 window.addEventListener('keydown', e => { if (e.key === 'Escape' && scene.ouverte) fermerScene(); });
 let minuterieScene = null;
 window.addEventListener('resize', () => {
+  if (portee) portee.echelle = 0;
   if (!scene.ouverte) return;
   clearTimeout(minuterieScene);
   minuterieScene = setTimeout(() => {

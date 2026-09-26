@@ -207,7 +207,16 @@ b,strong{color:#fff;font-weight:700}
 .scroll-x::-webkit-scrollbar,.grille::-webkit-scrollbar{height:8px}
 .scroll-x::-webkit-scrollbar-thumb,.grille::-webkit-scrollbar-thumb{background:var(--chrome-2);border-radius:8px}
 .portee{display:block;height:230px;width:auto;max-width:none}
-.portee .note-grp.actif ellipse,.portee .note-grp.actif line{filter:drop-shadow(0 0 5px currentColor)}
+.portee-cadre{position:relative;display:inline-block;vertical-align:top}
+/* tête de lecture : calque déplacé par transform, sans redessiner la partition */
+.tete-lecture{
+  position:absolute;left:0;top:0;width:3px;height:100%;border-radius:2px;
+  background:var(--tapis);box-shadow:0 0 0 1px rgba(229,88,75,.25);
+  opacity:0;pointer-events:none;will-change:transform;
+}
+/* note en cours : un contour clair, bien moins coûteux qu'une lueur */
+.portee .note-grp.actif ellipse{stroke:#fff;stroke-width:1.6px}
+.portee .note-grp.actif line:not(.hampe):not(.ligne){stroke-width:3px}
 .portee .doigte{fill:var(--peau-2);font:600 11.5px var(--f-chiffres)}
 .legende{display:flex;flex-wrap:wrap;gap:6px 16px;padding:2px 12px 8px;font-size:var(--t-xs);color:var(--peau-2)}
 .lg{display:inline-flex;align-items:center;gap:5px}
@@ -298,11 +307,11 @@ b,strong{color:#fff;font-weight:700}
 .two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:var(--esp)}
 .kit-svg{width:100%;height:auto;display:block;max-height:330px}
 .kit-el{cursor:pointer}
-.kit-el .corps{transition:fill .12s,filter .12s}
+.kit-el .corps{transition:fill .08s}
 .kit-el:hover .corps{filter:brightness(1.5)}
 .kit-el:not(.utilise){opacity:.3}
 .kit-el.frappe{opacity:1}
-.kit-el.frappe .corps{fill:currentColor;filter:drop-shadow(0 0 10px rgba(240,201,105,.75)) brightness(1.9)}
+.kit-el.frappe .corps{fill:rgba(240,201,105,.55);stroke:var(--laiton-2)}
 .kit-label{fill:var(--peau-2);font:600 11px var(--f-texte);pointer-events:none}
 .kit-el.frappe .kit-label{fill:#fff}
 .mixer{display:flex;flex-direction:column;gap:6px;margin-top:12px;border-top:1px solid var(--chrome);padding-top:12px}
@@ -421,7 +430,8 @@ body.en-scene{overflow:hidden}
 .scene-systeme{padding:4px 0 10px;border-bottom:1px dashed var(--chrome);opacity:.42;transition:opacity .15s}
 .scene-systeme.courante{opacity:1}
 .scene-systeme.passee{opacity:.25}
-.scene .portee.systeme{display:block;height:auto;max-width:none}
+.scene .portee-cadre{display:block}
+.scene .portee.systeme{display:block;width:100%;height:auto;max-width:none}
 .scene-compte{
   position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
   background:radial-gradient(circle at center, rgba(18,16,16,.85) 0%, rgba(18,16,16,.35) 55%, transparent 80%);
@@ -485,7 +495,7 @@ body.en-scene{overflow:hidden}
 /* mouvement réduit : pas d'animation, pas de lueur */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
-  .kit-el.frappe .corps{filter:brightness(1.6)}
+  .kit-el.frappe .corps{fill:rgba(240,201,105,.55)}
 }
 
 /* ====== impression : la partition seule, en noir sur blanc ====== */
@@ -503,7 +513,7 @@ body.en-scene{overflow:hidden}
   .eyebrow{color:#555}
   #piece-title{color:#000;font-size:24px}
   #piece-sub{color:#333}
-  .empty-hint,.playhead{display:none}
+  .empty-hint,.tete-lecture{display:none}
   .legende,.doigte-info{color:#222}
   .legende .lg-sym{color:#000 !important}
   .portee{height:auto;width:100%}

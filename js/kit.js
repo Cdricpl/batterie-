@@ -98,10 +98,9 @@ export function dessinerKit(surClic){
   const flash = (id) => {
     const g = map[id] || map[id === 'CH_OPEN' ? 'CH' : null];
     if (!g) return;
-    g.classList.remove('frappe');
-    void g.getBoundingClientRect();
+    clearTimeout(g._minuterie);
     g.classList.add('frappe');
-    setTimeout(() => g.classList.remove('frappe'), 220);
+    g._minuterie = setTimeout(() => g.classList.remove('frappe'), 160);
   };
 
   const surligner = (ids) => {

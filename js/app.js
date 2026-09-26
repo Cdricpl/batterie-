@@ -15,8 +15,10 @@ const $$ = s => [...document.querySelectorAll(s)];
 
 let motifCourant = null;
 let leconCourante = null;
-let portee = null;          // {svg, xDe, playhead, ...}
+let portee = null;          // {svg, xDe, notesParStep, teteEl…}
 let grille = null;
+let casesParStep = new Map();   // pas → cases de la grille
+let actifs = [];                // éléments éclairés au pas en cours
 let modeJeu = false;
 let solosActifs = new Set();
 let jugements = [];
@@ -30,7 +32,10 @@ $('#kit-diagram').appendChild(kit.svg);
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
   onPos: pos => { majTeteLecture(pos); if (scene.ouverte) majScene(pos); },
-  onFrappe: notes => { masquerDecompte(); for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst); },
+  onFrappe: notes => {
+    masquerDecompte();
+    if (!scene.ouverte) for (const n of notes) kit.flash(n.signe === 'o' && n.inst === 'CH' ? 'CH' : n.inst);
+  },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
   onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-num').value = bpm; $('#scene-bpm').textContent = bpm; },
@@ -85,7 +90,7 @@ function rendrePartition(){
   if ($('#opt-names').checked) wStaff.appendChild(legende(motifCourant));
   const scroller = document.createElement('div');
   scroller.className = 'scroll-x';
-  scroller.appendChild(portee.svg);
+  scroller.appendChild(creerTete(portee));
   if (motifCourant.doigte){
     const d = document.createElement('div');
     d.className = 'doigte-info';
@@ -99,8 +104,50 @@ function rendrePartition(){
   wGrid.innerHTML = '';
   grille = dessinerGrille(motifCourant);
   wGrid.appendChild(grille);
+  // index pas → cases, pour ne pas fouiller toute la page à chaque note
+  casesParStep = new Map();
+  grille.querySelectorAll('td[data-step]').forEach(td => {
+    const k = +td.dataset.step;
+    if (!casesParStep.has(k)) casesParStep.set(k, []);
+    casesParStep.get(k).push(td);
+  });
+  actifs = [];
   majVueScore();
 }
+
+/* ---- tête de lecture ----
+ * Un simple calque posé sur la partition, déplacé par « transform » : le navigateur
+ * le fait glisser sans redessiner la partition, donc à vitesse parfaitement régulière. */
+function creerTete(po){
+  const cadre = document.createElement('div');
+  cadre.className = 'portee-cadre';
+  const tete = document.createElement('div');
+  tete.className = 'tete-lecture';
+  tete.setAttribute('aria-hidden', 'true');
+  cadre.append(po.svg, tete);
+  po.cadre = cadre; po.teteEl = tete; po.echelle = 0;
+  return cadre;
+}
+function echelleDe(po){
+  if (!po.echelle){
+    const w = po.svg.getBoundingClientRect().width;
+    if (!w) return 0;
+    po.echelle = w / po.largeur;
+    po.teteEl.style.top = (po.tete.y0 * po.echelle).toFixed(1) + 'px';
+    po.teteEl.style.height = ((po.tete.y1 - po.tete.y0) * po.echelle).toFixed(1) + 'px';
+  }
+  return po.echelle;
+}
+/* place la tête sur le pas (fractionnaire) donné ; renvoie sa position en pixels */
+function placerTete(po, step){
+  const k = echelleDe(po);
+  if (!k) return 0;
+  const px = po.xDe(step) * k;
+  po.teteEl.style.transform = `translate3d(${(px - 1.5).toFixed(2)}px,0,0)`;
+  po.teteEl.style.opacity = '1';
+  return px;
+}
+function cacherTete(po){ if (po && po.teteEl) po.teteEl.style.opacity = '0'; }
 
 function dessinerDoigte(po, motif){
   const a = analyser(motif);
@@ -122,38 +169,35 @@ function dessinerDoigte(po, motif){
 let dernierStep = -1;
 function majTeteLecture(pos){
   if (pos == null){
-    if (portee) portee.playhead.setAttribute('opacity', 0);
-    $$('.cel.actif').forEach(e => e.classList.remove('actif'));
-    $$('.note-grp.actif').forEach(e => e.classList.remove('actif'));
+    cacherTete(portee);
+    for (const e of actifs) e.classList.remove('actif');
+    actifs = [];
     dernierStep = -1;
     return;
   }
   if (portee){
-    const x = portee.xDe(Math.min(pos, portee.total - 0.001));
-    portee.playhead.setAttribute('x', x - 1.2);
-    portee.playhead.setAttribute('opacity', 1);
+    const px = placerTete(portee, Math.min(pos, portee.total - 0.001));
     if ($('#opt-follow').checked){
-      // quand la tête de lecture sort de l'écran, on saute : la mesure en cours
-      // se retrouve au début de la vue, comme une page qu'on tourne
+      // quand la tête sort de l'écran, on tourne la page : la mesure en cours
+      // se retrouve au début de la vue
       const box = $('#score-staff .scroll-x');
       if (box && box.scrollWidth > box.clientWidth &&
-          (x > box.scrollLeft + box.clientWidth - 24 || x < box.scrollLeft + 8)){
+          (px > box.scrollLeft + box.clientWidth - 24 || px < box.scrollLeft + 4)){
         const parMesure = analyser(motifCourant).parMesure;
-        box.scrollLeft = Math.max(0, portee.xDe(Math.floor(pos / parMesure) * parMesure) - 40);
+        const debut = portee.xDe(Math.floor(pos / parMesure) * parMesure) * portee.echelle;
+        box.scrollLeft = Math.max(0, debut - 60);
       }
     }
   }
   const step = Math.floor(pos);
   if (step !== dernierStep){
     dernierStep = step;
-    $$('.cel.actif').forEach(e => e.classList.remove('actif'));
-    $$(`.grille-table [data-step="${step}"]`).forEach(e => e.classList.add('actif'));
-    $$('.note-grp.actif').forEach(e => e.classList.remove('actif'));
-    if (portee && portee.notesParStep.has(step))
-      portee.notesParStep.get(step).forEach(g => g.classList.add('actif'));
+    for (const e of actifs) e.classList.remove('actif');
+    actifs = [...(casesParStep.get(step) || []), ...((portee && portee.notesParStep.get(step)) || [])];
+    for (const e of actifs) e.classList.add('actif');
     const g = $('#score-grid .grille');
-    if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth){
-      const cel = g.querySelector(`td[data-step="${step}"]`);
+    if (g && $('#opt-follow').checked && g.scrollWidth > g.clientWidth && !$('#score-grid').classList.contains('hidden')){
+      const cel = (casesParStep.get(step) || [])[0];
       const lbl = 90;   // colonne des noms, fixe à gauche
       if (cel && (cel.offsetLeft + cel.offsetWidth > g.scrollLeft + g.clientWidth || cel.offsetLeft < g.scrollLeft + lbl))
         g.scrollLeft = Math.max(0, cel.offsetLeft - lbl - 4);
@@ -604,7 +648,7 @@ $('#btn-play').addEventListener('click', async () => {
 $('#btn-stop').addEventListener('click', () => { lecteur.arreter(); majBoutonPlay(false); });
 
 /* ================= mode scène : plein écran, ligne par ligne ================= */
-const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1 };
+const scene = { ouverte:false, systemes:[], ligne:-1, natif:false, dernierStep:-1, actifs:[] };
 
 /* Découpe la partition en lignes de 1 à 4 mesures, selon la largeur de l'écran,
  * en gardant des notes au moins aussi grandes qu'à l'écran normal. */
@@ -623,16 +667,18 @@ function rendreScene(){
     const po = dessinerPortee(t, { premiereMesure: b, barreFinale: fin === a.bars });
     if (t.doigte) dessinerDoigte(po, t);
     po.svg.classList.add('systeme');
+    const cadre = creerTete(po);
     // une ligne incomplète garde la même échelle que les autres
-    po.svg.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
+    cadre.style.width = ((marge + (fin - b) * largeurMesure) / (marge + n * largeurMesure) * 100) + '%';
     const ligne = document.createElement('div');
     ligne.className = 'scene-systeme';
-    ligne.appendChild(po.svg);
+    ligne.appendChild(cadre);
     box.appendChild(ligne);
     scene.systemes.push({ po, el: ligne, debut: b * a.parMesure, fin: fin * a.parMesure });
   }
   scene.ligne = -1;
   scene.dernierStep = -1;
+  scene.actifs = [];
   allerLigne(Math.max(0, scene.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
   // en portrait sur téléphone : conseiller de tourner l'écran
   $('#scene-astuce').classList.toggle('hidden', !(n === 1 && innerHeight > innerWidth && innerWidth < 700));
@@ -652,27 +698,27 @@ function allerLigne(i){
 
 function majScene(pos){
   if (pos == null){
-    for (const sy of scene.systemes) sy.po.playhead.setAttribute('opacity', 0);
-    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
+    for (const sy of scene.systemes) cacherTete(sy.po);
+    for (const e of scene.actifs) e.classList.remove('actif');
+    scene.actifs = [];
     scene.dernierStep = -1;
     return;
   }
   let i = scene.systemes.findIndex(sy => pos < sy.fin);
   if (i < 0) i = scene.systemes.length - 1;
-  allerLigne(i);
-  scene.systemes.forEach((sy, k) => {
-    if (k !== i) { sy.po.playhead.setAttribute('opacity', 0); return; }
-    const local = Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001);
-    sy.po.playhead.setAttribute('x', sy.po.xDe(local) - 1.2);
-    sy.po.playhead.setAttribute('opacity', 1);
-  });
+  if (i !== scene.ligne){
+    const avant = scene.systemes[scene.ligne];
+    if (avant) cacherTete(avant.po);
+    allerLigne(i);
+  }
+  const sy = scene.systemes[i];
+  placerTete(sy.po, Math.min(pos - sy.debut, sy.fin - sy.debut - 0.001));
   const step = Math.floor(pos);
   if (step !== scene.dernierStep){
     scene.dernierStep = step;
-    $$('#scene .note-grp.actif').forEach(e => e.classList.remove('actif'));
-    const sy = scene.systemes[i];
-    const groupes = sy.po.notesParStep.get(step - sy.debut);
-    if (groupes) groupes.forEach(g => g.classList.add('actif'));
+    for (const e of scene.actifs) e.classList.remove('actif');
+    scene.actifs = sy.po.notesParStep.get(step - sy.debut) || [];
+    for (const e of scene.actifs) e.classList.add('actif');
   }
 }
 
@@ -716,6 +762,7 @@ document.addEventListener('fullscreenchange', () => {
 window.addEventListener('keydown', e => { if (e.key === 'Escape' && scene.ouverte) fermerScene(); });
 let minuterieScene = null;
 window.addEventListener('resize', () => {
+  if (portee) portee.echelle = 0;
   if (!scene.ouverte) return;
   clearTimeout(minuterieScene);
   minuterieScene = setTimeout(() => {

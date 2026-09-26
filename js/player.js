@@ -133,11 +133,35 @@ export class Lecteur {
     }
   }
 
+  /* Instant audio réellement entendu, pour l'image affichée à l'instant « image »
+   * (horodatage fourni par requestAnimationFrame).
+   * currentTime avance par paquets (surtout sur téléphone) : on mesure l'écart entre
+   * l'horloge audio et celle de l'écran, on le lisse, puis on place chaque image sur
+   * une droite. Résultat : la tête avance d'autant à chaque image, à vitesse constante. */
+  _tempsVisuel(ctx, image){
+    const maintenant = performance.now();
+    let brut = ctx.currentTime - (ctx.outputLatency || 0) - (maintenant - image) / 1000;
+    if (ctx.getOutputTimestamp){
+      const ts = ctx.getOutputTimestamp();
+      if (ts && ts.performanceTime > 0 && ts.contextTime > 0)
+        brut = ts.contextTime + (image - ts.performanceTime) / 1000;
+    }
+    const ecart = brut - image / 1000;
+    if (this._ecart == null || Math.abs(ecart - this._ecart) > 0.05) this._ecart = ecart;   // départ ou gros décalage : on recale
+    else this._ecart += (ecart - this._ecart) * 0.04;                                         // sinon : lissage doux
+    let t = image / 1000 + this._ecart;
+    if (this._tPrec != null && t < this._tPrec) t = this._tPrec;   // jamais de retour en arrière
+    this._tPrec = t;
+    return t;
+  }
+
   _suivre(){
-    const boucle = () => {
+    this._tPrec = null;
+    this._ecart = null;
+    const boucle = (image) => {
       const ctx = ctxAudio();
       if (!ctx || !this.enLecture) return;
-      const now = ctx.currentTime;
+      const now = this._tVisuel = this._tempsVisuel(ctx, image ?? performance.now());
       let courant = null;
       while (this.file.length && this.file[0].temps <= now){
         courant = this.file.shift();
@@ -150,7 +174,10 @@ export class Lecteur {
         }
       }
       if (this._dernier){
-        const pos = this._dernier.step + (now - this._dernier.temps) / this._dernier.duree;
+        // progression dans le pas en cours, bornée : si une image est en retard,
+        // la tête attend la note suivante au lieu de la dépasser
+        const frac = Math.min(0.999, Math.max(0, (now - this._dernier.temps) / this._dernier.duree));
+        const pos = this._dernier.step + frac;
         this.cb.onPos && this.cb.onPos(Math.min(pos, this.finPlage));
       }
       this.raf = requestAnimationFrame(boucle);

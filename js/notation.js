@@ -13,8 +13,7 @@ const G = {
   hauteur: 196,
   yBase: 100,        // y de la position 0 (ligne du bas)
   demi: 5,           // 1 position = 5 px
-  margeG: 64,
-  padMesure: 14,
+  margeG: 80,
   hampe: 30,
   teteRx: 5.1,
   teteRy: 4.0
@@ -176,7 +175,7 @@ function pasLargeur(res){ return res >= 8 ? 15 : res === 6 ? 19 : res >= 4 ? 24 
  * sert à choisir combien de mesures tiennent sur une ligne d'écran. */
 export function dimensions(motif){
   const a = analyser(motif);
-  return { largeurMesure: a.parMesure * pasLargeur(a.res) + G.padMesure * 2, marge: G.margeG + 26 };
+  return { largeurMesure: a.parMesure * pasLargeur(a.res), marge: G.margeG + 26 };
 }
 
 /* ---------- rendu principal ---------- */
@@ -187,7 +186,11 @@ export function dessinerPortee(motif, opts = {}){
   const groupe = (unite === 8 && beats % 3 === 0) ? res * 3 : res;
 
   const stepW = pasLargeur(res);
-  const largeurMesure = parMesure * stepW + G.padMesure * 2;
+  // Pas de marge autour des mesures : toutes les notes sont espacées pareil, la barre
+  // de mesure se place au milieu de l'écart. La tête de lecture avance donc à vitesse
+  // constante, sans accélérer au passage des barres de mesure.
+  const largeurMesure = parMesure * stepW;
+  const xBarre = b => G.margeG + b * largeurMesure - stepW / 2;
   const largeur = G.margeG + largeurMesure * bars + 26;
 
   const sections = motif.sections || [];
@@ -202,7 +205,7 @@ export function dessinerPortee(motif, opts = {}){
   const xDe = (stepFlottant) => {
     const b = Math.min(bars - 1, Math.floor(stepFlottant / parMesure));
     const dans = stepFlottant - b * parMesure;
-    return G.margeG + b * largeurMesure + G.padMesure + dans * stepW;
+    return G.margeG + b * largeurMesure + dans * stepW;
   };
 
   /* portée */
@@ -214,16 +217,16 @@ export function dessinerPortee(motif, opts = {}){
   el('rect', {class:'ink', x:30, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
   el('rect', {class:'ink', x:38, y:yPos(7), width:4, height:yPos(1)-yPos(7), fill:'#e9e4dc'}, fond);
   // chiffrage
-  const sig = el('text', {class:'ink', x:G.margeG - 14, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
+  const sig = el('text', {class:'ink', x:54, y:yPos(6)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
     'text-anchor':'middle', 'font-family':FONTE_TITRE}, fond);
   sig.textContent = String(motif.beats ?? 4);
-  const sig2 = el('text', {class:'ink', x:G.margeG - 14, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
+  const sig2 = el('text', {class:'ink', x:54, y:yPos(2)+4, fill:'#e9e4dc', 'font-size':21, 'font-weight':800,
     'text-anchor':'middle', 'font-family':FONTE_TITRE}, fond);
   sig2.textContent = String(motif.unite ?? 4);
 
   // barres de mesure + numéros
   for (let b = 0; b <= bars; b++){
-    const x = G.margeG + b * largeurMesure - 6;
+    const x = xBarre(b);
     if (b > 0) el('line', {class:'ligne', x1:x, y1:yPos(8), x2:x, y2:yPos(0), stroke:'#8a806f', 'stroke-width':1.4}, fond);
     if (b < bars){
       const n = el('text', {class:'txt-faible', x:x + 8, y:yPos(8) - 26, fill:'#a39884', 'font-size':10, 'font-weight':600}, fond);
@@ -231,7 +234,7 @@ export function dessinerPortee(motif, opts = {}){
     }
   }
   // double barre finale
-  const xf = G.margeG + bars * largeurMesure - 6;
+  const xf = xBarre(bars) - 4;
   if (opts.barreFinale !== false)
     el('line', {class:'ligne', x1:xf + 4, y1:yPos(8), x2:xf + 4, y2:yPos(0), stroke:'#8a806f', 'stroke-width':3.5}, fond);
 
@@ -438,7 +441,7 @@ export function dessinerPortee(motif, opts = {}){
   if (sections.length){
     const gS = el('g', { class:'sections' }, svg);
     for (const sec of sections){
-      const x = G.margeG + sec.debut * largeurMesure - 6;
+      const x = xBarre(sec.debut);
       const lbl = sec.nom + (sec.fois > 1 ? `  ×${sec.fois}` : '');
       const w = Math.max(44, lbl.length * 6.2 + 16);
       el('rect', { class:'sec-boite', x, y:3, width:w, height:17, rx:3,
@@ -454,10 +457,10 @@ export function dessinerPortee(motif, opts = {}){
     }
   }
 
-  const tete0 = el('rect', {x:0, y:yPos(10) - 22, width:2.5, height: yPos(0) - yPos(10) + 86,
-    fill:'#e5584b', rx:1.2, class:'playhead', opacity:0}, racine);
+  // zone verticale que doit couvrir la tête de lecture (en unités SVG)
+  const zoneTete = { y0: yPos(10) - 22 + decalY, y1: yPos(0) + 64 + decalY };
 
-  return { svg, racine, xDe, largeur, total, notesParStep, playhead: tete0 };
+  return { svg, racine, xDe, largeur, hauteur, total, notesParStep, tete: zoneTete };
 }
 
 /* ---------- vue "grille" (plus simple pour débuter) ---------- */
