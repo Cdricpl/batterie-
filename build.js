@@ -64,7 +64,8 @@ if (process.argv.includes('--artefact')){
   const titre = html.match(/<title>[\s\S]*?<\/title>/)[0];
   const style = html.match(/<style>[\s\S]*?<\/style>/)[0];
   const corps = html.match(/<body>([\s\S]*)<\/body>/)[1];
-  html = `${titre}\n${style}\n${corps.trim()}\n`;
+  const polices = (html.match(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/) || [''])[0];
+  html = `${titre}\n${polices}\n${style}\n${corps.trim()}\n`;
 }
 
 fs.writeFileSync(sortie, html);
