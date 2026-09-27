@@ -470,6 +470,7 @@ export function dessinerGrille(motif){
   const ids = Object.keys(a.pistes).filter(id => INSTRUMENTS[id]);
   ids.sort((x, y) => INSTRUMENTS[y].pos - INSTRUMENTS[x].pos);
 
+  const doigte = (motif.doigte || '').replace(/\s/g, '');
   const div = document.createElement('div');
   div.className = 'grille';
   const table = document.createElement('table');
@@ -512,6 +513,12 @@ export function dessinerGrille(motif){
         if (c === 'X') b.textContent = '>';
         if (c === 'g') b.textContent = 'g';
         if (c === 'f') b.textContent = 'fl';
+        // doigté connu : la main (D / G) dans la case, le pied (P) pour les pédales
+        if (doigte){
+          if (id === 'GC' || id === 'HP') b.textContent = 'P';
+          else if (doigte[s] === 'D' || doigte[s] === 'G') b.textContent = doigte[s];
+          b.classList.add('main');
+        }
         td.appendChild(b);
       }
       tr.appendChild(td);

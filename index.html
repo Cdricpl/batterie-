@@ -37,6 +37,9 @@
   <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
+  <symbol id="i-vue-partition" viewBox="0 0 24 24"><path d="M3 6h18M3 10h18M3 14h18M3 18h18" stroke="currentColor" stroke-width="1.4" opacity=".5"/><ellipse cx="8" cy="16" rx="2.6" ry="2" fill="currentColor" transform="rotate(-20 8 16)"/><ellipse cx="15.5" cy="12" rx="2.6" ry="2" fill="currentColor" transform="rotate(-20 15.5 12)"/><path d="M10.4 15.4V4.6l7.5-2v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-vue-grille" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9.5h18M3 15h18M9 4v16M15 4v16" stroke="currentColor" stroke-width="1.6"/><rect x="4.5" y="5.5" width="3.2" height="2.8" rx=".8" fill="currentColor"/><rect x="16.3" y="11" width="3.2" height="2.8" rx=".8" fill="currentColor"/><rect x="10.4" y="16.4" width="3.2" height="2.8" rx=".8" fill="currentColor"/></symbol>
+  <symbol id="i-vue-kit" viewBox="0 0 24 24"><circle cx="6" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="6" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="16.5" r="3.4" fill="currentColor"/><circle cx="16.5" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
   <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
 </svg>
@@ -147,12 +150,16 @@
     <div class="papier" id="papier">
       <div class="score-staff" id="score-staff"></div>
       <div class="score-grid" id="score-grid" hidden></div>
+      <div class="score-kit" id="score-kit" hidden></div>
     </div>
     <div class="count-overlay" id="count-overlay" hidden aria-live="assertive"><span></span></div>
   </main>
 
   <footer class="barre-transport">
     <div class="t-bascules">
+      <button class="bascule vue" id="opt-vue" type="button" aria-label="Affichage : partition" title="Changer d'affichage : partition, grille, batterie">
+        <svg class="ico" aria-hidden="true"><use id="opt-vue-ico" href="#i-vue-partition"/></svg><span id="opt-vue-txt">Partition</span>
+      </button>
       <button class="bascule" id="opt-click" type="button" aria-pressed="false" aria-label="Métronome" title="Métronome">
         <svg class="ico" aria-hidden="true"><use href="#i-metronome"/></svg>
       </button>
@@ -202,6 +209,7 @@
     <div class="seg" id="view-toggle" role="group" aria-label="Affichage">
       <button class="seg-btn actif" data-score="staff" type="button" aria-pressed="true">Partition</button>
       <button class="seg-btn" data-score="grid" type="button" aria-pressed="false">Grille</button>
+      <button class="seg-btn" data-score="kit" type="button" aria-pressed="false">Batterie</button>
     </div>
 
     <h3>Lecture</h3>

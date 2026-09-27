@@ -7,6 +7,7 @@ import { RUDIMENTS, FAMILLES_RUDIMENTS } from './rudiments.js';
 import { MORCEAUX, compilerMorceau } from './songs.js';
 import { LECONS, NIVEAUX } from './lessons.js';
 import { dessinerKit } from './kit.js';
+import { creerVueKit } from './vuekit.js';
 import { Lecteur } from './player.js';
 import { CATEGORIES, kitNiveau, miniGroove, miniDoigte, miniVinyle } from './illustrations.js';
 import * as P from './progress.js';
@@ -18,6 +19,7 @@ const $$ = s => [...document.querySelectorAll(s)];
 let motifCourant = null;
 let elementCourant = null;     // {liste, item}
 let grille = null;
+let vueKit = null;              // affichage « Batterie »
 let casesParStep = new Map();  // pas → cases de la grille
 let actifsGrille = [];
 let modeJeu = false;
@@ -119,7 +121,7 @@ $('#kit-diagram').appendChild(kit.svg);
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
   onPos: pos => majTeteLecture(pos),
-  onFrappe: () => masquerDecompte(),
+  onFrappe: (notes, step) => { masquerDecompte(); if (vueKit && reglages.vue === 'kit') vueKit.frappe(notes, step); },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
   onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-val').textContent = bpm; },
@@ -585,12 +587,23 @@ function quitterLecteur(){
 }
 
 /* ================= partition ================= */
+const VUES = ['staff', 'grid', 'kit'];
+const NOMS_VUES = { staff:'Partition', grid:'Grille', kit:'Batterie' };
+const ICONES_VUES = { staff:'#i-vue-partition', grid:'#i-vue-grille', kit:'#i-vue-kit' };
+if (!VUES.includes(reglages.vue)) reglages.vue = 'staff';
+
 function rendrePartition(){
   if (!motifCourant) return;
-  const grilleVisible = reglages.vue === 'grid';
-  $('#score-staff').hidden = grilleVisible;
-  $('#score-grid').hidden = !grilleVisible;
+  $('#score-staff').hidden = reglages.vue !== 'staff';
+  $('#score-grid').hidden = reglages.vue !== 'grid';
+  $('#score-kit').hidden = reglages.vue !== 'kit';
   rendreLignes();
+
+  // affichage « Batterie » : le kit vu de dessus ; toucher un élément le fait sonner
+  vueKit = creerVueKit(motifCourant, async id => { await reprendreAudio(); jouer(id, 0, { velo:0.9 }); });
+  const wKit = $('#score-kit');
+  wKit.innerHTML = '';
+  wKit.appendChild(vueKit.svg);
 
   const wGrid = $('#score-grid');
   wGrid.innerHTML = '';
@@ -752,6 +765,7 @@ function majTeteLecture(pos){
     for (const e of actifsGrille) e.classList.remove('actif');
     vue.actifs = []; actifsGrille = [];
     vue.dernierStep = -1;
+    if (vueKit) vueKit.effacer();
     return;
   }
   const step = Math.floor(pos);
@@ -770,6 +784,8 @@ function majTeteLecture(pos){
       vue.actifs = sy.po.notesParStep.get(step - sy.debut) || [];
       for (const e of vue.actifs) e.classList.add('actif');
     }
+  } else if (reglages.vue === 'kit'){
+    if (vueKit) vueKit.maj(pos, lecteur.debutPlage, lecteur.finPlage);
   } else if (step !== vue.dernierStep){
     for (const e of actifsGrille) e.classList.remove('actif');
     actifsGrille = casesParStep.get(step) || [];
@@ -974,17 +990,20 @@ function majVueBoutons(){
     b.classList.toggle('actif', on);
     b.setAttribute('aria-pressed', on);
   });
+  $('#opt-vue-ico').setAttribute('href', ICONES_VUES[reglages.vue]);
+  $('#opt-vue-txt').textContent = NOMS_VUES[reglages.vue];
+  $('#opt-vue').setAttribute('aria-label', 'Affichage : ' + NOMS_VUES[reglages.vue]);
 }
-majVueBoutons();
-$$('#view-toggle .seg-btn').forEach(b => b.addEventListener('click', () => {
-  reglages.vue = b.dataset.score;
+function changerVue(v){
+  reglages.vue = v;
   sauverReglages();
   majVueBoutons();
-  const relancer = lecteur.enLecture;
   majTeteLecture(null);
   rendrePartition();
-  if (relancer) vue.ligne = -1;
-}));
+}
+majVueBoutons();
+$$('#view-toggle .seg-btn').forEach(b => b.addEventListener('click', () => changerVue(b.dataset.score)));
+$('#opt-vue').addEventListener('click', () => changerVue(VUES[(VUES.indexOf(reglages.vue) + 1) % VUES.length]));
 
 /* --- impression --- */
 function preparerImpression(){

@@ -390,6 +390,24 @@ a.carte-cat:active,.tuile:active,.item-carte:active{transform:scale(.98)}
 .portee-cadre{position:relative;display:block}
 .portee{display:block;width:100%;height:auto;max-width:none}
 .score-grid{height:100%;overflow:auto}
+/* --- affichage « Batterie » : le kit vu de dessus --- */
+.score-kit{height:100%;padding:6px 10px 4px;cursor:pointer}
+.vue-kit{display:block;width:100%;height:100%}
+.kit-compteur{font:800 17px var(--f-titre);letter-spacing:.12em;text-transform:uppercase;fill:var(--encre-2)}
+.pad{cursor:pointer}
+.pad .fond{fill:#fff;stroke:var(--p);stroke-width:7}
+.pad.cymbale .fond{fill:color-mix(in srgb, var(--p) 16%, #fff);stroke-width:5}
+.pad .sillon{fill:none;stroke:var(--p);stroke-width:1.5;opacity:.35}
+.pad .point{fill:var(--p);opacity:.3;transform-box:fill-box;transform-origin:center}
+.pad .anneau{fill:none;stroke:var(--p);stroke-width:6;opacity:0;pointer-events:none}
+.pad .nom{font:700 13px var(--f-texte);fill:var(--encre-2);pointer-events:none}
+.pad .lettre{font:800 30px var(--f-titre);fill:#fff;opacity:0;pointer-events:none}
+.pad.absent{opacity:.22}
+.pad.frappe .point{animation:coup .26s ease-out}
+.pad.frappe .fond{filter:drop-shadow(0 0 12px color-mix(in srgb, var(--p) 80%, transparent))}
+.pad.frappe .lettre{opacity:1}
+@keyframes coup{0%{opacity:1;transform:scale(2.15)}60%{opacity:1;transform:scale(2)}100%{opacity:.3;transform:scale(1)}}
+.bascule.vue{width:auto;padding:0 12px;gap:7px;display:inline-flex;align-items:center;color:var(--texte);font:700 13px/1 var(--f-titre);letter-spacing:.08em;text-transform:uppercase}
 .fin-page{height:60%}      /* de quoi amener la dernière ligne en haut */
 
 /* tête de lecture : calque déplacé par transform, sans redessiner la partition */
@@ -440,6 +458,7 @@ a.carte-cat:active,.tuile:active,.item-carte:active{transform:scale(.98)}
 .hit.s-g{opacity:.45;transform:scale(.7)}
 .hit.s-X{box-shadow:0 0 0 2px var(--encre)}
 .hit.s-o{border-radius:50%}
+.hit.main{font:800 12px/20px var(--f-titre);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25)}
 
 /* --- décompte --- */
 .count-overlay{
@@ -644,11 +663,13 @@ kbd{
 @media (max-width:700px){
   .t-tempo input[type=range]{display:none}
   .j-titres .surtitre{display:none}
+  .bascule.vue span{display:none}
 }
 @media (pointer:coarse){
   .item-carte,.tuile,.carte-cat{-webkit-user-select:none;user-select:none}
 }
 @media (prefers-reduced-motion:reduce){
+  .pad.frappe .point{opacity:1;transform:scale(1.8)}
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
 
@@ -697,6 +718,9 @@ kbd{
   <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
+  <symbol id="i-vue-partition" viewBox="0 0 24 24"><path d="M3 6h18M3 10h18M3 14h18M3 18h18" stroke="currentColor" stroke-width="1.4" opacity=".5"/><ellipse cx="8" cy="16" rx="2.6" ry="2" fill="currentColor" transform="rotate(-20 8 16)"/><ellipse cx="15.5" cy="12" rx="2.6" ry="2" fill="currentColor" transform="rotate(-20 15.5 12)"/><path d="M10.4 15.4V4.6l7.5-2v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-vue-grille" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9.5h18M3 15h18M9 4v16M15 4v16" stroke="currentColor" stroke-width="1.6"/><rect x="4.5" y="5.5" width="3.2" height="2.8" rx=".8" fill="currentColor"/><rect x="16.3" y="11" width="3.2" height="2.8" rx=".8" fill="currentColor"/><rect x="10.4" y="16.4" width="3.2" height="2.8" rx=".8" fill="currentColor"/></symbol>
+  <symbol id="i-vue-kit" viewBox="0 0 24 24"><circle cx="6" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="6" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="16.5" r="3.4" fill="currentColor"/><circle cx="16.5" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
   <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
 </svg>
@@ -807,12 +831,16 @@ kbd{
     <div class="papier" id="papier">
       <div class="score-staff" id="score-staff"></div>
       <div class="score-grid" id="score-grid" hidden></div>
+      <div class="score-kit" id="score-kit" hidden></div>
     </div>
     <div class="count-overlay" id="count-overlay" hidden aria-live="assertive"><span></span></div>
   </main>
 
   <footer class="barre-transport">
     <div class="t-bascules">
+      <button class="bascule vue" id="opt-vue" type="button" aria-label="Affichage : partition" title="Changer d'affichage : partition, grille, batterie">
+        <svg class="ico" aria-hidden="true"><use id="opt-vue-ico" href="#i-vue-partition"/></svg><span id="opt-vue-txt">Partition</span>
+      </button>
       <button class="bascule" id="opt-click" type="button" aria-pressed="false" aria-label="Métronome" title="Métronome">
         <svg class="ico" aria-hidden="true"><use href="#i-metronome"/></svg>
       </button>
@@ -862,6 +890,7 @@ kbd{
     <div class="seg" id="view-toggle" role="group" aria-label="Affichage">
       <button class="seg-btn actif" data-score="staff" type="button" aria-pressed="true">Partition</button>
       <button class="seg-btn" data-score="grid" type="button" aria-pressed="false">Grille</button>
+      <button class="seg-btn" data-score="kit" type="button" aria-pressed="false">Batterie</button>
     </div>
 
     <h3>Lecture</h3>
@@ -945,7 +974,7 @@ kbd{
 /* Numéro de version de l'application : affiché en haut de l'écran, et utilisé par
  * le service worker (build.js --site) pour que les téléphones installés récupèrent
  * chaque nouvelle version. À augmenter à chaque livraison. */
-const VERSION = '2.5.0';
+const VERSION = '2.6.0';
 const DATE_VERSION = '2026-09-26';
 
 
@@ -1886,6 +1915,7 @@ function dessinerGrille(motif){
   const ids = Object.keys(a.pistes).filter(id => INSTRUMENTS[id]);
   ids.sort((x, y) => INSTRUMENTS[y].pos - INSTRUMENTS[x].pos);
 
+  const doigte = (motif.doigte || '').replace(/\s/g, '');
   const div = document.createElement('div');
   div.className = 'grille';
   const table = document.createElement('table');
@@ -1928,6 +1958,12 @@ function dessinerGrille(motif){
         if (c === 'X') b.textContent = '>';
         if (c === 'g') b.textContent = 'g';
         if (c === 'f') b.textContent = 'fl';
+        // doigté connu : la main (D / G) dans la case, le pied (P) pour les pédales
+        if (doigte){
+          if (id === 'GC' || id === 'HP') b.textContent = 'P';
+          else if (doigte[s] === 'D' || doigte[s] === 'G') b.textContent = doigte[s];
+          b.classList.add('main');
+        }
         td.appendChild(b);
       }
       tr.appendChild(td);
@@ -4470,6 +4506,148 @@ function dessinerKit(surClic){
 }
 
 
+/* ================= js/vuekit.js ================= */
+/* Affichage « Batterie » : le kit vu de dessus, chaque élément dans sa couleur.
+ * Avant chaque coup, un anneau se resserre sur l'élément à frapper (un temps d'avance) ;
+ * au moment du coup, l'élément s'allume, avec la main à utiliser (D / G) ou le pied (P).
+ * Disposition d'après le kit de la photo : charleston à gauche, caisse claire devant,
+ * deux toms au centre, tom basse et ride à droite, crash en hauteur à gauche. */
+
+
+const NS_VUE = 'http://www.w3.org/2000/svg';
+
+const PADS = {
+  CR:{ x:178, y:74,  r:60, cymbale:true, couleur:'#f59e0b', nom:'Crash' },
+  RD:{ x:652, y:88,  r:68, cymbale:true, couleur:'#d97706', nom:'Ride' },
+  CH:{ x:92,  y:192, r:50, cymbale:true, couleur:'#eab308', nom:'Charley' },
+  T1:{ x:322, y:96,  r:46, couleur:'#3b82f6', nom:'Tom 1' },
+  T2:{ x:458, y:96,  r:50, couleur:'#6366f1', nom:'Tom 2' },
+  CC:{ x:226, y:222, r:52, couleur:'#ef4444', nom:'Claire' },
+  TB:{ x:604, y:232, r:60, couleur:'#8b5cf6', nom:'Tom basse' },
+  GC:{ x:414, y:240, r:66, couleur:'#10b981', nom:'Grosse caisse' },
+  HP:{ x:92,  y:292, r:22, pedale:true, couleur:'#ec4899', nom:'Pied charley' }
+};
+
+function noeud(nom, attrs, parent){
+  const e = document.createElementNS(NS_VUE, nom);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* index du premier élément ≥ v dans un tableau trié */
+function premierDes(tab, v){
+  let a = 0, b = tab.length;
+  while (a < b){ const m = (a + b) >> 1; if (tab[m] < v) a = m + 1; else b = m; }
+  return a;
+}
+
+function creerVueKit(motif, surToucher){
+  const an = analyser(motif);
+  const doigte = (motif.doigte || '').replace(/\s/g, '');
+  const svg = noeud('svg', { viewBox:'0 0 760 344', class:'vue-kit', role:'img', 'aria-label':'Batterie vue de dessus' });
+
+  // coups de chaque élément (pas triés)
+  const coups = {};
+  for (const [id, piste] of Object.entries(an.pistes)){
+    const cle = id === 'CH_OPEN' ? 'CH' : id;
+    if (!PADS[cle]) continue;
+    const l = coups[cle] || (coups[cle] = []);
+    for (let s = 0; s < piste.length; s++) if (estNote(piste[s])) l.push(s);
+  }
+  for (const l of Object.values(coups)) l.sort((a, b) => a - b);
+
+  // compteur : mesure et temps en cours
+  const compteur = noeud('text', { x:380, y:26, 'text-anchor':'middle', class:'kit-compteur' }, svg);
+
+  const pads = {};
+  const ordre = ['HP', 'GC', 'CC', 'T1', 'T2', 'TB', 'CH', 'CR', 'RD'];   // du bas vers le haut
+  for (const id of ordre){
+    const p = PADS[id];
+    const g = noeud('g', { class:'pad' + (p.cymbale ? ' cymbale' : '') + (p.pedale ? ' pedale' : '') + (coups[id] ? '' : ' absent'),
+      'data-inst':id, style:`--p:${p.couleur}`, tabindex:'-1' }, svg);
+    if (p.pedale){
+      noeud('rect', { x:p.x - 44, y:p.y - p.r, width:88, height:p.r * 2, rx:12, class:'fond' }, g);
+      noeud('rect', { x:p.x - 30, y:p.y - p.r * 0.5, width:60, height:p.r, rx:8, class:'point' }, g);
+    } else {
+      noeud('circle', { cx:p.x, cy:p.y, r:p.r, class:'fond' }, g);
+      if (p.cymbale){
+        noeud('circle', { cx:p.x, cy:p.y, r:p.r * 0.66, class:'sillon' }, g);
+        noeud('circle', { cx:p.x, cy:p.y, r:p.r * 0.36, class:'sillon' }, g);
+      }
+      noeud('circle', { cx:p.x, cy:p.y, r:p.r * 0.42, class:'point' }, g);
+    }
+    const anneau = noeud('circle', { cx:p.x, cy:p.y, r:p.r, class:'anneau' }, g);
+    const lettre = noeud('text', { x:p.x, y:p.y + 9, 'text-anchor':'middle', class:'lettre' }, g);
+    const nom = noeud('text', { x:p.x, y:p.pedale ? p.y + p.r + 17 : p.y + p.r + 17, 'text-anchor':'middle', class:'nom' }, g);
+    nom.textContent = p.nom;
+    g.addEventListener('click', e => { e.stopPropagation(); surToucher && surToucher(id); allumer(id, ''); });
+    pads[id] = { g, anneau, lettre, r:p.pedale ? 28 : p.r, visible:false };
+  }
+
+  const minuteries = {};
+  function allumer(id, texte){
+    const pad = pads[id];
+    if (!pad) return;
+    pad.lettre.textContent = texte;
+    pad.g.classList.remove('frappe');
+    void pad.g.getBBox();                        // relance l'animation même sur deux coups rapprochés
+    pad.g.classList.add('frappe');
+    clearTimeout(minuteries[id]);
+    minuteries[id] = setTimeout(() => pad.g.classList.remove('frappe'), 260);
+  }
+
+  /* un coup vient de tomber (même horloge que le son) */
+  function frappe(notes, step){
+    for (const n of notes){
+      const id = n.inst === 'CH_OPEN' ? 'CH' : n.inst;
+      let main = '';
+      if (id === 'GC' || id === 'HP') main = 'P';
+      else if (doigte[step] === 'D' || doigte[step] === 'G') main = doigte[step];
+      allumer(id, main);
+    }
+  }
+
+  /* à chaque image : les anneaux d'anticipation, sur un temps d'avance */
+  let dernierTemps = -1;
+  function maj(pos, debut, fin){
+    const longueur = fin - debut;
+    for (const [id, l] of Object.entries(coups)){
+      const pad = pads[id];
+      let i = premierDes(l, pos);
+      let prochain = l[i];
+      if (prochain == null || prochain >= fin){               // on boucle : premier coup de la plage
+        const j = premierDes(l, debut);
+        prochain = l[j] != null && l[j] < fin ? l[j] + longueur : null;
+      }
+      const t = prochain == null ? 2 : (prochain - pos) / an.res;   // en temps
+      if (t <= 1 && t >= 0){
+        pad.anneau.setAttribute('r', (pad.r * (1 + 0.9 * t)).toFixed(1));
+        pad.anneau.style.opacity = (0.95 * (1 - t) + 0.05).toFixed(2);
+        pad.visible = true;
+      } else if (pad.visible){
+        pad.anneau.style.opacity = '0';
+        pad.visible = false;
+      }
+    }
+    const temps = Math.floor(pos / an.res);
+    if (temps !== dernierTemps){
+      dernierTemps = temps;
+      compteur.textContent = `Mesure ${Math.floor(pos / an.parMesure) + 1} · temps ${temps % an.beats + 1}`;
+    }
+  }
+
+  function effacer(){
+    for (const pad of Object.values(pads)){ pad.anneau.style.opacity = '0'; pad.visible = false; }
+    compteur.textContent = '';
+    dernierTemps = -1;
+  }
+  effacer();
+
+  return { svg, maj, frappe, allumer, effacer };
+}
+
+
 /* ================= js/player.js ================= */
 /* Lecteur : planification audio précise (lookahead) + tête de lecture fluide. */
 
@@ -4747,12 +4925,14 @@ const P = { charger, etatActuel, estFaite, marquer, nbFaites, noterTempo, meille
 
 
 
+
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 let motifCourant = null;
 let elementCourant = null;     // {liste, item}
 let grille = null;
+let vueKit = null;              // affichage « Batterie »
 let casesParStep = new Map();  // pas → cases de la grille
 let actifsGrille = [];
 let modeJeu = false;
@@ -4854,7 +5034,7 @@ $('#kit-diagram').appendChild(kit.svg);
 /* ================= lecteur ================= */
 const lecteur = new Lecteur({
   onPos: pos => majTeteLecture(pos),
-  onFrappe: () => masquerDecompte(),
+  onFrappe: (notes, step) => { masquerDecompte(); if (vueKit && reglages.vue === 'kit') vueKit.frappe(notes, step); },
   onCompte: n => afficherDecompte(n),
   onBoucle: () => { if (modeJeu) resumerJeu(); if (motifCourant) P.noterTempo(motifCourant.id, lecteur.bpm); },
   onTempo: bpm => { $('#bpm').value = bpm; $('#bpm-val').textContent = bpm; },
@@ -5320,12 +5500,23 @@ function quitterLecteur(){
 }
 
 /* ================= partition ================= */
+const VUES = ['staff', 'grid', 'kit'];
+const NOMS_VUES = { staff:'Partition', grid:'Grille', kit:'Batterie' };
+const ICONES_VUES = { staff:'#i-vue-partition', grid:'#i-vue-grille', kit:'#i-vue-kit' };
+if (!VUES.includes(reglages.vue)) reglages.vue = 'staff';
+
 function rendrePartition(){
   if (!motifCourant) return;
-  const grilleVisible = reglages.vue === 'grid';
-  $('#score-staff').hidden = grilleVisible;
-  $('#score-grid').hidden = !grilleVisible;
+  $('#score-staff').hidden = reglages.vue !== 'staff';
+  $('#score-grid').hidden = reglages.vue !== 'grid';
+  $('#score-kit').hidden = reglages.vue !== 'kit';
   rendreLignes();
+
+  // affichage « Batterie » : le kit vu de dessus ; toucher un élément le fait sonner
+  vueKit = creerVueKit(motifCourant, async id => { await reprendreAudio(); jouer(id, 0, { velo:0.9 }); });
+  const wKit = $('#score-kit');
+  wKit.innerHTML = '';
+  wKit.appendChild(vueKit.svg);
 
   const wGrid = $('#score-grid');
   wGrid.innerHTML = '';
@@ -5487,6 +5678,7 @@ function majTeteLecture(pos){
     for (const e of actifsGrille) e.classList.remove('actif');
     vue.actifs = []; actifsGrille = [];
     vue.dernierStep = -1;
+    if (vueKit) vueKit.effacer();
     return;
   }
   const step = Math.floor(pos);
@@ -5505,6 +5697,8 @@ function majTeteLecture(pos){
       vue.actifs = sy.po.notesParStep.get(step - sy.debut) || [];
       for (const e of vue.actifs) e.classList.add('actif');
     }
+  } else if (reglages.vue === 'kit'){
+    if (vueKit) vueKit.maj(pos, lecteur.debutPlage, lecteur.finPlage);
   } else if (step !== vue.dernierStep){
     for (const e of actifsGrille) e.classList.remove('actif');
     actifsGrille = casesParStep.get(step) || [];
@@ -5709,17 +5903,20 @@ function majVueBoutons(){
     b.classList.toggle('actif', on);
     b.setAttribute('aria-pressed', on);
   });
+  $('#opt-vue-ico').setAttribute('href', ICONES_VUES[reglages.vue]);
+  $('#opt-vue-txt').textContent = NOMS_VUES[reglages.vue];
+  $('#opt-vue').setAttribute('aria-label', 'Affichage : ' + NOMS_VUES[reglages.vue]);
 }
-majVueBoutons();
-$$('#view-toggle .seg-btn').forEach(b => b.addEventListener('click', () => {
-  reglages.vue = b.dataset.score;
+function changerVue(v){
+  reglages.vue = v;
   sauverReglages();
   majVueBoutons();
-  const relancer = lecteur.enLecture;
   majTeteLecture(null);
   rendrePartition();
-  if (relancer) vue.ligne = -1;
-}));
+}
+majVueBoutons();
+$$('#view-toggle .seg-btn').forEach(b => b.addEventListener('click', () => changerVue(b.dataset.score)));
+$('#opt-vue').addEventListener('click', () => changerVue(VUES[(VUES.indexOf(reglages.vue) + 1) % VUES.length]));
 
 /* --- impression --- */
 function preparerImpression(){

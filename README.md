@@ -95,9 +95,14 @@ tenue du tempo (tempo très lent, mesure silencieuse), polyrythme 3 contre 2.
   (on peut la couper pour jouer seul sur le clic), le tempo et le gros bouton lecture.
 - **Les partitions se lisent toutes seules.** Une tête de lecture rouge avance à
   vitesse constante et les notes jouées s'allument.
-- **Deux affichages** : la vraie **partition** (portée, hampes, ligatures, silences,
-  accents, ghost notes, triolets, charleston ouvert…) et une **grille** de type
-  boîte à rythmes, beaucoup plus simple pour débuter. Ou les deux à la fois.
+- **Trois affichages**, qu'on change d'un toucher (bouton en bas à gauche du lecteur) :
+  - la vraie **partition** (portée, hampes, ligatures, silences, accents, ghost notes,
+    triolets, charleston ouvert…) ;
+  - une **grille** de type boîte à rythmes, colorée, avec la main à utiliser (D / G, P
+    pour les pieds) quand le doigté est connu ;
+  - la **batterie** vue de dessus, chaque élément dans sa couleur : un anneau se
+    resserre sur l'élément à frapper un temps avant le coup, puis l'élément s'allume
+    au moment exact, avec la main à utiliser. Toucher un élément le fait sonner.
 - **Au moins deux lignes à l'écran** : celle qu'on joue et la suivante, pour lire en
   avance. Chaque ligne compte de 1 à 4 mesures selon la largeur, et la portée est
   recadrée au plus près des notes pour que les deux lignes restent lisibles. Pendant la lecture, **la partition tourne la page** : quand la
@@ -234,6 +239,7 @@ js/rudiments.js       les rudiments
 js/songs.js           les morceaux connus et leur découpage en sections
 js/lessons.js         les 31 leçons
 js/kit.js             schéma du kit
+js/vuekit.js          affichage « Batterie » (kit vu de dessus, anneaux d'anticipation)
 js/illustrations.js   dessins des cartes (catégories, niveaux, familles)
 js/progress.js        progression sauvegardée (localStorage)
 js/app.js             assemblage de l'interface
