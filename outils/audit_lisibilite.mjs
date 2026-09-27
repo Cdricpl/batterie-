@@ -55,7 +55,7 @@ for (const t of TAILLES){
   } catch {} });
   const p = await ctx.newPage(); const err = []; p.on('pageerror', e => err.push(e.message));
   await p.goto('file://' + racine + 'ma-batterie.html#/'); await p.waitForTimeout(1200);
-  const routes = ['#/jouer/rythme/rock-8', '#/', '#/parcours', '#/parcours/1', '#/parcours/5', '#/rythmes', '#/morceaux', '#/breaks', '#/breaks/3', '#/rudiments', '#/progression'];
+  const routes = ['#/jouer/rythme/rock-8', '#/', '#/parcours', '#/parcours/1', '#/parcours/5', '#/rythmes', '#/morceaux', '#/breaks', '#/breaks/3', '#/breaks/5', '#/rudiments', '#/progression'];
   // sous-écrans : première et dernière tuile de chaque catégorie
   for (const r of ['#/rythmes', '#/morceaux', '#/rudiments']){
     await p.evaluate(h => location.hash = h, r); await p.waitForTimeout(250);

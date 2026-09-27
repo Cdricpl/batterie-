@@ -412,7 +412,7 @@ function ecranNiveauBreaks(n){
     sur:`Breaks · niveau ${n} · groove + break`, titre:NOMS_NIVEAUX[n], retour:'#/breaks',
     html:`<div class="rangee">${lot.map(f => itemCarte({
       href:lienJouer('break', f), nom:f.nom,
-      meta:f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
+      meta:f.meta || (f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break'),
       niveau:f.niveau, illus:miniGroove(f, 1), grad:NIV_GRAD[n - 1]
     })).join('')}</div>`
   });
@@ -540,7 +540,8 @@ function ouvrir(liste, id){
     const aide = `<h2>${item.nom}</h2>
       <p>${[item.style, 'Niveau ' + (item.niveau || 1), item.bpm ? item.bpm[1] + ' BPM' : '', signature(item)].filter(Boolean).map(b => `<span class="badge">${b}</span>`).join('')}</p>
       <p>${item.desc || ''}</p>${item.astuce ? CONSEIL(item.astuce) : ''}
-      ${liste === 'break' ? '<p class="muted small">La première mesure est un groove simple : elle sert à te remettre en place après le break.</p>' : ''}
+      ${liste === 'break' && !item.sansGroove ? '<p class="muted small">La première mesure est un groove simple : elle sert à te remettre en place après le break.</p>' : ''}
+      ${item.source ? `<p class="muted small">${item.source}</p>` : ''}
       ${rudiment ? '<p class="muted small">D = main droite, G = main gauche. Le doigté est écrit sous la partition.</p>' : ''}
       ${liste === 'rythme' ? '<p class="muted small">Dans les réglages, le mixeur isole (S) ou coupe (M) un élément pour travailler les autres séparément.</p>' : ''}
       ${rudiment || liste === 'exercice' ? METHODE : ''}`;

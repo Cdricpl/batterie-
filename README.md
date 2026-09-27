@@ -71,13 +71,20 @@ triple, double, 5, 6, 7, 9, 10, 11, 13, 15, 17…), paradiddles (simple, double,
 triolet suisse, flam tap inversé, flam drag…), drags (drag tap, leçon 25,
 dragadiddle, drag paradiddles, ratamacues simple, double et triple). Doigté D/G sous chaque note.
 
-### 🥁 Breaks & fills — 35 breaks
+### 🥁 Breaks & fills — 38 breaks
 On choisit d'abord son niveau, puis les breaks de ce niveau.
 Chaque break est présenté sous la forme **1 mesure de groove + 1 mesure de break**,
 en boucle : c'est l'enchaînement qui se travaille, pas le break tout seul.
 
 Dont triolets main-main-pied (style Bonham), paradiddle sur les toms, roulement de 6,
 triples-croches.
+
+**Le solo de Dave Grohl dans « A Song for the Dead »** (Queens of the Stone Age,
+*Songs for the Deaf*, 2002), au niveau 5, en trois parties qui s'enchaînent avec ‹ › :
+1/3 l'entrée en double-time, 2/3 les triolets main-main-pied qui voyagent entre caisse
+claire et toms, 3/3 la rafale finale en doubles-croches. C'est une reconstitution
+simplifiée d'après la structure décrite par les leçons publiées, pas une transcription
+note à note : à vérifier à l'oreille.
 
 ### ⏱️ Exercices — 21
 Mains (alternées, 8/8, doubles lentes, triolets, accents, nuances), pieds
