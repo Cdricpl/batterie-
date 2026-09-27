@@ -1,7 +1,7 @@
 /* Progression sauvegardée dans le navigateur (localStorage). */
 const CLE = 'ma-batterie-progres-v1';
 
-const vide = () => ({ leconsFaites:{}, tempos:{}, minutes:{}, derniereLecon:null, total:0 });
+const vide = () => ({ leconsFaites:{}, statuts:{}, tempos:{}, minutes:{}, derniereLecon:null, total:0 });
 
 export function charger(){
   try {
@@ -20,9 +20,29 @@ export const jour = () => new Date().toISOString().slice(0, 10);
 
 export function etatActuel(){ return etat; }
 export function estFaite(id){ return !!etat.leconsFaites[id]; }
-export function marquer(id, fait){
-  if (fait) etat.leconsFaites[id] = jour(); else delete etat.leconsFaites[id];
+export function marquer(id, fait){ setStatut('lecon', id, fait ? 'acquis' : null); }
+/* Statut d'un élément de n'importe quelle liste : 'acquis', 'travail' (à travailler) ou null.
+ * Pour une leçon, « acquis » est la même chose que « terminée ». */
+const cleStatut = (liste, id) => liste + ':' + id;
+export function statut(liste, id){
+  if (liste === 'lecon' && etat.leconsFaites[id]) return 'acquis';
+  const v = etat.statuts[cleStatut(liste, id)];
+  return v ? v.s : null;
+}
+export function setStatut(liste, id, s){
+  const k = cleStatut(liste, id);
+  if (liste === 'lecon'){
+    if (s === 'acquis') etat.leconsFaites[id] = jour(); else delete etat.leconsFaites[id];
+  }
+  if (s && !(liste === 'lecon' && s === 'acquis')) etat.statuts[k] = { s, j:jour() };
+  else delete etat.statuts[k];
   sauver();
+}
+/* éléments d'un statut, du plus récent au plus ancien : [{ liste, id, j }] */
+export function elementsDe(s){
+  const l = Object.entries(etat.statuts).filter(([, v]) => v.s === s)
+    .map(([k, v]) => ({ liste:k.slice(0, k.indexOf(':')), id:k.slice(k.indexOf(':') + 1), j:v.j }));
+  return l.sort((a, b) => (b.j || '').localeCompare(a.j || ''));
 }
 export function nbFaites(){ return Object.keys(etat.leconsFaites).length; }
 export function noterTempo(id, bpm){

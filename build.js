@@ -11,12 +11,13 @@ const ORDRE = [
   'js/lessons.js', 'js/kit.js', 'js/vuekit.js', 'js/player.js', 'js/progress.js', 'js/app.js'
 ];
 
-/* app.js fait « import * as P from './progress.js' » : on reconstruit l'objet. */
+/* app.js fait « import * as P from './progress.js' » : on reconstruit l'objet
+ * à partir de tout ce que progress.js exporte (rien à tenir à jour à la main). */
+const exportsP = [...fs.readFileSync('js/progress.js', 'utf8')
+  .matchAll(/^export\s+(?:function|const|let)\s+([A-Za-z_$][\w$]*)/gm)].map(m => m[1]);
 const SHIM_P = `
 /* --- espace de noms de progress.js --- */
-const P = { charger, etatActuel, estFaite, marquer, nbFaites, noterTempo, meilleurTempo,
-  ajouterSecondes, minutesAujourdhui, minutesTotal, serie, setDerniereLecon,
-  historique, toutEffacer, jour };
+const P = { ${exportsP.join(', ')} };
 `;
 
 function module(chemin){

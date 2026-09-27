@@ -139,6 +139,7 @@ function montrer(id){
 function route(){
   const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   fermerVolets(false);
+  $('#toast').hidden = true;
   if (parts[0] !== 'jouer') quitterLecteur();
   switch (parts[0]){
     case 'parcours':    return parts[1] ? ecranNiveau(+parts[1]) : ecranParcours();
@@ -171,6 +172,10 @@ function ecranAccueil(){
   $('#compte-rudiments').textContent = `${RUDIMENTS.length} rudiments et ${EXERCICES.length} exercices`;
   majStat();
 
+  const nTravail = P.elementsDe('travail').filter(e => SOURCES[e.liste] && SOURCES[e.liste].some(x => x.id === e.id)).length;
+  $('#pastille-travail').hidden = !nTravail;
+  $('#travail-n').textContent = nTravail;
+  $('#pastille-travail').title = `${nTravail} à travailler`;
   const derniere = lire(CLE_DERNIERE, null);
   const it = derniere && SOURCES[derniere.liste] && SOURCES[derniere.liste].find(x => x.id === derniere.id);
   const r = $('#reprendre');
@@ -255,14 +260,25 @@ function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null, g
   </a>`;
 }
 
-function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat = null, classe = '', badge = '', illus = '', grad }){
-  const visuel = illus ? `<div class="i-vis">${illus}</div>`
-    : num !== '' ? `<div class="i-vis i-vis-num"><span class="i-num">${num}</span></div>` : '';
-  const marque = etat != null
-    ? `<span class="etat" aria-label="${etat ? 'terminée' : 'à faire'}">${etat ? '<svg class="ico"><use href="#i-coche"/></svg>' : ''}</span>` : '';
+/* pastille de statut : acquis (coche verte), à travailler (drapeau orange), à faire (cercle vide, leçons) */
+function marqueStatut(st, aFaire = false){
+  if (st === 'acquis') return '<span class="etat acquis" title="Acquis" aria-label="acquis"><svg class="ico"><use href="#i-coche"/></svg></span>';
+  if (st === 'travail') return '<span class="etat travail" title="À travailler" aria-label="à travailler"><svg class="ico"><use href="#i-drapeau"/></svg></span>';
+  return aFaire ? '<span class="etat" aria-label="à faire"></span>' : '';
+}
+
+function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', aFaire = false, classe = '', badge = '', illus = '', grad }){
+  const [, , liste, id] = href.split('/');               // #/jouer/<liste>/<id>
+  const st = P.statut(liste, decodeURIComponent(id || ''));
+  const marque = marqueStatut(st, aFaire);
+  // la pastille de statut se pose en coin du visuel (carte basse) ou en pied de carte (carte haute)
+  const coin = marque.replace('class="etat', 'class="etat etat-vis');
+  const visuel = illus ? `<div class="i-vis">${illus}${coin}</div>`
+    : num !== '' ? `<div class="i-vis i-vis-num"><span class="i-num">${num}</span>${coin}</div>` : '';
+  if (st === 'travail') classe += ' a-travailler';
   // niveau, tempo et état : sous le visuel (carte basse) ou en pied de carte (carte haute)
   const bas = niveau || bpm || marque
-    ? `<span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}${marque}</span>` : '';
+    ? `<span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}${marque.replace('class="etat', 'class="etat etat-bas')}</span>` : '';
   return `<a class="item-carte ${classe}" href="${href}" style="${gradStyle(grad)}">
     <div class="i-corps">
       ${visuel}
@@ -317,7 +333,7 @@ function ecranNiveau(n){
         return itemCarte({
           href:lienJouer('lecon', l), num:LECONS.indexOf(l) + 1, nom:l.titre,
           meta:`${l.duree}${record ? ` · record ${record} BPM` : ''}`,
-          etat:fait, classe:(fait ? 'faite' : '') + (l === suivante && !fait ? ' prochaine' : ''), grad:NIV_GRAD[n - 1],
+          aFaire:true, classe:(fait ? 'faite' : '') + (l === suivante && !fait ? ' prochaine' : ''), grad:NIV_GRAD[n - 1],
           badge:(l === suivante && !fait ? '<span class="i-tag">À toi !</span>' : '') + (l.cle ? '<span class="cle">étape clé</span>' : '')
         });
       }).join('')}</div>`
@@ -448,9 +464,20 @@ function ecranProgression(){
       }).join('')}</div></div>`;
   }).join('');
 
+  const blocStatut = (s, titre, ico, vide) => {
+    const l = P.elementsDe(s).map(e => ({ ...e, it:SOURCES[e.liste] && SOURCES[e.liste].find(x => x.id === e.id) })).filter(e => e.it);
+    return `<div class="bloc bloc-statut bloc-defile ${s}">
+      <h3><svg class="ico" aria-hidden="true"><use href="${ico}"/></svg>${titre} · ${l.length}</h3>
+      ${l.length ? `<ul class="liste-statut">${l.map(e => `<li><a href="${lienJouer(e.liste, e.it)}">
+          <span class="ls-cat">${LISTES[e.liste].nom}</span><span class="ls-nom">${e.it.titre || e.it.nom}</span></a></li>`).join('')}</ul>`
+        : `<p class="muted small">${vide}</p>`}
+    </div>`;
+  };
   ecranListe({
     sur:'Enregistré sur cet appareil', titre:'Progression',
     html:`
+        ${blocStatut('travail', 'À travailler', '#i-drapeau', "Rien pour l'instant. Dans le lecteur, touche le drapeau en haut pour garder un exercice, un rythme ou un morceau sous la main.")}
+        ${blocStatut('acquis', 'Acquis', '#i-coche', "Rien pour l'instant. Dans le lecteur, touche la coche quand tu maîtrises un exercice. (Les leçons terminées sont comptées dans le parcours.)")}
         <div class="bloc bloc-stats">
           <h3>En chiffres</h3>
           <div class="stats">
@@ -521,7 +548,40 @@ function ouvrir(liste, id){
   }
   document.title = (item.titre || item.nom) + ' — Ma Batterie';
   if (ouvrirAide) ouvrirVolet('volet-aide', false);
+  majStatutBoutons();
   return true;
+}
+
+/* ================= statut : à travailler / acquis ================= */
+function majStatutBoutons(){
+  if (!elementCourant) return;
+  const st = P.statut(elementCourant.liste, elementCourant.item.id);
+  for (const [b, v] of [[$('#st-travail'), 'travail'], [$('#st-acquis'), 'acquis']]){
+    b.classList.toggle('actif', st === v);
+    b.setAttribute('aria-pressed', String(st === v));
+  }
+  const chk = $('#chk-faite');
+  if (chk) chk.checked = st === 'acquis';
+}
+function basculerStatut(v){
+  if (!elementCourant) return;
+  const { liste, item } = elementCourant;
+  const nouveau = P.statut(liste, item.id) === v ? null : v;
+  P.setStatut(liste, item.id, nouveau);
+  majStatutBoutons();
+  annoncer(nouveau === 'acquis' ? 'Acquis ✓ Bravo !' : nouveau === 'travail' ? 'Ajouté à « À travailler »' : 'Statut retiré');
+}
+$('#st-travail').addEventListener('click', () => basculerStatut('travail'));
+$('#st-acquis').addEventListener('click', () => basculerStatut('acquis'));
+
+let minuterieToast = null;
+function annoncer(texte){
+  const t = $('#toast');
+  t.hidden = true; void t.offsetWidth;          // relance l'animation
+  t.textContent = texte;
+  t.hidden = false;
+  clearTimeout(minuterieToast);
+  minuterieToast = setTimeout(() => { t.hidden = true; }, 1800);
 }
 
 function corpsLecon(l){
@@ -598,7 +658,7 @@ function chargerMotif(motif, { sur = '', titre, aide = '' }){
   lg.appendChild(legende(motif));
   kit.surligner(Object.keys(analyser(motif).pistes).filter(id => INSTRUMENTS[id]));
   const chk = $('#chk-faite');
-  if (chk) chk.addEventListener('change', e => P.marquer(elementCourant.item.id, e.target.checked));
+  if (chk) chk.addEventListener('change', e => { P.marquer(elementCourant.item.id, e.target.checked); majStatutBoutons(); });
 }
 
 function quitterLecteur(){

@@ -29,6 +29,14 @@ en fait le bilan : leçons terminées, pourcentage du parcours, temps de pratiqu
 trois dernières semaines, jours d'affilée, meilleur tempo atteint sur chaque leçon et
 défis réussis. Un clic sur le numéro d'une leçon la rouvre.
 
+**Acquis ou à travailler, pour tout.** Dans le lecteur, en haut à droite, deux boutons
+marquent l'exercice ouvert — leçon, rythme, morceau, break, rudiment ou exercice —
+d'un seul toucher : **⚑ À travailler** ou **✓ Acquis** (re-toucher retire le statut).
+Le statut apparaît sur les cartes des listes (drapeau orange, coche verte). L'écran
+Progression regroupe tout ce qui est à travailler et tout ce qui est acquis, pour
+rouvrir un élément d'un toucher, et l'accueil affiche le nombre d'éléments à
+travailler. Pour une leçon, « Acquis » et « Leçon terminée » sont la même chose.
+
 ### 🎵 Rythmes — 74 grooves, en 7 familles
 Rock, rock 16 temps, rythme de stade, four on the floor, Motown, funk, boom bap,
 Bo Diddley, shuffle, half-time shuffle, reggae (one drop et steppers), ska, bossa,
@@ -284,7 +292,8 @@ banque d'origine. Une synthèse Web Audio sert de secours le temps du décodage.
 1. Fais les leçons **dans l'ordre**, même celles qui semblent trop faciles.
 2. Toujours **avec le métronome**, toujours **plus lentement que tu ne le voudrais**.
 3. Une leçon est acquise quand tu tiens **une minute sans erreur**, pas quand tu l'as
-   réussie une fois.
+   réussie une fois. Tant que ce n'est pas le cas, marque-la **À travailler** : tu la
+   retrouves d'un toucher depuis l'accueil.
 4. 15 minutes tous les jours valent mieux que 2 heures le dimanche — l'écran
    *Progression* (la pastille des minutes, en haut de l'accueil) te montre ta régularité.
 

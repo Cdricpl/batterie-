@@ -46,7 +46,13 @@ const b = await chromium.launch({
 const bilan = {};
 for (const t of TAILLES){
   const ctx = await b.newContext({ viewport:{ width:t.w, height:t.h }, hasTouch:!!t.tactile, isMobile:!!t.tactile, deviceScaleFactor:1 });
-  await ctx.addInitScript(() => { try { localStorage.setItem('ma-batterie-installation-proposee', '1'); } catch {} });
+  await ctx.addInitScript(() => { try {
+    localStorage.setItem('ma-batterie-installation-proposee', '1');
+    // quelques statuts, pour voir pastilles, drapeaux et listes de progression
+    if (!localStorage.getItem('ma-batterie-progres-v1')) localStorage.setItem('ma-batterie-progres-v1', JSON.stringify({
+      leconsFaites:{ l01:'2026-01-01' }, statuts:{ 'rythme:rock-8':{ s:'travail', j:'2026-01-02' }, 'lecon:l03':{ s:'travail', j:'2026-01-03' },
+        'rudiment:r-paradiddle':{ s:'acquis', j:'2026-01-02' }, 'break:fill-rock-2t':{ s:'acquis', j:'2026-01-04' } } }));
+  } catch {} });
   const p = await ctx.newPage(); const err = []; p.on('pageerror', e => err.push(e.message));
   await p.goto('file://' + racine + 'ma-batterie.html#/'); await p.waitForTimeout(1200);
   const routes = ['#/jouer/rythme/rock-8', '#/', '#/parcours', '#/parcours/1', '#/parcours/5', '#/rythmes', '#/morceaux', '#/breaks', '#/breaks/3', '#/rudiments', '#/progression'];
