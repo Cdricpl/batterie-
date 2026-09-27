@@ -84,8 +84,11 @@ tenue du tempo (tempo très lent, mesure silencieuse), polyrythme 3 contre 2.
   (Parcours, Rythmes, Morceaux, Breaks, Rudiments) ; chacune ouvre ses niveaux ou ses
   familles, puis ses exercices. Les listes défilent **de gauche à droite**, du bout
   du doigt ou à la molette ; pour les morceaux et les breaks, des pastilles N1…N6
-  sautent directement à un niveau. Sur téléphone, l'appli passe en plein écran et se
-  joue couchée : tenu droit, l'écran invite à tourner le téléphone.
+  sautent directement à un niveau. Sur téléphone, l'appli se joue toujours à
+  l'horizontale, sans rien demander : au premier toucher elle passe en plein écran et se
+  verrouille en paysage quand le navigateur le permet (Android) ; sinon (iPhone), tant
+  que le téléphone est tenu droit, elle s'affiche d'elle-même pivotée d'un quart de tour
+  — il suffit de pencher le téléphone. Au premier démarrage, elle propose de s'installer.
 - **Le lecteur occupe tout l'écran** : la partition sur une feuille claire, en haut
   le titre avec ‹ › pour passer à l'exercice voisin, (?) pour les explications et le
   schéma du kit, les réglages à droite ; en bas le métronome, la batterie

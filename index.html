@@ -39,8 +39,10 @@
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
   <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-tourner" viewBox="0 0 48 48"><rect x="15" y="7" width="18" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M21 34h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M38 10a16 16 0 0 1 3 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M37 19l4 5 4-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
+
+<!-- Toute l'appli : si le téléphone est tenu droit, ce conteneur pivote d'un quart de tour -->
+<div id="appli">
 
 <!-- ================= Accueil ================= -->
 <section class="ecran" id="ecran-accueil" aria-labelledby="titre-accueil">
@@ -248,26 +250,27 @@
   </div>
 </aside>
 
-<!-- Téléphone tenu droit : l'appli se joue en paysage -->
-<div class="tourner" id="tourner" aria-live="polite">
-  <svg class="tourner-ico" aria-hidden="true"><use href="#i-tourner"/></svg>
-  <p class="tourner-titre">Tourne ton téléphone</p>
-  <p class="muted">Ma Batterie se joue à l'horizontale : la partition est plus grande et plus lisible.</p>
-  <button class="btn-plat accent" id="btn-paysage" type="button" hidden>Passer en plein écran horizontal</button>
-</div>
-
-<div class="modal" id="ios-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ios-title">
-  <div class="modal-box">
-    <h2 id="ios-title">Installer sur l'iPhone</h2>
-    <ol class="etapes">
-      <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche vers le haut).</li>
-      <li>Fais défiler et choisis <b>Sur l'écran d'accueil</b>.</li>
-      <li>Touche <b>Ajouter</b> : l'icône Ma Batterie apparaît avec tes applis.</li>
-    </ol>
-    <p class="muted small">Ensuite, l'appli s'ouvre en plein écran et fonctionne même sans connexion.</p>
-    <button class="btn-plat accent" id="btn-ios-close" type="button">Compris</button>
+<!-- Installation : proposée au premier démarrage -->
+<div class="modal" id="install-modal" hidden role="dialog" aria-modal="true" aria-labelledby="install-titre">
+  <div class="modal-box install-box">
+    <img class="install-icone" src="icons/icone-192.png" width="84" height="84" alt="">
+    <div class="install-texte">
+      <h2 id="install-titre">Installe Ma Batterie</h2>
+      <p>Une icône sur ton écran d'accueil, l'appli en plein écran et à l'horizontale, et elle marche même sans connexion.</p>
+      <ol class="etapes" id="install-ios" hidden>
+        <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche vers le haut).</li>
+        <li>Choisis <b>Sur l'écran d'accueil</b>, puis <b>Ajouter</b>.</li>
+      </ol>
+      <p class="muted small" id="install-autre" hidden>Ouvre le menu du navigateur (⋮) et choisis <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.</p>
+      <div class="rang-boutons">
+        <button class="btn-plat accent" id="install-oui" type="button" hidden>Installer</button>
+        <button class="btn-plat" id="install-non" type="button">Plus tard</button>
+      </div>
+    </div>
   </div>
 </div>
+
+</div><!-- /appli -->
 
 <!-- Impression : la partition découpée en lignes -->
 <div class="impression" id="impression" aria-hidden="true">

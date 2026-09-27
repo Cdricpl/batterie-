@@ -589,22 +589,30 @@ kbd{
 .modal-box{background:var(--surface);border-radius:var(--r-carte);padding:22px 24px;max-width:460px;width:100%;max-height:100%;overflow:auto;box-shadow:var(--ombre)}
 .modal-box h2{font-size:28px;text-transform:uppercase}
 .etapes{padding-left:1.2em;margin:12px 0}
+.install-box{display:flex;gap:20px;align-items:flex-start;max-width:560px}
+.install-icone{flex:none;border-radius:22px;box-shadow:0 10px 24px -10px rgba(245,66,108,.6)}
+.install-texte h2{margin-bottom:4px}
+.install-texte p{margin:6px 0 12px;color:var(--texte-2)}
+.install-texte .rang-boutons{margin-top:6px}
 .etapes li{margin:.5em 0}
 
-/* ====== téléphone tenu droit ====== */
-.tourner{display:none}
+/* ====== téléphone tenu droit : l'appli pivote d'elle-même ======
+ * Quand le navigateur ne peut pas verrouiller l'écran à l'horizontale (iPhone, ou avant le
+ * premier toucher), tout le contenu tourne d'un quart de tour : il suffit de pencher le
+ * téléphone, sans aucun message. Les zones sûres (encoche) suivent la rotation. */
 @media (orientation:portrait) and (pointer:coarse){
-  .tourner{
-    position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:6px;padding:32px;text-align:center;color:#fff;
-    background:linear-gradient(160deg,var(--ton-1),var(--ton-2));
+  #appli{
+    position:fixed;top:0;left:0;overflow:hidden;
+    width:100vh;width:100dvh;height:100vw;
+    transform-origin:top left;transform:rotate(90deg) translateY(-100%);
+    --sur-g:env(safe-area-inset-top, 0px);
+    --sur-d:env(safe-area-inset-bottom, 0px);
+    --sur-h:env(safe-area-inset-right, 0px);
+    --sur-b:env(safe-area-inset-left, 0px);
   }
-  .tourner-ico{width:96px;height:96px;color:#fff;animation:bascule 2.4s ease-in-out infinite;transform-origin:50% 50%}
-  .tourner-titre{font:800 32px/1.1 var(--f-titre);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 0}
-  .tourner p.muted{max-width:30ch;color:rgba(255,255,255,.92)}
-  #btn-paysage{margin-top:14px;background:#fff;color:var(--ton-texte);box-shadow:0 8px 20px -8px rgba(0,0,0,.35)}
+  /* le défilement au doigt est piloté par l'appli : pas d'aimantation qui le contrarie */
+  #appli .liste-corps{scroll-snap-type:none}
 }
-@keyframes bascule{0%,30%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
 
 /* ====== écrans bas (téléphone couché) ====== */
 @media (max-height:500px){
@@ -691,8 +699,10 @@ kbd{
   <symbol id="i-flamme" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-6.8 0-4.3-3.6-6.3-4.3-10.2-2.4 1.6-3.5 4-3.2 6.6-1.2-.6-2-1.8-2.2-3.2C7.2 10 5 12.3 5 15.2 5 19.2 8 22 12 22z" fill="currentColor"/></symbol>
   <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-tourner" viewBox="0 0 48 48"><rect x="15" y="7" width="18" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M21 34h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M38 10a16 16 0 0 1 3 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M37 19l4 5 4-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
+
+<!-- Toute l'appli : si le téléphone est tenu droit, ce conteneur pivote d'un quart de tour -->
+<div id="appli">
 
 <!-- ================= Accueil ================= -->
 <section class="ecran" id="ecran-accueil" aria-labelledby="titre-accueil">
@@ -900,26 +910,27 @@ kbd{
   </div>
 </aside>
 
-<!-- Téléphone tenu droit : l'appli se joue en paysage -->
-<div class="tourner" id="tourner" aria-live="polite">
-  <svg class="tourner-ico" aria-hidden="true"><use href="#i-tourner"/></svg>
-  <p class="tourner-titre">Tourne ton téléphone</p>
-  <p class="muted">Ma Batterie se joue à l'horizontale : la partition est plus grande et plus lisible.</p>
-  <button class="btn-plat accent" id="btn-paysage" type="button" hidden>Passer en plein écran horizontal</button>
-</div>
-
-<div class="modal" id="ios-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ios-title">
-  <div class="modal-box">
-    <h2 id="ios-title">Installer sur l'iPhone</h2>
-    <ol class="etapes">
-      <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche vers le haut).</li>
-      <li>Fais défiler et choisis <b>Sur l'écran d'accueil</b>.</li>
-      <li>Touche <b>Ajouter</b> : l'icône Ma Batterie apparaît avec tes applis.</li>
-    </ol>
-    <p class="muted small">Ensuite, l'appli s'ouvre en plein écran et fonctionne même sans connexion.</p>
-    <button class="btn-plat accent" id="btn-ios-close" type="button">Compris</button>
+<!-- Installation : proposée au premier démarrage -->
+<div class="modal" id="install-modal" hidden role="dialog" aria-modal="true" aria-labelledby="install-titre">
+  <div class="modal-box install-box">
+    <img class="install-icone" src="icons/icone-192.png" width="84" height="84" alt="">
+    <div class="install-texte">
+      <h2 id="install-titre">Installe Ma Batterie</h2>
+      <p>Une icône sur ton écran d'accueil, l'appli en plein écran et à l'horizontale, et elle marche même sans connexion.</p>
+      <ol class="etapes" id="install-ios" hidden>
+        <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche vers le haut).</li>
+        <li>Choisis <b>Sur l'écran d'accueil</b>, puis <b>Ajouter</b>.</li>
+      </ol>
+      <p class="muted small" id="install-autre" hidden>Ouvre le menu du navigateur (⋮) et choisis <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.</p>
+      <div class="rang-boutons">
+        <button class="btn-plat accent" id="install-oui" type="button" hidden>Installer</button>
+        <button class="btn-plat" id="install-non" type="button">Plus tard</button>
+      </div>
+    </div>
   </div>
 </div>
+
+</div><!-- /appli -->
 
 <!-- Impression : la partition découpée en lignes -->
 <div class="impression" id="impression" aria-hidden="true">
@@ -934,7 +945,7 @@ kbd{
 /* Numéro de version de l'application : affiché en haut de l'écran, et utilisé par
  * le service worker (build.js --site) pour que les téléphones installés récupèrent
  * chaque nouvelle version. À augmenter à chaque livraison. */
-const VERSION = '2.4.1';
+const VERSION = '2.5.0';
 const DATE_VERSION = '2026-09-26';
 
 
@@ -5434,7 +5445,7 @@ function creerTete(po){
 }
 function echelleDe(po){
   if (!po.echelle){
-    const w = po.svg.getBoundingClientRect().width;
+    const w = po.cadre.clientWidth;       // taille de mise en page : juste même si l'appli est pivotée
     if (!w) return 0;
     po.echelle = w / po.largeur;
     // zone couverte par la tête, ramenée à la partie visible si la portée est recadrée
@@ -5814,7 +5825,7 @@ const enfoncees = new Set();
 const INTERACTIF = 'button, a, summary, select, [role="button"], [role="tab"], [tabindex]';
 window.addEventListener('keydown', async e => {
   if (e.key === 'Escape'){
-    if (!$('#ios-modal').hidden){ fermerIOS(); return; }
+    if (!$('#install-modal').hidden){ fermerInstallation(); return; }
     if (voletOuvert){ fermerVolets(); return; }
   }
   if (!enLecteur() || voletOuvert || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -5851,23 +5862,89 @@ window.addEventListener('resize', () => {
   }, 160);
 });
 
-/* ================= plein écran horizontal (téléphone) ================= */
+/* ================= plein écran horizontal (téléphone) =================
+ * Aucun message : au premier toucher, l'appli passe en plein écran et se verrouille à
+ * l'horizontale quand le navigateur le permet (Android). Sinon (iPhone), la feuille de style
+ * fait pivoter l'appli d'un quart de tour tant que le téléphone est tenu droit. */
 const enApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const tactile = matchMedia('(pointer:coarse)').matches;
-const peutBasculer = !!(document.documentElement.requestFullscreen && screen.orientation && screen.orientation.lock);
 async function pleinEcranPaysage(){
   try {
     if (!enApp && !document.fullscreenElement && document.documentElement.requestFullscreen)
       await document.documentElement.requestFullscreen({ navigationUI:'hide' });
     if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
-  } catch { /* refusé ou non pris en charge (iPhone) : l'invitation à tourner reste */ }
+  } catch { /* refusé ou non pris en charge : l'appli pivote d'elle-même (CSS) */ }
 }
-if (tactile && peutBasculer) $('#btn-paysage').hidden = false;
-$('#btn-paysage').addEventListener('click', pleinEcranPaysage);
-// au premier toucher, l'appli passe en plein écran et reste à l'horizontale
-if (tactile) document.addEventListener('pointerup', () => { if (peutBasculer) pleinEcranPaysage(); }, { once:true });
+if (tactile){
+  // appli installée : le verrouillage ne demande pas de geste
+  if (enApp && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
+  const auPremierToucher = e => {
+    if (e.target.closest('#install-modal')) return;       // pas pendant la proposition d'installation
+    document.removeEventListener('pointerup', auPremierToucher);
+    pleinEcranPaysage();
+  };
+  document.addEventListener('pointerup', auPremierToucher);
+}
 
 document.addEventListener('pointerdown', () => initAudio(), { once:true });
+
+/* Appli pivotée (téléphone tenu droit) : le navigateur fait défiler dans le sens de l'écran,
+ * plus dans celui du contenu. On traduit donc nous-mêmes le glissé du doigt vers la zone qui
+ * défile, avec l'élan à la fin du geste, comme un défilement normal. */
+const pivotee = matchMedia('(orientation: portrait) and (pointer: coarse)');
+function zoneDefilante(el, horizontal){
+  for (let n = el; n && n.id !== 'appli'; n = n.parentElement){
+    const st = getComputedStyle(n);
+    const ok = horizontal
+      ? /(auto|scroll)/.test(st.overflowX) && n.scrollWidth > n.clientWidth + 1
+      : /(auto|scroll)/.test(st.overflowY) && n.scrollHeight > n.clientHeight + 1;
+    if (ok) return n;
+  }
+  return null;
+}
+let glisse = null, elan = null, ignorerClic = 0;
+document.addEventListener('touchstart', e => {
+  cancelAnimationFrame(elan);
+  glisse = null;
+  if (!pivotee.matches || e.touches.length !== 1 || e.target.closest('input[type=range], select')) return;
+  const t = e.touches[0];
+  glisse = { x:t.clientX, y:t.clientY, temps:performance.now(), cible:e.target, zone:null, v:0 };
+}, { passive:true });
+document.addEventListener('touchmove', e => {
+  if (!glisse) return;
+  const t = e.touches[0];
+  // rotation d'un quart de tour : x du contenu = y de l'écran, y du contenu = −x de l'écran
+  const dx = t.clientY - glisse.y, dy = -(t.clientX - glisse.x);
+  if (!glisse.zone){
+    if (Math.hypot(dx, dy) < 8) return;
+    glisse.horizontal = Math.abs(dx) >= Math.abs(dy);
+    glisse.zone = zoneDefilante(glisse.cible, glisse.horizontal);
+    if (!glisse.zone){ glisse = null; return; }
+  }
+  e.preventDefault();
+  const d = glisse.horizontal ? dx : dy;
+  if (glisse.horizontal) glisse.zone.scrollLeft -= d; else glisse.zone.scrollTop -= d;
+  const maintenant = performance.now();
+  glisse.v = glisse.v * 0.6 + (d / Math.max(1, maintenant - glisse.temps)) * 0.4;   // vitesse lissée (px/ms)
+  glisse.x = t.clientX; glisse.y = t.clientY; glisse.temps = maintenant;
+}, { passive:false });
+document.addEventListener('touchend', () => {
+  if (!glisse || !glisse.zone) { glisse = null; return; }
+  ignorerClic = performance.now();              // un glissé n'est pas un toucher sur une carte
+  const { zone, horizontal } = glisse;
+  let v = glisse.v * 16;                         // px par image
+  glisse = null;
+  const pas = () => {
+    if (Math.abs(v) < 0.4) return;
+    if (horizontal) zone.scrollLeft -= v; else zone.scrollTop -= v;
+    v *= 0.94;
+    elan = requestAnimationFrame(pas);
+  };
+  elan = requestAnimationFrame(pas);
+});
+document.addEventListener('click', e => {
+  if (performance.now() - ignorerClic < 350){ e.preventDefault(); e.stopPropagation(); }
+}, true);
 
 /* ================= installation sur le téléphone ================= */
 const surIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
@@ -5894,29 +5971,57 @@ if (installable && 'serviceWorker' in navigator){
   });
 }
 
+/* Proposition d'installation : une fois, au premier démarrage ; ensuite, le bouton
+ * « Installer » de l'accueil reste disponible. */
+const CLE_INSTALLATION = 'ma-batterie-installation-proposee';
 let demandeInstallation = null;
+
+function majInstallation(){
+  // Android / Chrome : un vrai bouton « Installer » ; iPhone : les étapes ; autres : le menu
+  $('#install-oui').hidden = !demandeInstallation;
+  $('#install-ios').hidden = !!demandeInstallation || !surIOS;
+  $('#install-autre').hidden = !!demandeInstallation || surIOS;
+  $('#install-non').textContent = demandeInstallation ? 'Plus tard' : 'Compris';
+}
+function proposerInstallation(){
+  if (enApp || !installable) return;
+  majInstallation();
+  $('#install-modal').hidden = false;
+  if (!tactile) ($('#install-oui').hidden ? $('#install-non') : $('#install-oui')).focus();
+}
+function fermerInstallation(){ $('#install-modal').hidden = true; }
+function premiereProposition(){
+  if (enApp || !installable || lire(CLE_INSTALLATION, false)) return;
+  ecrire(CLE_INSTALLATION, true);
+  proposerInstallation();
+}
+
 window.addEventListener('beforeinstallprompt', e => {      // Android, Chrome, Edge
   e.preventDefault();
   demandeInstallation = e;
-  if (!enApp) $('#btn-installer').hidden = false;
+  if (enApp) return;
+  $('#btn-installer').hidden = false;
+  if (!$('#install-modal').hidden) majInstallation();       // la fenêtre est ouverte : on passe au vrai bouton
+  else premiereProposition();
 });
-window.addEventListener('appinstalled', () => { $('#btn-installer').hidden = true; });
-if (installable && surIOS && !enApp) $('#btn-installer').hidden = false;   // iPhone : on explique
+window.addEventListener('appinstalled', () => { $('#btn-installer').hidden = true; fermerInstallation(); });
+if (installable && !enApp){
+  if (surIOS) $('#btn-installer').hidden = false;           // iPhone : on explique la marche à suivre
+  // si le navigateur ne propose rien de lui-même, on explique quand même au premier démarrage
+  setTimeout(premiereProposition, surIOS ? 1200 : 3000);
+}
 
-$('#btn-installer').addEventListener('click', async () => {
-  if (demandeInstallation){
-    demandeInstallation.prompt();
-    await demandeInstallation.userChoice;
-    demandeInstallation = null;
-    $('#btn-installer').hidden = true;
-  } else {
-    $('#ios-modal').hidden = false;
-    $('#btn-ios-close').focus();
-  }
+$('#btn-installer').addEventListener('click', proposerInstallation);
+$('#install-oui').addEventListener('click', async () => {
+  if (!demandeInstallation) return;
+  demandeInstallation.prompt();
+  const choix = await demandeInstallation.userChoice;
+  demandeInstallation = null;
+  fermerInstallation();
+  if (choix && choix.outcome === 'accepted') $('#btn-installer').hidden = true;
 });
-function fermerIOS(){ $('#ios-modal').hidden = true; $('#btn-installer').focus(); }
-$('#btn-ios-close').addEventListener('click', fermerIOS);
-$('#ios-modal').addEventListener('click', e => { if (e.target.id === 'ios-modal') fermerIOS(); });
+$('#install-non').addEventListener('click', fermerInstallation);
+$('#install-modal').addEventListener('click', e => { if (e.target.id === 'install-modal') fermerInstallation(); });
 
 /* ================= démarrage ================= */
 majRampe();
