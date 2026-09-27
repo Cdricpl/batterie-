@@ -100,9 +100,11 @@ tenue du tempo (tempo très lent, mesure silencieuse), polyrythme 3 contre 2.
     triolets, charleston ouvert…) ;
   - une **grille** de type boîte à rythmes, colorée, avec la main à utiliser (D / G, P
     pour les pieds) quand le doigté est connu ;
-  - la **batterie** vue de dessus, chaque élément dans sa couleur : un anneau se
-    resserre sur l'élément à frapper un temps avant le coup, puis l'élément s'allume
-    au moment exact, avec la main à utiliser. Toucher un élément le fait sonner.
+  - la **batterie en 3D**, vue depuis le tabouret : fûts laqués chacun dans sa
+    couleur, cercles et pieds chromés, cymbales en bronze. Un anneau se resserre sur
+    l'élément à frapper un temps avant le coup ; au moment exact, l'élément s'allume
+    et bouge (la peau rebondit, la cymbale vibre, la batte part vers la grosse
+    caisse), avec la main à utiliser. Toucher un élément le fait sonner.
 - **Au moins deux lignes à l'écran** : celle qu'on joue et la suivante, pour lire en
   avance. Chaque ligne compte de 1 à 4 mesures selon la largeur, et la portée est
   recadrée au plus près des notes pour que les deux lignes restent lisibles. Pendant la lecture, **la partition tourne la page** : quand la
@@ -239,7 +241,7 @@ js/rudiments.js       les rudiments
 js/songs.js           les morceaux connus et leur découpage en sections
 js/lessons.js         les 31 leçons
 js/kit.js             schéma du kit
-js/vuekit.js          affichage « Batterie » (kit vu de dessus, anneaux d'anticipation)
+js/vuekit.js          affichage « Batterie » (kit en 3D, anneaux d'anticipation)
 js/illustrations.js   dessins des cartes (catégories, niveaux, familles)
 js/progress.js        progression sauvegardée (localStorage)
 js/app.js             assemblage de l'interface

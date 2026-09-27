@@ -371,23 +371,38 @@ a.carte-cat:active,.tuile:active,.item-carte:active{transform:scale(.98)}
 .portee-cadre{position:relative;display:block}
 .portee{display:block;width:100%;height:auto;max-width:none}
 .score-grid{height:100%;overflow:auto}
-/* --- affichage « Batterie » : le kit vu de dessus --- */
-.score-kit{height:100%;padding:6px 10px 4px;cursor:pointer}
-.vue-kit{display:block;width:100%;height:100%}
+/* --- affichage « Batterie » : le kit en 3D, vu depuis le tabouret --- */
+.score-kit{height:100%;padding:6px 10px 4px;cursor:pointer;
+  background:radial-gradient(120% 90% at 50% 0%, #fff 40%, #eef1fb 100%)}
+.vue-kit{display:block;width:100%;height:100%;overflow:visible}
 .kit-compteur{font:800 17px var(--f-titre);letter-spacing:.12em;text-transform:uppercase;fill:var(--encre-2)}
-.pad{cursor:pointer}
-.pad .fond{fill:#fff;stroke:var(--p);stroke-width:7}
-.pad.cymbale .fond{fill:color-mix(in srgb, var(--p) 16%, #fff);stroke-width:5}
-.pad .sillon{fill:none;stroke:var(--p);stroke-width:1.5;opacity:.35}
-.pad .point{fill:var(--p);opacity:.3;transform-box:fill-box;transform-origin:center}
-.pad .anneau{fill:none;stroke:var(--p);stroke-width:6;opacity:0;pointer-events:none}
-.pad .nom{font:700 13px var(--f-texte);fill:var(--encre-2);pointer-events:none}
-.pad .lettre{font:800 30px var(--f-titre);fill:#fff;opacity:0;pointer-events:none}
-.pad.absent{opacity:.22}
-.pad.frappe .point{animation:coup .26s ease-out}
-.pad.frappe .fond{filter:drop-shadow(0 0 12px color-mix(in srgb, var(--p) 80%, transparent))}
+.vue-kit .pieds{pointer-events:none}
+.pad{cursor:pointer;transition:opacity .2s,filter .2s;outline:none}
+.pad .corps,.pad .batte,.pad .dessus{transform-box:fill-box;transform-origin:50% 50%}
+.pad .eclat{fill:var(--p);opacity:0;pointer-events:none}
+.pad .anneau{fill:none;stroke:var(--p);stroke-width:5;opacity:0;pointer-events:none;
+  filter:drop-shadow(0 0 3px color-mix(in srgb, var(--p) 60%, transparent))}
+.pad .nom{font:700 13px var(--f-texte);fill:var(--encre-2);pointer-events:none;
+  paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.pad.gc .nom{stroke:none;fill:#4b5565;font-size:12px}
+.pad .lettre{font:800 30px var(--f-titre);fill:#fff;opacity:0;pointer-events:none;
+  paint-order:stroke;stroke:rgba(22,28,45,.75);stroke-width:5px;stroke-linejoin:round}
+.pad.absent{opacity:.62;filter:saturate(.4)}
+.pad.frappe{opacity:1;filter:none}
+.pad.frappe .eclat{animation:eclat .3s ease-out}
+.pad.frappe .cible{filter:drop-shadow(0 0 8px var(--p))}
 .pad.frappe .lettre{opacity:1}
-@keyframes coup{0%{opacity:1;transform:scale(2.15)}60%{opacity:1;transform:scale(2)}100%{opacity:.3;transform:scale(1)}}
+.pad.fut.frappe .corps,.pad.gc.frappe .corps{animation:rebond .22s ease-out}
+.pad.cymbale.frappe .corps{animation:vibre .5s ease-out}
+.pad.charley.frappe .dessus{animation:ferme .2s ease-out}
+.pad.pedale.frappe .corps{animation:appui .22s ease-out}
+.pad.gc.frappe .batte{animation:batte .22s ease-out}
+@keyframes eclat{0%{opacity:.8}100%{opacity:0}}
+@keyframes rebond{0%{transform:translateY(3px) scale(.985)}100%{transform:none}}
+@keyframes vibre{0%{transform:rotate(-4deg)}25%{transform:rotate(3deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(1deg)}100%{transform:none}}
+@keyframes ferme{0%{transform:translateY(5px)}100%{transform:none}}
+@keyframes appui{0%{transform:translateY(3px) scaleY(.9)}100%{transform:none}}
+@keyframes batte{0%{transform:translateY(-12px)}100%{transform:none}}
 .bascule.vue{width:auto;padding:0 12px;gap:7px;display:inline-flex;align-items:center;color:var(--texte);font:700 13px/1 var(--f-titre);letter-spacing:.08em;text-transform:uppercase}
 .fin-page{height:60%}      /* de quoi amener la dernière ligne en haut */
 
@@ -650,7 +665,7 @@ kbd{
   .item-carte,.tuile,.carte-cat{-webkit-user-select:none;user-select:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .pad.frappe .point{opacity:1;transform:scale(1.8)}
+  .pad.frappe .eclat{opacity:.5}
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
 
