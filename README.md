@@ -151,6 +151,13 @@ Une fois le site ouvert sur le téléphone :
 
 Sur iPhone, le son est joué même quand le téléphone est en mode silencieux.
 
+## En ligne (GitHub Pages)
+
+L'application est publiée directement depuis ce dépôt : **https://cdricpl.github.io/batterie-/**
+(réglage unique : *Settings → Pages → Deploy from a branch →* `claude/drum-learning-app-orbwmz`, dossier `/ (root)`).
+Chaque nouvelle version poussée sur la branche est en ligne une ou deux minutes après ;
+les téléphones qui l'ont installée la récupèrent à l'ouverture suivante.
+
 ## Lancer l'application
 
 **Le plus simple** : double-cliquer sur **`ma-batterie.html`** — tout est dedans, ça
