@@ -230,7 +230,8 @@ js/app.js             assemblage de l'interface
 build.js              fabrique ma-batterie.html (fichier unique) et site/ (installable)
 manifest.webmanifest  description de l'application pour l'installation
 sw.js                 service worker : fonctionnement hors connexion
-icons/                icônes de l'application
+icons/                icônes de l'application (dessin unique : icons/icone.svg)
+outils/generer_icones.mjs  fabrique les PNG et le logo de l'appli depuis icone.svg
 netlify.toml          publication sur Netlify
 ma-batterie.html      l'application entière en un seul fichier — à double-cliquer
 ```
