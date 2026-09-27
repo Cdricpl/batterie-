@@ -164,7 +164,7 @@ function ecranAccueil(){
     : `${LECONS.length} leçons pas à pas, du tout premier coup au niveau avancé.`;
   $('#parcours-jauge').style.width = Math.round(faites / LECONS.length * 100) + '%';
   $('#cta-continuer').href = lienJouer('lecon', suivante);
-  $('#cta-texte').textContent = faites ? `Continuer · Leçon ${idx}` : 'Commencer · Leçon 1';
+  $('#cta-texte').innerHTML = `<span class="cta-verbe">${faites ? 'Continuer' : 'Commencer'} · </span>Leçon ${faites ? idx : 1}`;
   $('#compte-rythmes').textContent = `${GROOVES.length} grooves, du rock au 9/8`;
   $('#compte-morceaux').textContent = `${MORCEAUX.length} titres connus à jouer`;
   $('#compte-breaks').textContent = `${FILLS.length} fills pour relier les parties`;
@@ -178,9 +178,26 @@ function ecranAccueil(){
   if (it && derniere.liste !== 'lecon'){
     r.hidden = false;
     r.href = lienJouer(derniere.liste, it);
-    $('#reprendre-texte').textContent = 'Reprendre · ' + (it.titre || it.nom);
+    const nom = it.titre || it.nom;
+    r.title = 'Reprendre · ' + nom;
+    // nom court (sans la précision entre parenthèses) ; s'il ne tient pas, « Reprendre » seul
+    const court = nom.replace(/\s*\(.*?\)/g, '').replace(/\s+—.*$/, '').trim();
+    const t = $('#reprendre-texte');
+    t.textContent = 'Reprendre';
+    const n = document.createElement('span');
+    n.className = 'reprendre-nom';
+    n.textContent = ' · ' + court;
+    t.appendChild(n);
+    requestAnimationFrame(ajusterReprendre);
   } else r.hidden = true;
 }
+function ajusterReprendre(){
+  const t = $('#reprendre-texte'), n = t.querySelector('.reprendre-nom');
+  if (!n || !t.clientWidth) return;
+  n.hidden = false;
+  if (t.scrollWidth > t.clientWidth + 1) n.hidden = true;
+}
+if (typeof ResizeObserver !== 'undefined') new ResizeObserver(ajusterReprendre).observe($('#reprendre').closest('.entete'));
 function majStat(){
   const s = P.serie();
   $('#streak-text').textContent = `${P.minutesAujourdhui()} min` + (s > 1 ? ` · ${s} j` : '');
@@ -241,17 +258,21 @@ function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null, g
 function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat = null, classe = '', badge = '', illus = '', grad }){
   const visuel = illus ? `<div class="i-vis">${illus}</div>`
     : num !== '' ? `<div class="i-vis i-vis-num"><span class="i-num">${num}</span></div>` : '';
+  const marque = etat != null
+    ? `<span class="etat" aria-label="${etat ? 'terminée' : 'à faire'}">${etat ? '<svg class="ico"><use href="#i-coche"/></svg>' : ''}</span>` : '';
+  // niveau, tempo et état : sous le visuel (carte basse) ou en pied de carte (carte haute)
+  const bas = niveau || bpm || marque
+    ? `<span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}${marque}</span>` : '';
   return `<a class="item-carte ${classe}" href="${href}" style="${gradStyle(grad)}">
     <div class="i-corps">
       ${visuel}
       <div class="i-texte">
         ${badge}
-        <span class="i-nom">${nom}</span>
+        <span class="i-nom">${nom.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</span>
         ${meta ? `<span class="i-meta">${meta}</span>` : ''}
-        ${niveau || bpm ? `<span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}</span>` : ''}
       </div>
+      ${bas}
     </div>
-    ${etat != null ? `<span class="etat" aria-label="${etat ? 'terminée' : 'à faire'}">${etat ? '<svg class="ico"><use href="#i-coche"/></svg>' : ''}</span>` : ''}
   </a>`;
 }
 
@@ -351,7 +372,7 @@ function ecranGenre(id){
       niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[n - 1]
     }));
   }
-  ecranListe({ sur:`Morceaux · ${lot.length} titres, du plus facile au plus dur`, titre:g.nom, retour:'#/morceaux', html,
+  ecranListe({ sur:`Morceaux · ${lot.length} titres, par niveau`, titre:g.nom, retour:'#/morceaux', html,
     sauts:sautsNiveaux(lot, 'm-niv') });
 }
 
@@ -372,7 +393,7 @@ function ecranNiveauBreaks(n){
   const lot = FILLS.filter(f => (f.niveau || 1) === n);
   if (!lot.length) return ecranBreaks();
   ecranListe({
-    sur:`Breaks · niveau ${n} · une mesure de groove, une mesure de break`, titre:NOMS_NIVEAUX[n], retour:'#/breaks',
+    sur:`Breaks · niveau ${n} · groove + break`, titre:NOMS_NIVEAUX[n], retour:'#/breaks',
     html:`<div class="rangee">${lot.map(f => itemCarte({
       href:lienJouer('break', f), nom:f.nom,
       meta:f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
@@ -428,7 +449,7 @@ function ecranProgression(){
   }).join('');
 
   ecranListe({
-    sur:'Tout est enregistré sur cet appareil', titre:'Progression',
+    sur:'Enregistré sur cet appareil', titre:'Progression',
     html:`
         <div class="bloc bloc-stats">
           <h3>En chiffres</h3>
@@ -634,40 +655,50 @@ function rendreLignes(){
   if (W <= 0 || H <= 0) return;
   const ECART = 6;
 
-  // hauteur réelle d'une ligne, sans le blanc autour de la portée
-  const essai = dessinerPortee(tranche(motifCourant, 0, 1), { premiereMesure:0 });
-  if (motifCourant.doigte) dessinerDoigte(essai, tranche(motifCourant, 0, 1));
-  box.appendChild(essai.svg);
-  const bb = essai.svg.getBBox();
-  box.removeChild(essai.svg);
-  const hRef = Math.ceil(bb.height) + 10 + (motifCourant.sections && motifCourant.sections.length && !(motifCourant.sections[0].debut === 0) ? 22 : 0);
+  // hauteur réelle d'une ligne, sans le blanc autour de la portée (à l'échelle ech, le
+  // comptage grossit pour rester lisible : la ligne est alors un peu plus haute)
+  const hauteurLigne = ech => {
+    const essai = dessinerPortee(tranche(motifCourant, 0, 1), { premiereMesure:0 });
+    if (motifCourant.doigte) dessinerDoigte(essai, tranche(motifCourant, 0, 1));
+    comptageLisible(essai.svg, ech);
+    box.appendChild(essai.svg);
+    const bb = essai.svg.getBBox();
+    box.removeChild(essai.svg);
+    return Math.ceil(bb.height) + 10 + (motifCourant.sections && motifCourant.sections.length && !(motifCourant.sections[0].debut === 0) ? 22 : 0);
+  };
   const largeurDe = k => marge + k * largeurMesure;
 
-  // a) tout sur une seule ligne, si ça tient
-  const mini = H / hRef > 2.2 ? 1.05 : 0.87;
-  let n = 1, s = 1;
-  for (let k = Math.min(4, a.bars); k >= 1; k--){
-    const sk = Math.min(W / largeurDe(k), H / hRef);
-    if (sk >= mini || k === 1){ n = k; s = sk; break; }
+  function disposer(hRef){
+    // a) tout sur une seule ligne, si ça tient
+    const mini = H / hRef > 2.2 ? 1.05 : 0.87;
+    let n = 1, s = 1;
+    for (let k = Math.min(4, a.bars); k >= 1; k--){
+      const sk = Math.min(W / largeurDe(k), H / hRef);
+      if (sk >= mini || k === 1){ n = k; s = sk; break; }
+    }
+    // b) sinon, plusieurs lignes visibles : la hauteur fixe la taille des notes, puis on
+    //    met sur chaque ligne autant de mesures que la largeur en accepte à cette taille
+    if (Math.ceil(a.bars / n) > 1){
+      const nbLignes = Math.max(2, Math.min(4, Math.floor(H / (hRef * 1.05))));
+      const sH = Math.min(1.7, (H - (nbLignes - 1) * ECART) / (nbLignes * hRef));
+      let k = Math.min(4, a.bars);
+      while (k > 1 && W / largeurDe(k) < sH * 0.92) k--;
+      const s2 = Math.min(sH, W / largeurDe(k));
+      if (s2 >= 0.58){ n = k; s = s2; }
+    }
+    if (n === 3 && a.bars % 3 && a.bars % 2 === 0 && a.bars > 3){ n = 2; s = Math.min(s, W / largeurDe(2)); }
+    return { n, s:Math.min(s, 1.7) };
   }
-  // b) sinon, plusieurs lignes visibles : la hauteur fixe la taille des notes, puis on
-  //    met sur chaque ligne autant de mesures que la largeur en accepte à cette taille
-  if (Math.ceil(a.bars / n) > 1){
-    const nbLignes = Math.max(2, Math.min(4, Math.floor(H / (hRef * 1.05))));
-    const sH = Math.min(1.7, (H - (nbLignes - 1) * ECART) / (nbLignes * hRef));
-    let k = Math.min(4, a.bars);
-    while (k > 1 && W / largeurDe(k) < sH * 0.92) k--;
-    const s2 = Math.min(sH, W / largeurDe(k));
-    if (s2 >= 0.58){ n = k; s = s2; }
-  }
-  if (n === 3 && a.bars % 3 && a.bars % 2 === 0 && a.bars > 3){ n = 2; s = Math.min(s, W / largeurDe(2)); }
-  s = Math.min(s, 1.7);
+  let { n, s } = disposer(hauteurLigne(1));
+  // petite échelle : on remesure avec le comptage grossi, pour que les lignes tiennent
+  if (s < 1) ({ n, s } = disposer(hauteurLigne(s * 0.97)));
 
   for (let b = 0; b < a.bars; b += n){
     const fin = Math.min(a.bars, b + n);
     const t = tranche(motifCourant, b, fin);
     const po = dessinerPortee(t, { premiereMesure:b, barreFinale:fin === a.bars });
     if (t.doigte) dessinerDoigte(po, t);
+    comptageLisible(po.svg, s);
     po.svg.classList.add('systeme');
     const cadre = creerTete(po);
     cadre.style.width = (po.largeur * s).toFixed(1) + 'px';
@@ -686,6 +717,36 @@ function rendreLignes(){
     box.appendChild(fin);
   }
   allerLigne(Math.max(0, vue.systemes.findIndex(sy => lecteur.debutPlage < sy.fin)));
+}
+
+/* Sur un petit écran la portée est réduite : comptage et doigté grossissent
+ * d'autant pour rester lisibles (≈ 11 px à l'écran). Les « e, et, a » entre les temps
+ * disparaissent s'ils n'ont plus la place ; les numéros de temps restent toujours. */
+function comptageLisible(svg, s){
+  const pasDe = sel => {
+    const l = [...svg.querySelectorAll(sel)].map(t => [+t.getAttribute('data-step'), +t.getAttribute('x')]).filter(([st]) => !isNaN(st));
+    let p = Infinity;
+    for (let i = 1; i < l.length; i++) if (l[i][0] > l[i - 1][0]) p = Math.min(p, (l[i][1] - l[i - 1][1]) / (l[i][0] - l[i - 1][0]));
+    return p;
+  };
+  const pas = pasDe('.compte');
+  const comptes = [...svg.querySelectorAll('.compte')];
+  const fort = t => t.getAttribute('font-weight') === '700';
+  const tailleDe = t => Math.max(+t.getAttribute('font-size'), (fort(t) ? 12 : 11) / s);
+  // toutes les syllabes ou aucune : « 1 e et a », jamais « 1 e a »
+  const place = comptes.every(t => fort(t) || tailleDe(t) * 0.62 * t.textContent.length <= pas * 0.92);
+  for (const t of comptes){
+    if (!fort(t) && !place){ t.setAttribute('display', 'none'); continue; }
+    t.setAttribute('font-size', tailleDe(t).toFixed(1));
+  }
+  for (const t of svg.querySelectorAll('.num-mesure, .nolet')){
+    const base = +t.getAttribute('font-size');
+    if (base * s < 11) t.setAttribute('font-size', (11 / s).toFixed(1));
+  }
+  for (const t of svg.querySelectorAll('.doigte')){
+    const base = parseFloat(getComputedStyle(t).fontSize) || 11.5;
+    if (base * s < 11) t.style.fontSize = (11 / s).toFixed(1) + 'px';
+  }
 }
 
 /* Recadre la portée sur son contenu : pas de grande marge blanche au-dessus ni dessous */
@@ -1019,6 +1080,7 @@ function preparerImpression(){
     const t = tranche(motifCourant, b, fin);
     const po = dessinerPortee(t, { premiereMesure:b, barreFinale:fin === a.bars });
     if (t.doigte) dessinerDoigte(po, t);
+    comptageLisible(po.svg, s);
     po.svg.classList.add('systeme');
     // largeur proportionnelle au nombre de mesures : la dernière ligne n'est pas étirée
     po.svg.style.width = (fin - b) / parLigne * 100 + '%';
@@ -1135,6 +1197,26 @@ window.addEventListener('keydown', async e => {
 window.addEventListener('keyup', e => enfoncees.delete(e.key === ' ' ? ' ' : e.key.toLowerCase()));
 
 /* ================= taille de l'écran ================= */
+/* Titre trop long pour sa place : on réduit la police (jusqu'à un minimum lisible) plutôt
+ * que de le couper. Réajusté quand le texte change et quand la barre change de taille. */
+function titreAjuste(el, cadre, min, deuxLignes = false){
+  const ajuster = () => {
+    el.style.fontSize = '';
+    el.classList.remove('deux-lignes');
+    if (!el.clientWidth) return;
+    let t = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 1 && t > min){ t -= 1; el.style.fontSize = t + 'px'; }
+    // toujours trop long à la taille minimale : sur deux lignes plutôt que coupé
+    if (deuxLignes && el.scrollWidth > el.clientWidth + 1) el.classList.add('deux-lignes');
+  };
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(ajuster).observe(cadre);
+  new MutationObserver(ajuster).observe(el, { childList:true, characterData:true, subtree:true });
+}
+titreAjuste($('#j-titre'), $('#j-titre').closest('.barre-jeu'), 15, true);
+titreAjuste($('#liste-titre'), $('#liste-titre').closest('.entete'), 18);
+titreAjuste($('#liste-sur'), $('#liste-sur').closest('.entete'), 11);
+for (const h of document.querySelectorAll('.carte-cat h2')) titreAjuste(h, h.closest('.carte-cat'), 18);
+
 let minuterieTaille = null;
 window.addEventListener('resize', () => {
   clearTimeout(minuterieTaille);

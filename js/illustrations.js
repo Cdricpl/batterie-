@@ -57,8 +57,8 @@ export const CATEGORIES = {
     <ellipse cx="62" cy="60" rx="46" ry="15" ${trace(C1, 2.6)}/>
     <ellipse cx="62" cy="60" rx="26" ry="8.5" ${trace(C3, 1.6)}/>
     ${baguette(22, 16, 54, 56)}${baguette(106, 14, 72, 56)}
-    <text x="62" y="102" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="600" font-size="15" letter-spacing="4" ${rempli(C1)}>DGDD</text>
-    <text x="142" y="44" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="600" font-size="13" ${rempli(C2)}>×4</text>`)
+    <text x="62" y="102" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="700" font-size="22" letter-spacing="2" ${rempli(C1)}>DGDD</text>
+    <text x="142" y="44" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="700" font-size="22" ${rempli(C2)}>×4</text>`)
 };
 
 /* Batterie qui se complète à chaque niveau (1 à 6) */

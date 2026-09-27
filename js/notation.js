@@ -229,7 +229,7 @@ export function dessinerPortee(motif, opts = {}){
     const x = xBarre(b);
     if (b > 0) el('line', {class:'ligne', x1:x, y1:yPos(8), x2:x, y2:yPos(0), stroke:'#8a806f', 'stroke-width':1.4}, fond);
     if (b < bars){
-      const n = el('text', {class:'txt-faible', x:x + 8, y:yPos(8) - 26, fill:'#a39884', 'font-size':10, 'font-weight':600}, fond);
+      const n = el('text', {class:'txt-faible num-mesure', x:x + 8, y:yPos(8) - 26, fill:'#a39884', 'font-size':10, 'font-weight':600}, fond);
       n.textContent = String(b + 1 + (opts.premiereMesure || 0));
     }
   }
@@ -412,7 +412,7 @@ export function dessinerPortee(motif, opts = {}){
       const y = 16;
       el('path', {d:`M ${x1} ${y+5} L ${x1} ${y} L ${(x1+x2)/2 - 6} ${y} M ${(x1+x2)/2 + 6} ${y} L ${x2} ${y} L ${x2} ${y+5}`,
         fill:'none', stroke:'#8a806f', 'stroke-width':1, class:'ligne'}, gT);
-      const tx = el('text', {class:'txt-faible', x:(x1+x2)/2, y:y + 4, 'text-anchor':'middle', 'font-size':11,
+      const tx = el('text', {class:'txt-faible nolet', x:(x1+x2)/2, y:y + 4, 'text-anchor':'middle', 'font-size':11,
         'font-style':'italic', fill:'#a49a8c'}, gT);
       tx.textContent = '3';
     }

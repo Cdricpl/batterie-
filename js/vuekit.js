@@ -252,6 +252,18 @@ export function creerVueKit(motif, surToucher){
   fut('TB'); fut('CC');
   pedale('HP');
 
+  /* le dessin se réduit sur un petit écran : on grossit les textes d'autant pour qu'ils
+   * restent lisibles (au moins 12 px à l'écran) */
+  if (typeof ResizeObserver !== 'undefined'){
+    new ResizeObserver(() => {
+      const w = svg.clientWidth, h = svg.clientHeight;
+      if (!w || !h) return;
+      const echelle = Math.min(w / 760, h / 378);
+      svg.style.setProperty('--kit-nom', Math.max(13, 12.5 / echelle).toFixed(1) + 'px');
+      svg.style.setProperty('--kit-compteur', Math.max(17, 13.5 / echelle).toFixed(1) + 'px');
+    }).observe(svg);
+  }
+
   const minuteries = {};
   function allumer(id, texte){
     const pad = pads[id];

@@ -14,7 +14,7 @@ const ELEMENTS = [
   { id:'TB', type:'fut',     x:410, y:222, rx:53, ry:44, label:'Tom basse' },
   { id:'CC', type:'fut',     x:116, y:228, rx:45, ry:37, label:'Caisse claire' },
   { id:'GC', type:'fut',     x:248, y:262, rx:88, ry:60, label:'Grosse caisse' },
-  { id:'HP', type:'pedale',  x:46,  y:288, rx:23, ry:9,  label:'Pédale charley' }
+  { id:'HP', type:'pedale',  x:46,  y:288, rx:23, ry:9,  label:'Pied charley' }
 ];
 
 export function dessinerKit(surClic){
@@ -85,6 +85,7 @@ export function dessinerKit(surClic){
     t.setAttribute('x', e.x);
     t.setAttribute('y', e.y + (e.type === 'fut' ? 5 : e.ry + 15));
     t.setAttribute('text-anchor', 'middle');
+    if (e.type === 'pedale'){ t.setAttribute('text-anchor', 'start'); t.setAttribute('x', 6); }   // au bord : ne pas déborder
     t.setAttribute('class', 'kit-label');
     t.textContent = e.label;
     g.appendChild(t);

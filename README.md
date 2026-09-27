@@ -89,6 +89,13 @@ tenue du tempo (tempo très lent, mesure silencieuse), polyrythme 3 contre 2.
   verrouille en paysage quand le navigateur le permet (Android) ; sinon (iPhone), tant
   que le téléphone est tenu droit, elle s'affiche d'elle-même pivotée d'un quart de tour
   — il suffit de pencher le téléphone. Au premier démarrage, elle propose de s'installer.
+- **Lisible sur tous les écrans.** La mise en page se règle sur la taille réelle de
+  l'appli (qu'elle soit pivotée ou non), pas sur celle du navigateur : nombre de
+  rangées de cartes, taille des titres, barres. Aucun texte n'est coupé : les titres
+  longs passent sur 3 lignes, le titre du lecteur rétrécit pour tenir en entier, et
+  sur un petit écran le comptage sous la partition, les numéros de mesure et les noms
+  des éléments de la batterie grossissent pour rester à 11 px au moins. Vérifié
+  automatiquement sur 23 tailles, du petit téléphone (568 × 320) à l'écran de bureau.
 - **Le lecteur occupe tout l'écran** : la partition sur une feuille claire, en haut
   le titre avec ‹ › pour passer à l'exercice voisin, (?) pour les explications et le
   schéma du kit, les réglages à droite ; en bas le métronome, la batterie
