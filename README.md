@@ -47,8 +47,8 @@ Lose Yourself, Papaoutai, Ça plane pour moi, L'Aventurier, Dernière danse,
 Despacito, Oye Como Va, Pride and Joy, La Grange, Fly Me to the Moon…
 
 Huit genres : rock, hard rock & métal, pop, funk-soul-disco, hip-hop & électro,
-variété française, reggae & latino, blues & jazz. Des raccourcis en haut de l'écran
-sautent directement à un genre.
+variété française, reggae & latino, blues & jazz. On choisit d'abord le style, puis
+les titres s'affichent du plus facile au plus difficile, groupés par niveau.
 
 Chaque morceau est découpé en **sections** (intro, couplet, refrain, break) : un clic
 sur une section la joue seule, en boucle. Le tempo est celui du disque (vérifié sur
@@ -64,6 +64,7 @@ triolet suisse, flam tap inversé, flam drag…), drags (drag tap, leçon 25,
 dragadiddle, drag paradiddles, ratamacues simple, double et triple). Doigté D/G sous chaque note.
 
 ### 🥁 Breaks & fills — 35 breaks
+On choisit d'abord son niveau, puis les breaks de ce niveau.
 Chaque break est présenté sous la forme **1 mesure de groove + 1 mesure de break**,
 en boucle : c'est l'enchaînement qui se travaille, pas le break tout seul.
 

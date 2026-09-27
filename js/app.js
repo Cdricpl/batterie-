@@ -74,7 +74,6 @@ const GENRES_MORCEAUX = [
 ];
 const genreDe = m => GENRES_MORCEAUX.find(g => g.styles.includes(m.style)) || GENRES_MORCEAUX[0];
 const morceauxDe = g => parNiveau(MORCEAUX.filter(m => genreDe(m) === g));
-const MORCEAUX_TRIES = GENRES_MORCEAUX.flatMap(morceauxDe);
 
 const FAMILLES_RYTHMES = [
   { id:'rock',     nom:'Rock & pop',        desc:'Le socle : croches, doubles, ballades.',   styles:['Rock', 'Ballade', 'Country'] },
@@ -104,8 +103,8 @@ const FAMILLES_TRAVAIL = [
 const LISTES = {
   lecon:    { nom:'Leçon',    items: () => LECONS,                                     retour: it => '#/parcours/' + it.niveau },
   rythme:   { nom:'Rythme',   items: it => rythmesDe(familleRythme(it)),               retour: it => '#/rythmes/' + familleRythme(it) },
-  morceau:  { nom:'Morceau',  items: () => MORCEAUX_TRIES,                             retour: () => '#/morceaux' },
-  break:    { nom:'Break',    items: () => parNiveau(FILLS),                           retour: () => '#/breaks' },
+  morceau:  { nom:'Morceau',  items: it => morceauxDe(genreDe(it)),                    retour: it => '#/morceaux/' + genreDe(it).id },
+  break:    { nom:'Break',    items: it => FILLS.filter(f => (f.niveau || 1) === (it.niveau || 1)), retour: it => '#/breaks/' + (it.niveau || 1) },
   rudiment: { nom:'Rudiment', items: it => RUDIMENTS.filter(r => r.famille === it.famille), retour: it => '#/rudiments/' + it.famille },
   exercice: { nom:'Exercice', items: () => EXERCICES,                                  retour: () => '#/rudiments/coordination' }
 };
@@ -142,8 +141,8 @@ function route(){
   switch (parts[0]){
     case 'parcours':    return parts[1] ? ecranNiveau(+parts[1]) : ecranParcours();
     case 'rythmes':     return parts[1] ? ecranFamilleRythmes(parts[1]) : ecranRythmes();
-    case 'morceaux':    return ecranMorceaux();
-    case 'breaks':      return ecranBreaks();
+    case 'morceaux':    return parts[1] ? ecranGenre(parts[1]) : ecranMorceaux();
+    case 'breaks':      return parts[1] ? ecranNiveauBreaks(+parts[1]) : ecranBreaks();
     case 'rudiments':   return parts[1] ? ecranFamilleTravail(parts[1]) : ecranRudiments();
     case 'progression': return ecranProgression();
     case 'jouer':       if (ouvrir(parts[1], parts[2])) return; break;
@@ -238,13 +237,18 @@ function tuile({ href, illus = '', titre, texte = '', coin = '', jauge = null, g
 }
 
 function itemCarte({ href, num = '', nom, meta = '', niveau = 0, bpm = '', etat = null, classe = '', badge = '', illus = '', grad }){
-  return `<a class="item-carte ${classe}${illus ? ' avec-illus' : ''}" href="${href}" style="${gradStyle(grad)}">
-    ${illus ? `<div class="i-illus">${illus}</div>` : ''}
-    ${num !== '' ? `<span class="i-num">${num}</span>` : ''}
-    ${badge}
-    <span class="i-nom">${nom}</span>
-    ${meta ? `<span class="i-meta">${meta}</span>` : ''}
-    <span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}</span>
+  const visuel = illus ? `<div class="i-vis">${illus}</div>`
+    : num !== '' ? `<div class="i-vis i-vis-num"><span class="i-num">${num}</span></div>` : '';
+  return `<a class="item-carte ${classe}" href="${href}" style="${gradStyle(grad)}">
+    <div class="i-corps">
+      ${visuel}
+      <div class="i-texte">
+        ${badge}
+        <span class="i-nom">${nom}</span>
+        ${meta ? `<span class="i-meta">${meta}</span>` : ''}
+        ${niveau || bpm ? `<span class="i-bas">${niveau ? points(niveau) : ''}${bpm ? `<span class="bpm-pastille">${bpm}</span>` : ''}</span>` : ''}
+      </div>
+    </div>
     ${etat != null ? `<span class="etat" aria-label="${etat ? 'terminée' : 'à faire'}">${etat ? '<svg class="ico"><use href="#i-coche"/></svg>' : ''}</span>` : ''}
   </a>`;
 }
@@ -291,7 +295,7 @@ function ecranNiveau(n){
           href:lienJouer('lecon', l), num:LECONS.indexOf(l) + 1, nom:l.titre,
           meta:`${l.duree}${record ? ` · record ${record} BPM` : ''}`,
           etat:fait, classe:(fait ? 'faite' : '') + (l === suivante && !fait ? ' prochaine' : ''), grad:NIV_GRAD[n - 1],
-          badge:l.cle ? '<span class="cle">étape clé</span>' : ''
+          badge:(l === suivante && !fait ? '<span class="i-tag">À toi !</span>' : '') + (l.cle ? '<span class="cle">étape clé</span>' : '')
         });
       }).join('')}</div>`
   });
@@ -321,38 +325,58 @@ function ecranFamilleRythmes(id){
 
 /* --- morceaux --- */
 function ecranMorceaux(){
+  ecranListe({
+    sur:`${MORCEAUX.length} titres · choisis un style`, titre:'Morceaux',
+    html:`<div class="rangee tuiles">${GENRES_MORCEAUX.map(g => {
+      const lot = morceauxDe(g);
+      if (!lot.length) return '';
+      const artistes = [...new Set(lot.map(m => m.artiste))].slice(0, 3).join(', ');
+      return tuile({ href:'#/morceaux/' + g.id, illus:miniGroove(compilerMorceau(lot[Math.floor(lot.length / 2)])),
+        titre:g.nom, texte:artistes + '…', coin:`${lot.length} titres`, grad:g.grad });
+    }).join('')}</div>`
+  });
+}
+function ecranGenre(id){
+  const g = GENRES_MORCEAUX.find(x => x.id === id);
+  if (!g) return ecranMorceaux();
+  const lot = morceauxDe(g);
   let html = '';
-  for (const g of GENRES_MORCEAUX){
-    const lot = morceauxDe(g);
-    if (!lot.length) continue;
-    html += `<section class="groupe" id="m-${g.id}">
-      <div class="groupe-tete genre" style="${gradStyle(g.grad)}">
-        <div class="g-illus">${miniVinyle()}</div>
-        <b>${g.nom}</b><span>${lot.length} titre${lot.length > 1 ? 's' : ''}</span>
-      </div>
-      <div class="rangee">${lot.map(m => itemCarte({
-        href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
-        niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[m.niveau - 1]
-      })).join('')}</div>
-    </section>`;
+  for (let n = 1; n <= 6; n++){
+    const niv = lot.filter(m => m.niveau === n);
+    if (!niv.length) continue;
+    html += groupe('m-niv' + n, n, niv, m => itemCarte({
+      href:lienJouer('morceau', m), nom:m.titre, meta:`${m.artiste} · ${m.annee}`,
+      niveau:m.niveau, bpm:`${m.bpm} BPM`, illus:miniVinyle(), grad:NIV_GRAD[n - 1]
+    }));
   }
-  ecranListe({ sur:`${MORCEAUX.length} titres · par genre, puis par niveau`, titre:'Morceaux', html,
-    sauts:GENRES_MORCEAUX.filter(g => morceauxDe(g).length).map(g => ['m-' + g.id, g.court, g.grad[1]]) });
+  ecranListe({ sur:`Morceaux · ${lot.length} titres, du plus facile au plus dur`, titre:g.nom, retour:'#/morceaux', html,
+    sauts:sautsNiveaux(lot, 'm-niv') });
 }
 
 /* --- breaks --- */
 function ecranBreaks(){
-  let html = '';
-  for (let n = 1; n <= 6; n++){
-    const lot = FILLS.filter(f => (f.niveau || 1) === n);
-    if (!lot.length) continue;
-    html += groupe('b-niv' + n, n, lot, f => itemCarte({
+  ecranListe({
+    sur:`${FILLS.length} breaks · choisis ton niveau`, titre:'Breaks',
+    html:`<div class="rangee tuiles">${[1, 2, 3, 4, 5, 6].map(n => {
+      const lot = FILLS.filter(f => (f.niveau || 1) === n);
+      if (!lot.length) return '';
+      return tuile({ href:'#/breaks/' + n, illus:miniGroove(lot[0], 1), titre:NOMS_NIVEAUX[n],
+        texte:lot.slice(0, 2).map(f => f.nom.replace(/\s*\(.*\)/, '')).join(', ') + '…',
+        coin:`${lot.length} break${lot.length > 1 ? 's' : ''}`, grad:NIV_GRAD[n - 1] });
+    }).join('')}</div>`
+  });
+}
+function ecranNiveauBreaks(n){
+  const lot = FILLS.filter(f => (f.niveau || 1) === n);
+  if (!lot.length) return ecranBreaks();
+  ecranListe({
+    sur:`Breaks · niveau ${n} · une mesure de groove, une mesure de break`, titre:NOMS_NIVEAUX[n], retour:'#/breaks',
+    html:`<div class="rangee">${lot.map(f => itemCarte({
       href:lienJouer('break', f), nom:f.nom,
-      meta:f.res === 3 ? 'Triolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
+      meta:f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
       niveau:f.niveau, illus:miniGroove(f, 1), grad:NIV_GRAD[n - 1]
-    }), 'break');
-  }
-  ecranListe({ sur:`${FILLS.length} fills`, titre:'Breaks', html, sauts:sautsNiveaux(FILLS, 'b-niv') });
+    })).join('')}</div>`
+  });
 }
 
 /* --- rudiments et coordination --- */
