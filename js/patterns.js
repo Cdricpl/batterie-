@@ -800,54 +800,6 @@ EXERCICES.push(
     astuce:"Les deux mains ne tombent ensemble que sur le temps ; entre deux temps, l'ordre est ride – caisse claire – ride." })
 );
 
-/* Queens of the Stone Age — « A Song for the Dead » (album Songs for the Deaf, 2002),
- * le solo de Dave Grohl en ouverture. Reconstitution simplifiée d'après la structure
- * décrite par les leçons publiées (groove double-time, triolets main-main-pied qui
- * voyagent entre caisse claire et toms, puis rafale en doubles-croches) : ce n'est pas
- * une transcription note à note. Le moteur n'ayant qu'une subdivision par exercice,
- * le solo est découpé en trois parties qui se suivent dans la liste. */
-const SOURCE_QOTSA = "Reconstitution simplifiée du solo d'ouverture de « A Song for the Dead » (Queens of the Stone Age, <i>Songs for the Deaf</i>, 2002, Dave Grohl à la batterie), d'après la structure décrite par les leçons publiées — pas une transcription note à note. Pour le détail exact, vérifie à l'oreille ou avec la partition gratuite de DrumsTheWord.";
-FILLS.push({
-  id:'qotsa-dead-1', meta:'Solo de Dave Grohl · double-time', nom:'QOTSA · Song for the Dead 1/3 : l\'entrée', niveau:5, style:'Fill',
-  bpm:[70,120,200], beats:4, res:4, bars:2, sansGroove:true, source:SOURCE_QOTSA,
-  tracks:{
-    CR:'x' + R(15) + R(16),
-    CH:'--x-x-x-x-x-x-x-' + 'x-x-x-x-x-x-x-x-',
-    CC:'--x---x---x---x-' + '--x---x---x---x-',
-    GC:'x---x---x---x---' + 'x---x---x---x---'
-  },
-  desc:"Le solo démarre sur un groove « double-time » : grosse caisse sur chaque temps, caisse claire sur chaque « et ». C'est l'élan punk qui lance les triolets de la partie 2.",
-  astuce:"Commence à 120, puis monte. Sur le disque, c'est beaucoup plus rapide : garde la caisse claire bien forte et régulière."
-});
-FILLS.push({
-  id:'qotsa-dead-2', meta:'Solo de Dave Grohl · triolets', nom:'QOTSA · Song for the Dead 2/3 : les triolets', niveau:5, style:'Fill',
-  bpm:[50,72,160], beats:4, res:3, bars:4, sansGroove:true, source:SOURCE_QOTSA,
-  tracks:{
-    CC:'xx-xx-xx-xx-' + '-x--x--x--x-' + R(12)          + '-x--x-xx-xx-',
-    T1:R(12)          + 'x--x--x--x--' + 'x--x--x--x--' + R(12),
-    T2:R(12)          + R(12)          + '-x--x--x--x-' + 'x--x--------',
-    GC:'--x--x--x--x'.repeat(4)
-  },
-  doigte:'DG-'.repeat(16),
-  desc:"Le cœur du solo : main droite, main gauche, grosse caisse, en triolets, sans arrêt. Les mains voyagent : caisse claire, puis tom 1 / caisse claire, tom 1 / tom 2, et retour à la caisse claire avec les deux mains.",
-  astuce:"Trois sons égaux, comme une seule phrase qui roule. Le pied est la troisième « main » : il ne doit ni traîner ni se précipiter."
-});
-FILLS.push({
-  id:'qotsa-dead-3', meta:'Solo de Dave Grohl · doubles-croches', nom:'QOTSA · Song for the Dead 3/3 : la rafale', niveau:5, style:'Fill',
-  bpm:[50,76,160], beats:4, res:4, bars:2, sansGroove:true, source:SOURCE_QOTSA,
-  tracks:{
-    CR:'x' + R(15) + R(16),
-    CC:'xxxxxxxxxxxx----' + 'xxxx------------',
-    T1:'------------xxxx' + '----xxxx--------',
-    T2:R(16)             + '--------xxxx----',
-    TB:R(16)             + '------------xxxx',
-    GC:'x---x---x-------' + 'x---x---x---x---'
-  },
-  doigte:'DGDG'.repeat(8),
-  desc:"La fin du solo passe en doubles-croches : caisse claire avec la grosse caisse sur chaque temps, quatre notes sur le tom 1, puis la descente de tous les fûts à pleine vitesse. En boucle, la crash marque l'arrivée.",
-  astuce:"Mains alternées D-G-D-G du début à la fin. Monte le tempo par petits paliers (+4 BPM) seulement quand c'est propre."
-});
-
 export const TOUS = [...GROOVES, ...FILLS, ...EXERCICES];
 export function parId(id){ return TOUS.find(p => p.id === id) || LECONS_PATTERNS[id]; }
 export const LECONS_PATTERNS = {};

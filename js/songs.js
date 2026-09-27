@@ -266,6 +266,28 @@ export const MORCEAUX = [
   sections:[
     { nom:'Groove 5/4', fois:8, tracks:{ RD:'x--x-xx--x-xx--', HP:'---x-----x-----', GC:'x--------------' } }
   ]
+},
+{
+  id:'m-song-for-the-deaf', titre:'Song for the Deaf', artiste:'Queens of the Stone Age', annee:2002,
+  niveau:4, style:'Hard rock', bpm:171, beats:4, res:4, fidelite:'accompagnement',
+  desc:"Le morceau-titre de l'album, Dave Grohl à la batterie : 171 BPM, une intro à la batterie, des toms qui martèlent comme une transe, puis des couplets lourds et des refrains qui explosent sur la crash.",
+  astuce:"À 171 BPM, tout repose sur les croches régulières. Travaille d'abord chaque section à 100–120 BPM, puis monte par paliers. Les toms doivent sonner gros : frappe au centre de la peau, bras détendus.",
+  sections:[
+    { nom:'Intro aux toms', fois:4, tracks:{
+        TB:'x-x-x-x-x-x-x-x-', T1:'--------------xx', CC:'----x-------x---', GC:'x-----x-x-----x-' } },
+    { nom:'Couplet', fois:8, tracks:{
+        CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-----x-' } },
+    { nom:'Refrain', fois:8, bars:2, tracks:{
+        CR:'x-x-x-x-x-x-x-x-'+'x-x-x-x-x-x-x-x-', CC:'----x-------x---'+'----x-------x---',
+        GC:'x---x-x-x---x-x-'+'x---x-x-x-x-x-x-' } },
+    { nom:'Transe aux toms', fois:8, tracks:{
+        TB:'x-x-x-x-x-x-x-x-', T1:'----x-------x---', GC:'x---x---x---x---' } },
+    { nom:'Break', fois:1, tracks:{
+        CC:'xxxx------------', T1:'----xxxx--------', T2:'--------xxxx----', TB:'------------xxxx', GC:'x---x---x---x---' } },
+    { nom:'Refrain final', fois:8, bars:2, tracks:{
+        CR:'x-x-x-x-x-x-x-x-'+'x-x-x-x-x-x-x-x-', CC:'----x-------x---'+'----x-------x---',
+        GC:'x---x-x-x---x-x-'+'x---x-x-x-x-x-x-' } }
+  ]
 }
 ];
 
