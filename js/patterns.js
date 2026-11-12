@@ -744,6 +744,70 @@ FILLS.push({
   astuce:"Compte « 1-la-li-et-la-li » : six notes égales, mains alternées."
 });
 
+/* ============================ BREAKS CÉLÈBRES ============================
+ * Des breaks tirés de morceaux connus : une mesure du groove du morceau, puis le
+ * break tel qu'on l'entend sur le disque (simplifié quand il le faut). `origine`
+ * dit d'où il vient ; le tempo par défaut est un tempo de travail, pas celui du disque. */
+FILLS.push(
+  {
+    id:'fill-teen-spirit', nom:'Fill d\'entrée de « Smells Like Teen Spirit »', niveau:4, style:'Fill',
+    origine:{ titre:'Smells Like Teen Spirit', artiste:'Nirvana', annee:1991, bpm:117 },
+    bpm:[60,90,130], beats:4, res:4, bars:2,
+    tracks:{
+      CR:R(16)             + R(16),
+      CH:'x-x-x-x-x-x-x-x-' + '----o---o---o---',
+      CC:'----x-------x---' + 'f---f--x-x--x---',
+      GC:'x-x-----x-x-----' + '---x----x-xx--x-'
+    },
+    doigte: R(16) + 'D---D--G-D--D---',
+    desc:"Le fill de Dave Grohl qui lance le morceau : un flam sur le 1, la grosse caisse qui se glisse juste avant le 2, un flam sur le 2, puis « da-da-doum-doum » autour du temps 3 et la dernière caisse claire sur le 4. Le charleston mi-ouvert marque 2, 3 et 4.",
+    astuce:"Chante-le avant de le jouer : « PA … PA-da da-doum-doum PA doum ». Les deux coups de pied rapprochés (« et-a » du 3) se jouent talon levé. Sur le disque, il tombe à 117 BPM et débouche sur la crash du riff."
+  },
+  {
+    id:'fill-wipe-out', nom:'Roulement de « Wipe Out »', niveau:3, style:'Fill',
+    origine:{ titre:'Wipe Out', artiste:'The Surfaris', annee:1963, bpm:160 },
+    bpm:[70,100,160], beats:4, res:4, bars:2,
+    tracks:{
+      CH:'x-x-x-x-x-x-x-x-' + R(16),
+      CC:'----x-------x---' + 'XxxxXxxxXxxxXxxx',
+      GC:'x---x---x---x---' + 'x---x---x---x---'
+    },
+    doigte: R(16) + 'DGDGDGDGDGDGDGDG',
+    desc:"Le roulement le plus connu du rock : des doubles-croches à la caisse claire, mains alternées, avec un accent sur chaque temps et la grosse caisse qui marque la pulsation.",
+    astuce:"L'accent tombe toujours sur la main droite : c'est elle qui garde le compte. Monte le tempo par paliers de 5 BPM, jusqu'aux 160 du disque."
+  },
+  {
+    id:'fill-air-tonight', nom:'Break de toms de « In the Air Tonight »', niveau:3, style:'Fill',
+    origine:{ titre:'In the Air Tonight', artiste:'Phil Collins', annee:1981, bpm:94 },
+    bpm:[60,80,110], beats:4, res:4, bars:2,
+    tracks:{
+      CR:R(16) + R(16),
+      HP:'x---x---x---x---' + 'x---x-----------',
+      T1:R(16) + '--------xxxx----',
+      T2:R(16) + '------------xx--',
+      TB:R(16) + '--------------xx'
+    },
+    doigte: R(16) + R(8) + 'DGDGDGDG',
+    desc:"Le break que tout le monde attend pendant trois minutes : deux temps de silence (charleston au pied), puis une descente en doubles-croches sur les trois toms, et la crash au 1 suivant. Version simplifiée.",
+    astuce:"Les deux premiers temps vides sont la partie la plus dure : compte « 1, 2 » avec le pied gauche, lève les bras pendant le 2, et frappe tout avec le même volume."
+  },
+  {
+    id:'fill-rosanna', nom:'Fill de « Rosanna » (half-time shuffle)', niveau:5, style:'Fill',
+    origine:{ titre:'Rosanna', artiste:'Toto', annee:1982, bpm:86 },
+    bpm:[50,66,100], beats:4, res:3, bars:2,
+    tracks:{
+      CH:'x-xx-xx-xx-x' + R(12),
+      CC:'-g--g-X-g-g-' + 'xxxxxx------',
+      T1:R(12)         + '------xxx---',
+      TB:R(12)         + '---------xxx',
+      GC:'x----x----x-' + R(12)
+    },
+    doigte: R(12) + 'DGDGDGDGDGDG',
+    desc:"Une mesure du half-time shuffle de Jeff Porcaro (ghost notes dans les triolets, caisse claire sur le 3 seulement), puis un fill en triolets qui descend : caisse claire, tom 1, tom basse.",
+    astuce:"Le fill garde exactement la vitesse des triolets du shuffle : rien n'accélère, seuls les fûts changent. Le groove seul demande des semaines : sois patient."
+  }
+);
+
 EXERCICES.push(
   g({ id:'ex-8-8', nom:'8 droite / 8 gauche', niveau:1, style:'Mains', bpm:[50,80,160], res:2, bars:2,
     tracks:{ CC:'xxxxxxxx' + 'xxxxxxxx' }, doigte:'DDDDDDDD' + 'GGGGGGGG',

@@ -1064,8 +1064,8 @@ kbd{
 /* Numéro de version de l'application : affiché en haut de l'écran, et utilisé par
  * le service worker (build.js --site) pour que les téléphones installés récupèrent
  * chaque nouvelle version. À augmenter à chaque livraison. */
-const VERSION = '2.11.0';
-const DATE_VERSION = '2026-09-27';
+const VERSION = '2.12.0';
+const DATE_VERSION = '2026-11-12';
 
 
 /* ================= js/instruments.js ================= */
@@ -2972,6 +2972,70 @@ FILLS.push({
   astuce:"Compte « 1-la-li-et-la-li » : six notes égales, mains alternées."
 });
 
+/* ============================ BREAKS CÉLÈBRES ============================
+ * Des breaks tirés de morceaux connus : une mesure du groove du morceau, puis le
+ * break tel qu'on l'entend sur le disque (simplifié quand il le faut). `origine`
+ * dit d'où il vient ; le tempo par défaut est un tempo de travail, pas celui du disque. */
+FILLS.push(
+  {
+    id:'fill-teen-spirit', nom:'Fill d\'entrée de « Smells Like Teen Spirit »', niveau:4, style:'Fill',
+    origine:{ titre:'Smells Like Teen Spirit', artiste:'Nirvana', annee:1991, bpm:117 },
+    bpm:[60,90,130], beats:4, res:4, bars:2,
+    tracks:{
+      CR:R(16)             + R(16),
+      CH:'x-x-x-x-x-x-x-x-' + '----o---o---o---',
+      CC:'----x-------x---' + 'f---f--x-x--x---',
+      GC:'x-x-----x-x-----' + '---x----x-xx--x-'
+    },
+    doigte: R(16) + 'D---D--G-D--D---',
+    desc:"Le fill de Dave Grohl qui lance le morceau : un flam sur le 1, la grosse caisse qui se glisse juste avant le 2, un flam sur le 2, puis « da-da-doum-doum » autour du temps 3 et la dernière caisse claire sur le 4. Le charleston mi-ouvert marque 2, 3 et 4.",
+    astuce:"Chante-le avant de le jouer : « PA … PA-da da-doum-doum PA doum ». Les deux coups de pied rapprochés (« et-a » du 3) se jouent talon levé. Sur le disque, il tombe à 117 BPM et débouche sur la crash du riff."
+  },
+  {
+    id:'fill-wipe-out', nom:'Roulement de « Wipe Out »', niveau:3, style:'Fill',
+    origine:{ titre:'Wipe Out', artiste:'The Surfaris', annee:1963, bpm:160 },
+    bpm:[70,100,160], beats:4, res:4, bars:2,
+    tracks:{
+      CH:'x-x-x-x-x-x-x-x-' + R(16),
+      CC:'----x-------x---' + 'XxxxXxxxXxxxXxxx',
+      GC:'x---x---x---x---' + 'x---x---x---x---'
+    },
+    doigte: R(16) + 'DGDGDGDGDGDGDGDG',
+    desc:"Le roulement le plus connu du rock : des doubles-croches à la caisse claire, mains alternées, avec un accent sur chaque temps et la grosse caisse qui marque la pulsation.",
+    astuce:"L'accent tombe toujours sur la main droite : c'est elle qui garde le compte. Monte le tempo par paliers de 5 BPM, jusqu'aux 160 du disque."
+  },
+  {
+    id:'fill-air-tonight', nom:'Break de toms de « In the Air Tonight »', niveau:3, style:'Fill',
+    origine:{ titre:'In the Air Tonight', artiste:'Phil Collins', annee:1981, bpm:94 },
+    bpm:[60,80,110], beats:4, res:4, bars:2,
+    tracks:{
+      CR:R(16) + R(16),
+      HP:'x---x---x---x---' + 'x---x-----------',
+      T1:R(16) + '--------xxxx----',
+      T2:R(16) + '------------xx--',
+      TB:R(16) + '--------------xx'
+    },
+    doigte: R(16) + R(8) + 'DGDGDGDG',
+    desc:"Le break que tout le monde attend pendant trois minutes : deux temps de silence (charleston au pied), puis une descente en doubles-croches sur les trois toms, et la crash au 1 suivant. Version simplifiée.",
+    astuce:"Les deux premiers temps vides sont la partie la plus dure : compte « 1, 2 » avec le pied gauche, lève les bras pendant le 2, et frappe tout avec le même volume."
+  },
+  {
+    id:'fill-rosanna', nom:'Fill de « Rosanna » (half-time shuffle)', niveau:5, style:'Fill',
+    origine:{ titre:'Rosanna', artiste:'Toto', annee:1982, bpm:86 },
+    bpm:[50,66,100], beats:4, res:3, bars:2,
+    tracks:{
+      CH:'x-xx-xx-xx-x' + R(12),
+      CC:'-g--g-X-g-g-' + 'xxxxxx------',
+      T1:R(12)         + '------xxx---',
+      TB:R(12)         + '---------xxx',
+      GC:'x----x----x-' + R(12)
+    },
+    doigte: R(12) + 'DGDGDGDGDGDG',
+    desc:"Une mesure du half-time shuffle de Jeff Porcaro (ghost notes dans les triolets, caisse claire sur le 3 seulement), puis un fill en triolets qui descend : caisse claire, tom 1, tom basse.",
+    astuce:"Le fill garde exactement la vitesse des triolets du shuffle : rien n'accélère, seuls les fûts changent. Le groove seul demande des semaines : sois patient."
+  }
+);
+
 EXERCICES.push(
   g({ id:'ex-8-8', nom:'8 droite / 8 gauche', niveau:1, style:'Mains', bpm:[50,80,160], res:2, bars:2,
     tracks:{ CC:'xxxxxxxx' + 'xxxxxxxx' }, doigte:'DDDDDDDD' + 'GGGGGGGG',
@@ -3358,10 +3422,11 @@ const MORCEAUX = [
 {
   id:'m-teen-spirit', titre:'Smells Like Teen Spirit', artiste:'Nirvana', annee:1991,
   niveau:3, style:'Grunge', bpm:117, beats:4, res:4, fidelite:'origine',
-  desc:"L'intro en flams sur la caisse claire avec la grosse caisse entre les temps, un couplet « boum-boum-tchak », un refrain déchaîné.",
-  astuce:"Dans l'intro, la grosse caisse joue sur les « e » et les « a » : entre les flams. Commence à 70 BPM.",
+  desc:"Le fill d'entrée de Dave Grohl : deux flams, la grosse caisse qui se glisse entre, le charleston mi-ouvert sur 2, 3 et 4, et le « da-da-doum-doum » du temps 3 ; puis le riff sur la crash, un couplet « boum-boum-tchak », un refrain déchaîné.",
+  astuce:"Le fill d'entrée se chante avant de se jouer : « PA… PA-da da-doum-doum PA doum ». Compte « 1 … 2 … a / e-et-a / 4-et » et commence à 70 BPM.",
   sections:[
-    { nom:'Intro', fois:1, tracks:{ CH:'--o---o---o-----', CC:'f---f---f---f---', GC:'-x-x-x-x-x-x--x-' } },
+    { nom:'Fill d\'entrée', fois:1, tracks:{ CH:'----o---o---o---', CC:'f---f--x-x--x---', GC:'---x----x-xx--x-' } },
+    { nom:'Riff (crash)', fois:4, tracks:{ CR:'x---------------', CH:'--o-o-o-o-o-o-o-', CC:'----X-------X---', GC:'x-x-----x-x-----' } },
     { nom:'Couplet', fois:4, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-x-----x-x-----' } },
     { nom:'Refrain', fois:4, tracks:{ CR:'x---------------', CH:'--o-o-o-o-o-o-o-', CC:'----X-------X---', GC:'x-x-----x-x-----' } }
   ]
@@ -3470,8 +3535,8 @@ const MORCEAUX = [
 },
 {
   id:'m-rosanna', titre:'Rosanna', artiste:'Toto', annee:1982,
-  niveau:5, style:'Pop rock', bpm:172, beats:4, res:3, fidelite:'origine',
-  desc:"LE half-time shuffle : backbeat seulement sur le 3, ghost notes dans les triolets. Ici écrit en croches ternaires (≈172, soit 86 en demi-tempo).",
+  niveau:5, style:'Pop rock', bpm:86, beats:4, res:3, fidelite:'origine',
+  desc:"LE half-time shuffle de Jeff Porcaro : backbeat seulement sur le 3, ghost notes dans les triolets. Les bases de tempo le notent souvent 172 (pulsation à la croche) : à la noire, c'est 86.",
   astuce:"Des semaines de travail, pas des jours. Isole charleston + caisse claire, ajoute le pied en dernier.",
   sections:[
     { nom:'Groove', fois:8, tracks:{ CH:'x-xx-xx-xx-x', CC:'-g--g-X-g-g-', GC:'x----x----x-' } },
@@ -3799,6 +3864,309 @@ morceau({ id:'m-fly-me-to-the-moon', titre:'Fly Me to the Moon', artiste:'Frank 
   desc:"Le swing d'un grand orchestre : ride « ding ding-ga », charleston au pied sur 2 et 4, grosse caisse effleurée.",
   astuce:"La ride mène tout. La grosse caisse sur les 4 temps doit être à peine audible.",
   sections:[ { nom:'Swing', fois:16, tracks:{ RD:'x--x-xx--x-x', HP:'---x-----x--', GC:'x--x--x--x--' } } ] })
+);
+
+/* ======================= TROISIÈME SÉRIE =======================
+ * Tempos de référence des enregistrements d'origine (bases de tempo publiques).
+ * Mêmes conventions : groove d'accompagnement sauf mention 'origine'. */
+const M16_ROCK = { CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-------' };   // le « rock 16 » le plus courant
+const M_CRASH16 = t => ({ ...t, CR:'x' + SILENCE(15), CH:'-' + t.CH.slice(1) });
+const QUATRE_SOL = { GC:'x-x-x-x-', CC:'--x---x-', CH:'-x-x-x-x' };                         // four on the floor électro
+
+MORCEAUX.push(
+/* ------------------------------ rock ------------------------------ */
+morceau({ id:'m-sweet-dreams', titre:'Sweet Dreams (Are Made of This)', artiste:'Eurythmics', annee:1983,
+  niveau:1, style:'Pop', bpm:125, res:2, fidelite:'origine',
+  desc:"Une boîte à rythmes implacable : grosse caisse sur chaque temps, caisse claire sur 2 et 4, charleston en croches. Rien d'autre, du début à la fin.",
+  astuce:"Le défi n'est pas la difficulté mais la régularité : joue-le comme une machine, sans accent, sans accélérer.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ GC:'x-x-x-x-', CC:'--x---x-', CH:'xxxxxxxx' } } ] }),
+morceau({ id:'m-song-2', titre:'Song 2', artiste:'Blur', annee:1997,
+  niveau:2, style:'Rock', bpm:130, res:2,
+  desc:"Un couplet retenu au charleston, puis le « Woo-hoo ! » : crash sur chaque temps et grosse caisse qui pousse.",
+  astuce:"Le refrain se joue fort mais court : deux minutes de morceau, pas une de plus. Garde les bras souples.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x---x-x-' } },
+    { nom:'Refrain « Woo-hoo »', fois:8, tracks:{ CR:'x-x-x-x-', CC:'--x---x-', GC:'x---x-x-' } } ] }),
+morceau({ id:'m-creep', titre:'Creep', artiste:'Radiohead', annee:1993,
+  niveau:2, style:'Rock', bpm:92, res:4,
+  desc:"Un tempo lent et posé : couplet en croches au charleston, refrain qui s'ouvre sur la crash et la ride.",
+  astuce:"Lent, donc exposé : chaque coup s'entend. Vise la justesse du placement plutôt que la puissance.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M16_ROCK },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---------------', RD:'--x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-----x-x-----x-' } } ] }),
+morceau({ id:'m-satisfaction', titre:"(I Can't Get No) Satisfaction", artiste:'The Rolling Stones', annee:1965,
+  niveau:2, style:'Rock', bpm:136, res:2,
+  desc:"Charlie Watts, sobre et carré : un rock en croches qui ne bouge pas d'un cheveu, sous le riff le plus connu du monde.",
+  astuce:"Le riff fait tout : la batterie reste derrière, simple et stable. Pas de fioriture.",
+  sections:[ { nom:'Riff', fois:8, tracks:M8 }, { nom:'Refrain', fois:8, tracks:M8_4 },
+    { nom:'Montée', fois:2, tracks:{ CC:'xxxxxxxx', GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-start-me-up', titre:'Start Me Up', artiste:'The Rolling Stones', annee:1981,
+  niveau:2, style:'Rock', bpm:122, res:2,
+  desc:"Le riff démarre seul, la batterie répond par de grands coups de crash, puis un rock en croches bien assis.",
+  astuce:"Les coups de crash de l'intro tombent avec la grosse caisse : un seul son, large. Compte les silences.",
+  sections:[ { nom:'Intro (réponses)', fois:4, tracks:{ CR:'x-------', GC:'x-------' } },
+    { nom:'Couplet', fois:8, tracks:M8 }, { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+morceau({ id:'m-fortunate-son', titre:'Fortunate Son', artiste:'Creedence Clearwater Revival', annee:1969,
+  niveau:2, style:'Rock', bpm:132, res:2,
+  desc:"L'intro à la grosse caisse et au tom basse, puis un rock sans fioriture qui avance tout seul.",
+  astuce:"Dans l'intro, grosse caisse et tom basse tombent ensemble : vise un seul coup, grave et sec.",
+  sections:[ { nom:'Intro (tom basse)', fois:4, tracks:{ TB:'x-x-x-x-', GC:'x-x-x-x-' } },
+    { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--x--x-' } },
+    { nom:'Refrain', fois:8, tracks:M_CRASH8({ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--x--x-' }) } ] }),
+morceau({ id:'m-in-the-end', titre:'In the End', artiste:'Linkin Park', annee:2000,
+  niveau:2, style:'Rock', bpm:105, res:4,
+  desc:"Un couplet hip-hop (caisse claire lourde, grosse caisse qui rebondit), un refrain rock qui s'ouvre sur la crash.",
+  astuce:"Même tempo, deux énergies : joue le couplet en retrait, puis frappe franchement au refrain.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-----x-x-------' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---------------', CH:'--x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-----x-x-x-----' } } ] }),
+morceau({ id:'m-boulevard', titre:'Boulevard of Broken Dreams', artiste:'Green Day', annee:2004,
+  niveau:2, style:'Rock', bpm:84, res:4,
+  desc:"Un mid-tempo lourd : charleston en croches, grosse caisse qui relance sur la fin de mesure, refrain à la crash.",
+  astuce:"Souvent noté 167 BPM : ici on le compte à 84, en doubles-croches, c'est le même morceau.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-------x-x-----' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x-------x-------', CH:'--x-x-x---x-x-x-', CC:'----X-------X---', GC:'x-----x-x-x-----' } } ] }),
+morceau({ id:'m-radioactive', titre:'Radioactive', artiste:'Imagine Dragons', annee:2012,
+  niveau:2, style:'Rock', bpm:136, res:2,
+  desc:"Un half-time géant : caisse claire seulement sur le 3, grosse caisse énorme. Peu de notes, beaucoup de son.",
+  astuce:"Frappe la caisse claire au centre, avec tout le bras : c'est le seul coup de la mesure, il doit peser.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'----X---', GC:'x-----x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---x---', CC:'----X---', GC:'x-x---x-' } } ] }),
+morceau({ id:'m-viva-la-vida', titre:'Viva la Vida', artiste:'Coldplay', annee:2008,
+  niveau:2, style:'Pop rock', bpm:138, res:2,
+  desc:"Pas de charleston : une grosse caisse qui marche sur les quatre temps comme une timbale, et le tom basse qui répond.",
+  astuce:"Le pied est une marche, pas une course : chaque coup identique, du premier au dernier.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ GC:'x-x-x-x-', TB:'--x---x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x-------', GC:'x-x-x-x-', CC:'--x---x-', TB:'------x-' } } ] }),
+morceau({ id:'m-hotel-california', titre:'Hotel California', artiste:'Eagles', annee:1977,
+  niveau:3, style:'Rock', bpm:74, res:4,
+  desc:"Un tempo très lent, une grosse caisse qui se glisse avant le 1 : tout le charme du groove de Don Henley.",
+  astuce:"Le coup de pied sur le « a » du 4 prépare le 1 suivant : il doit être léger, presque une anacrouse.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-----x-' } },
+    { nom:'Refrain', fois:8, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-----x-x-----x-' } } ] }),
+morceau({ id:'m-come-together', titre:'Come Together', artiste:'The Beatles', annee:1969,
+  niveau:3, style:'Rock', bpm:82, res:4,
+  desc:"Le groove de Ringo : un charleston qui chuchote, puis le petit roulement de toms « ba-doum-doum » qui répond au « shoot me ».",
+  astuce:"Les toms se jouent doucement, comme une phrase parlée : c'est un motif, pas un fill.",
+  sections:[ { nom:'Groove', fois:8, tracks:{ CH:'x-x-x-x---------', T1:'----------xx----', T2:'------------x-x-', GC:'x-------x-------' } },
+    { nom:'Refrain', fois:4, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-------x-x-----' } } ] }),
+morceau({ id:'m-believer', titre:'Believer', artiste:'Imagine Dragons', annee:2017,
+  niveau:3, style:'Pop rock', bpm:125, res:4,
+  desc:"Des toms qui martèlent comme des percussions de stade, et un refrain où la caisse claire claque à l'unisson des toms.",
+  astuce:"Alterne droite sur le tom basse et gauche sur le tom 1 : les deux doivent sonner aussi fort.",
+  sections:[ { nom:'Couplet (toms)', fois:8, tracks:{ TB:'x-x-----x-x-----', T1:'----x-------x---', GC:'x-x-----x-x-----' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---------------', CH:'--x-x-x-x-x-x-x-', CC:'----X-------X---', TB:'----x-------x---', GC:'x-x-----x-x-----' } } ] }),
+morceau({ id:'m-immigrant-song', titre:'Immigrant Song', artiste:'Led Zeppelin', annee:1970,
+  niveau:4, style:'Hard rock', bpm:112, res:4,
+  desc:"Le galop du riff au pied : Bonham colle la grosse caisse au « da-da-DAM » de la guitare, charleston et caisse claire par-dessus.",
+  astuce:"Chante le riff en jouant le pied seul, puis ajoute les mains. Le galop ne doit jamais traîner.",
+  sections:[ { nom:'Riff', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--xx---x--xx---' } },
+    { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-------x-x-----' } } ] }),
+morceau({ id:'m-wipe-out', titre:'Wipe Out', artiste:'The Surfaris', annee:1963,
+  niveau:4, style:'Rock\'n\'roll', bpm:160, res:4, fidelite:'origine',
+  desc:"LE solo de batterie que tout le monde a essayé : des doubles-croches à la caisse claire, un accent sur chaque temps, puis le même roulement qui descend sur les toms.",
+  astuce:"Commence à 90 BPM avec le tempo progressif. Mains alternées D-G-D-G, les accents tombent toujours sur la main droite.",
+  sections:[ { nom:'Groove surf', fois:4, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } },
+    { nom:'Roulement', fois:3, tracks:{ CC:'XxxxXxxxXxxxXxxx', GC:'x---x---x---x---' } },
+    { nom:'Roulement sur les toms', fois:1, tracks:{ CC:'XxxxXxxx--------', T1:'--------Xxxx----', TB:'------------Xxxx', GC:'x---x---x---x---' } },
+    { nom:'Groove surf (crash)', fois:4, tracks:{ CR:'x---------------', CH:'--x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+
+/* ------------------------- hard rock & métal ------------------------- */
+morceau({ id:'m-iron-man', titre:'Iron Man', artiste:'Black Sabbath', annee:1970,
+  niveau:2, style:'Hard rock', bpm:76, res:4,
+  desc:"Le riff le plus lourd des années 70, à un tempo de géant qui marche : la grosse caisse suit les pas du riff.",
+  astuce:"À 76 BPM, chaque coup doit être énorme et parfaitement en place : pense « lourd », pas « lent ».",
+  sections:[ { nom:'Riff', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x---x---x-x-x---' } },
+    { nom:'Couplet', fois:8, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-------x-x-----' } } ] }),
+morceau({ id:'m-rock-you-hurricane', titre:'Rock You Like a Hurricane', artiste:'Scorpions', annee:1984,
+  niveau:2, style:'Hard rock', bpm:126, res:2,
+  desc:"Le hard rock des stades : un rock en croches carré au couplet, la crash et la grosse caisse sur tous les temps au refrain.",
+  astuce:"Au refrain, la crash se joue sur le bord, en frappe glissée : sinon elle couvre tout.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M8 }, { nom:'Refrain', fois:8, tracks:M_CRASH8(M8_4) } ] }),
+morceau({ id:'m-du-hast', titre:'Du Hast', artiste:'Rammstein', annee:1997,
+  niveau:2, style:'Métal', bpm:128, res:2,
+  desc:"Du métal industriel : grosse caisse sur chaque temps comme une machine, caisse claire qui claque, refrain à la ride.",
+  astuce:"Le groove doit être mécanique : aucune variation de volume, aucun rubato. Joue avec le métronome fort.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--X---X-', GC:'x-x-x-x-' } },
+    { nom:'Refrain', fois:8, tracks:{ RD:'xxxxxxxx', CC:'--X---X-', GC:'x-x-x-x-' } },
+    { nom:'Arrêt', fois:1, tracks:{ CR:'x---x---', GC:'x---x---' } } ] }),
+morceau({ id:'m-whole-lotta-love', titre:'Whole Lotta Love', artiste:'Led Zeppelin', annee:1969,
+  niveau:3, style:'Hard rock', bpm:90, res:4,
+  desc:"Le riff en « da-da-DAM » et la batterie qui l'appuie : grosse caisse collée à la guitare, caisse claire qui claque sur 2 et 4.",
+  astuce:"Bonham joue fort mais détendu : la puissance vient de la vitesse de la baguette, pas de la crispation.",
+  sections:[ { nom:'Riff', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x--x----' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---------------', RD:'--x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x--x--x-' } } ] }),
+morceau({ id:'m-sad-but-true', titre:'Sad but True', artiste:'Metallica', annee:1991,
+  niveau:3, style:'Métal', bpm:90, res:4,
+  desc:"Le métal au ralenti : un groove massif à 90 BPM, avec des doublés de grosse caisse qui suivent le riff accordé bas.",
+  astuce:"Les deux coups de pied rapprochés se jouent talon levé, en « glissé » : le premier léger, le second franc.",
+  sections:[ { nom:'Riff', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x-----xxx-----x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x-------x-------', CC:'----X-------X---', GC:'x-----xxx-----xx' } } ] }),
+morceau({ id:'m-ace-of-spades', titre:'Ace of Spades', artiste:'Motörhead', annee:1980,
+  niveau:4, style:'Métal', bpm:140, res:2,
+  desc:"La grosse caisse en croches continues sous un rock à toute allure : le « double pied » de Philthy Animal Taylor, avec un seul pied.",
+  astuce:"Les croches au pied se jouent talon levé, cheville souple. Si ça se crispe, redescends à 100 BPM.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--X---X-', GC:'xxxxxxxx' } },
+    { nom:'Refrain', fois:8, tracks:{ CR:'x---x---', CH:'-xxx-xxx', CC:'--X---X-', GC:'xxxxxxxx' } } ] }),
+
+/* ------------------------------ pop ------------------------------ */
+morceau({ id:'m-dancing-queen', titre:'Dancing Queen', artiste:'ABBA', annee:1976,
+  niveau:2, style:'Pop', bpm:101, res:4,
+  desc:"Une pop disco à tempo moyen : grosse caisse chaloupée, charleston qui s'ouvre au refrain.",
+  astuce:"Souple et léger : le morceau est une danse, pas une marche.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-----x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-o-x-o-x-o-x-o-', CC:'----x-------x---', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-somebody', titre:'Somebody That I Used to Know', artiste:'Gotye', annee:2011,
+  niveau:2, style:'Pop', bpm:129, res:2,
+  desc:"Un groove minimaliste : grosse caisse qui rebondit, caisse claire sèche (en cross-stick sur le disque), charleston discret.",
+  astuce:"Joue la caisse claire tout doucement, en posant la baguette : le morceau est feutré jusqu'au refrain.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--x---x-', GC:'x--x-x--' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--X---X-', GC:'x--xx-x-' } } ] }),
+morceau({ id:'m-shape-of-you', titre:'Shape of You', artiste:'Ed Sheeran', annee:2017,
+  niveau:2, style:'Pop', bpm:96, res:4,
+  desc:"Le rythme « tresillo » (3-3-2) à la grosse caisse, hérité du dancehall, sous une caisse claire sur 2 et 4.",
+  astuce:"Compte « 1 . . 2 . . 3 . » pour le pied : trois, trois, deux. Le reste suit.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x--x-x--x--x-' } } ] }),
+morceau({ id:'m-take-on-me', titre:'Take On Me', artiste:'a-ha', annee:1985,
+  niveau:3, style:'Pop', bpm:169, res:2,
+  desc:"Une boîte à rythmes des années 80 à toute vitesse : grosse caisse sur les temps, charleston sur les contretemps.",
+  astuce:"À 169 BPM, ne cherche pas la force : des petits gestes, une cheville légère. Pense-le à 85 si besoin.",
+  sections:[ { nom:'Couplet', fois:8, tracks:QUATRE_SOL }, { nom:'Refrain', fois:8, tracks:{ ...QUATRE_SOL, CH:'-o-o-o-o' } } ] }),
+
+/* ------------------------ funk, soul, disco ------------------------ */
+morceau({ id:'m-respect', titre:'Respect', artiste:'Aretha Franklin', annee:1967,
+  niveau:2, style:'Soul', bpm:115, res:2,
+  desc:"La soul de Muscle Shoals : un backbeat qui claque, une grosse caisse qui pousse sur le « et » du 2.",
+  astuce:"Caisse claire bien au centre, baguette à plat : c'est le son « rimshot » de la soul.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--X---X-', GC:'x--xx---' } },
+    { nom:'Refrain (R-E-S-P-E-C-T)', fois:8, tracks:{ CH:'xxxxxxxx', CC:'--X---X-', GC:'x--xx-x-' } } ] }),
+morceau({ id:'m-play-that-funky-music', titre:'Play That Funky Music', artiste:'Wild Cherry', annee:1976,
+  niveau:3, style:'Funk', bpm:109, res:4,
+  desc:"Du funk blanc des années 70 : grosse caisse syncopée, ouverture de charleston en fin de mesure, backbeat lourd.",
+  astuce:"L'ouverture du charleston sur le « et » du 4 relance la mesure suivante : ferme-la pile sur le 1.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-o-', CC:'----X-------X---', GC:'x--x--x-x-----x-' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-o-', CC:'----X--g----X---', GC:'x--x--x-x--x--x-' } } ] }),
+morceau({ id:'m-good-times', titre:'Good Times', artiste:'Chic', annee:1979,
+  niveau:3, style:'Disco', bpm:110, res:4,
+  desc:"Le disco de Tony Thompson, samplé par le hip-hop entier : grosse caisse sur chaque temps, charleston ouvert sur les « et ».",
+  astuce:"L'ouverture est brève et égale à chaque fois : pied gauche souple, qui referme sur le temps.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-o-x-o-x-o-x-o-', CC:'----X-------X---', GC:'x---x---x---x---' } },
+    { nom:'Break (pied seul)', fois:2, tracks:{ GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-amen-brother', titre:'Amen, Brother', artiste:'The Winstons', annee:1969,
+  niveau:4, style:'Soul', bpm:136, res:4, fidelite:'origine',
+  desc:"Le « Amen break » de G. C. Coleman : quatre mesures de batterie seule, les plus samplées de l'histoire (hip-hop, jungle, drum'n'bass). Ride en croches, ghost notes, caisse claire décalée sur la fin.",
+  astuce:"Les deux premières mesures sont identiques ; la 3e déplace la dernière caisse claire, la 4e démarre par la crash. Travaille d'abord à 90 BPM.",
+  sections:[
+    { nom:'Mesures 1-2', fois:2, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----X--g-g--X--g', GC:'x-x-------xx----' } },
+    { nom:'Mesure 3', fois:1, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----X--g-g----X-', GC:'x-x-------xx----' } },
+    { nom:'Mesure 4', fois:1, tracks:{ CR:'--x-------------', RD:'x-x---x-x-x-x-x-', CC:'----X--g-g----X-', GC:'--x-------xx----' } },
+    { nom:'Le break entier', fois:1, bars:4, tracks:{
+        CR:SILENCE(48)+'--x-------------',
+        RD:'x-x-x-x-x-x-x-x-'+'x-x-x-x-x-x-x-x-'+'x-x-x-x-x-x-x-x-'+'x-x---x-x-x-x-x-',
+        CC:'----X--g-g--X--g'+'----X--g-g--X--g'+'----X--g-g----X-'+'----X--g-g----X-',
+        GC:'x-x-------xx----'+'x-x-------xx----'+'x-x-------xx----'+'--x-------xx----' } } ] }),
+morceau({ id:'m-funky-drummer', titre:'Funky Drummer', artiste:'James Brown', annee:1970,
+  niveau:5, style:'Funk', bpm:101, res:4, fidelite:'origine',
+  desc:"Le break de Clyde Stubblefield, l'un des plus samplés au monde : charleston en croches avec une ouverture, caisse claire pleine de ghost notes, grosse caisse syncopée.",
+  astuce:"Le secret est dans les nuances : accents sur 2 et 4 à 100 %, ghost notes à 20 %. Travaille mains seules, puis ajoute le pied.",
+  sections:[ { nom:'Groove', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-o-', CC:'----X--g-g--X--g', GC:'x-----x-x-x-----' } },
+    { nom:'Le break (batterie seule)', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-o-', CC:'----X--g-g--X-gg', GC:'x-----x-x-x-----' } } ] }),
+morceau({ id:'m-cissy-strut', titre:'Cissy Strut', artiste:'The Meters', annee:1969,
+  niveau:4, style:'Funk', bpm:90, res:4,
+  desc:"Le funk de La Nouvelle-Orléans, Zigaboo Modeliste aux baguettes : une grosse caisse qui parle, une caisse claire qui répond à côté des temps.",
+  astuce:"Rien n'est martelé : tout se joue en retenue, légèrement en arrière du temps. Écoute le disque avant de jouer.",
+  sections:[ { nom:'Thème', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X--x----X-x-', GC:'x--x--x---x-----' } },
+    { nom:'Solo de guitare', fois:8, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-g-g---X--g', GC:'x--x--x-x-x-----' } } ] }),
+morceau({ id:'m-chameleon', titre:'Chameleon', artiste:'Herbie Hancock', annee:1973,
+  niveau:4, style:'Funk', bpm:94, res:4,
+  desc:"Le jazz-funk des Headhunters : charleston en doubles-croches, grosse caisse qui colle à la basse, ghost notes sous le backbeat.",
+  astuce:"Les doubles au charleston se jouent d'une main, légères ; les accents sur les temps viennent du poignet.",
+  sections:[ { nom:'Riff de basse', fois:8, tracks:{ CH:'X-x-X-x-X-x-X-x-', CC:'----X-------X---', GC:'x--x--x---x--x--' } },
+    { nom:'Thème', fois:8, tracks:{ CH:'XxxxXxxxXxxxXxxx', CC:'----X--g-g--X--g', GC:'x--x--x---x--x--' } } ] }),
+
+/* ----------------------- hip-hop & électro ----------------------- */
+morceau({ id:'m-sandstorm', titre:'Sandstorm', artiste:'Darude', annee:1999,
+  niveau:1, style:'Électro', bpm:136, res:2,
+  desc:"La trance des années 2000 : grosse caisse sur chaque temps, charleston ouvert entre, et un pont où il ne reste que le pied.",
+  astuce:"Le charleston ouvert fait « tsss » exactement entre deux coups de pied : écoute le balancier.",
+  sections:[ { nom:'Boucle', fois:8, tracks:{ GC:'x-x-x-x-', CC:'--x---x-', CH:'-o-o-o-o' } },
+    { nom:'Pont (pied seul)', fois:4, tracks:{ GC:'x-x-x-x-' } },
+    { nom:'Montée', fois:2, tracks:{ CC:'xxxxxxxx', GC:'x-x-x-x-' } } ] }),
+morceau({ id:'m-levels', titre:'Levels', artiste:'Avicii', annee:2011,
+  niveau:1, style:'Électro', bpm:126, res:2,
+  desc:"La house de festival : four on the floor, montée à la caisse claire, et le « drop » où tout repart.",
+  astuce:"Pendant la montée, le crescendo se fait au volume, jamais au tempo : le métronome garde raison.",
+  sections:[ { nom:'Couplet', fois:8, tracks:QUATRE_SOL },
+    { nom:'Montée', fois:2, tracks:{ CC:'xxxxxxxx' } },
+    { nom:'Drop', fois:8, tracks:{ ...QUATRE_SOL, CH:'-o-o-o-o', CR:'x-------' } } ] }),
+morceau({ id:'m-gangstas-paradise', titre:"Gangsta's Paradise", artiste:'Coolio', annee:1995,
+  niveau:2, style:'Hip-hop', bpm:80, res:4,
+  desc:"Un hip-hop lent et sombre : caisse claire lourde sur 2 et 4, grosse caisse qui pousse sur la fin de mesure.",
+  astuce:"Le tempo est lent : résiste à l'envie d'accélérer, laisse chaque temps s'installer.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x-x-----' } } ] }),
+morceau({ id:'m-still-dre', titre:'Still D.R.E.', artiste:'Dr. Dre feat. Snoop Dogg', annee:1999,
+  niveau:2, style:'Hip-hop', bpm:93, res:4,
+  desc:"Le G-funk : un beat sec, grosse caisse en « 1 … a … et » sous le piano le plus célèbre du rap.",
+  astuce:"Joue en retrait, derrière le temps : la caisse claire tombe une fraction de seconde après le clic.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x--x----' } } ] }),
+
+/* ------------------------- variété française ------------------------- */
+morceau({ id:'m-le-vent', titre:'Le vent nous portera', artiste:'Noir Désir', annee:2001,
+  niveau:2, style:'Variété', bpm:108, res:4,
+  desc:"Un groove rock souple et tranquille, qui avance sans jamais forcer, sous la guitare de Manu Chao.",
+  astuce:"Charleston doux, caisse claire ronde : la chanson est une balade, la batterie marche à côté.",
+  sections:[ { nom:'Couplet', fois:8, tracks:M16_ROCK },
+    { nom:'Refrain', fois:8, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x-----x-x-----x-' } } ] }),
+morceau({ id:'m-desenchantee', titre:'Désenchantée', artiste:'Mylène Farmer', annee:1991,
+  niveau:2, style:'Variété', bpm:127, res:2,
+  desc:"La dance française des années 90 : grosse caisse sur chaque temps, charleston qui s'ouvre au refrain.",
+  astuce:"Les ouvertures du refrain sont courtes et régulières : comme un « tsss » à chaque contretemps.",
+  sections:[ { nom:'Couplet', fois:8, tracks:QUATRE_SOL }, { nom:'Refrain', fois:8, tracks:{ ...QUATRE_SOL, CH:'-o-o-o-o' } } ] }),
+morceau({ id:'m-djadja', titre:'Djadja', artiste:'Aya Nakamura', annee:2018,
+  niveau:2, style:'Variété', bpm:100, res:4,
+  desc:"L'afro-pop : une grosse caisse en 3-3-2 qui fait danser, caisse claire sur 2 et 4, charleston léger.",
+  astuce:"Le pied joue le « tresillo » : 1, le « a » du 1, le « et » du 2… Chante-le avant de le jouer.",
+  sections:[ { nom:'Groove', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----x-------x---', GC:'x--x--x---x--x--' } } ] }),
+
+/* -------------------------- reggae & latino -------------------------- */
+morceau({ id:'m-three-little-birds', titre:'Three Little Birds', artiste:'Bob Marley & The Wailers', annee:1977,
+  niveau:2, style:'Reggae', bpm:74, res:4,
+  desc:"Le one drop le plus doux qui soit : rien sur le 1, grosse caisse et caisse claire ensemble sur le 3.",
+  astuce:"Le vide sur le 1 déstabilise au début : compte « UN » à voix haute sans rien jouer.",
+  sections:[ { nom:'One drop', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'--------X-------', GC:'--------x-------' } } ] }),
+morceau({ id:'m-no-woman-no-cry', titre:'No Woman, No Cry', artiste:'Bob Marley & The Wailers', annee:1975,
+  niveau:3, style:'Reggae', bpm:78, res:4,
+  desc:"Le one drop de Carlton Barrett, avec le charleston qui s'ouvre avant le 3 et de petites relances à la caisse claire.",
+  astuce:"L'ouverture du charleston juste avant le 3 est la signature du reggae : courte, et refermée sur le coup.",
+  sections:[ { nom:'Couplet', fois:8, tracks:{ CH:'x-x-x-o-x-x-x-x-', CC:'--------X-------', GC:'--------x-------' } },
+    { nom:'Refrain', fois:8, tracks:{ CH:'x-x-x-o-x-x-x-o-', CC:'--------X-----x-', GC:'--------x-------' } } ] }),
+morceau({ id:'m-gasolina', titre:'Gasolina', artiste:'Daddy Yankee', annee:2004,
+  niveau:2, style:'Latin', bpm:96, res:4,
+  desc:"Le reggaeton qui a tout lancé : grosse caisse sur les quatre temps, caisse claire « dembow » qui boite.",
+  astuce:"Compte « 1 e et A 2 e ET a » : la caisse claire tombe sur le A puis sur le ET, toujours au même endroit.",
+  sections:[ { nom:'Dembow', fois:16, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'---x--x----x--x-', GC:'x---x---x---x---' } } ] }),
+morceau({ id:'m-girl-from-ipanema', titre:'The Girl from Ipanema', artiste:'Stan Getz & João Gilberto', annee:1964,
+  niveau:4, style:'Latin', bpm:130, res:2,
+  desc:"La bossa nova : charleston en croches, grosse caisse « 1 . . a 2 . 3 . . a 4 », et la clave jouée en cross-stick sur deux mesures.",
+  astuce:"Tout est léger : la bossa se murmure. La clave au cross-stick se pose, elle ne se frappe pas.",
+  sections:[ { nom:'Bossa', fois:8, bars:2, tracks:{ CH:'xxxxxxxx'+'xxxxxxxx', CC:'x--x--x-'+'-x--x---', GC:'x--xx--x'+'x--xx--x' } } ] }),
+
+/* --------------------------- blues & jazz --------------------------- */
+morceau({ id:'m-thrill-is-gone', titre:'The Thrill Is Gone', artiste:'B.B. King', annee:1969,
+  niveau:3, style:'Blues', bpm:90, res:4,
+  desc:"Un blues mineur en binaire, lent et élégant : grosse caisse qui pousse sur le « a » du 1, caisse claire ronde.",
+  astuce:"Le blues lent se joue avec les épaules basses : chaque coup est posé, jamais lancé.",
+  sections:[ { nom:'Couplet', fois:12, tracks:{ CH:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x-x-----' } },
+    { nom:'Solo (ride)', fois:12, tracks:{ RD:'x-x-x-x-x-x-x-x-', CC:'----X-------X---', GC:'x--x----x-x-----' } } ] }),
+morceau({ id:'m-sing-sing-sing', titre:'Sing, Sing, Sing', artiste:'Benny Goodman', annee:1937,
+  niveau:4, style:'Jazz', bpm:110, res:3, fidelite:'origine',
+  desc:"Gene Krupa, le premier batteur star : le rythme de swing joué au tom basse, grosse caisse sur les quatre temps, qui ouvre et porte tout le morceau.",
+  astuce:"Le motif « doum … doum-da-doum » est celui de la ride, descendu sur le tom basse. Frappe au centre, bras souple.",
+  sections:[ { nom:'Intro (tom basse)', fois:8, tracks:{ TB:'x--x-xx--x-x', GC:'x--x--x--x--' } },
+    { nom:'Thème', fois:8, tracks:{ TB:'x--x-xx--x-x', CC:'---x-----x--', GC:'x--x--x--x--', HP:'---x-----x--' } } ] }),
+morceau({ id:'m-so-what', titre:'So What', artiste:'Miles Davis', annee:1959,
+  niveau:4, style:'Jazz', bpm:136, res:3,
+  desc:"Le swing médium de Jimmy Cobb sur « Kind of Blue » : ride qui chante, charleston au pied sur 2 et 4, grosse caisse effleurée.",
+  astuce:"La ride mène. La caisse claire ne fait que ponctuer, très doucement, comme une conversation.",
+  sections:[ { nom:'Thème', fois:8, tracks:{ RD:'x--x-xx--x-x', HP:'---x-----x--', GC:'x--x--x--x--' } },
+    { nom:'Solo (comping)', fois:8, tracks:{ RD:'x--x-xx--x-x', HP:'---x-----x--', CC:'-----g----g-', GC:'x--x--x--x--' } } ] })
 );
 
 /* Transforme un morceau en un motif unique (sections dépliées) que le
@@ -5645,7 +6013,7 @@ function ecranNiveauBreaks(n){
     sur:`Breaks · niveau ${n} · groove + break`, titre:NOMS_NIVEAUX[n], retour:'#/breaks',
     html:`<div class="rangee">${lot.map(f => itemCarte({
       href:lienJouer('break', f), nom:f.nom,
-      meta:f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
+      meta:f.origine ? `${f.origine.artiste} · ${f.origine.annee}` : f.res === 3 ? 'Triolets' : f.res === 6 ? 'Sextolets' : f.res === 8 ? 'Triples-croches' : 'Groove + break',
       niveau:f.niveau, illus:miniGroove(f, 1), grad:NIV_GRAD[n - 1]
     })).join('')}</div>`
   });
@@ -5773,7 +6141,8 @@ function ouvrir(liste, id){
     const aide = `<h2>${item.nom}</h2>
       <p>${[item.style, 'Niveau ' + (item.niveau || 1), item.bpm ? item.bpm[1] + ' BPM' : '', signature(item)].filter(Boolean).map(b => `<span class="badge">${b}</span>`).join('')}</p>
       <p>${item.desc || ''}</p>${item.astuce ? CONSEIL(item.astuce) : ''}
-      ${liste === 'break' ? '<p class="muted small">La première mesure est un groove simple : elle sert à te remettre en place après le break.</p>' : ''}
+      ${item.origine ? `<p class="muted small">Tiré de <b>« ${item.origine.titre} »</b> (${item.origine.artiste}, ${item.origine.annee}), joué à ${item.origine.bpm} BPM sur le disque. Le tempo proposé ici est un tempo de travail.</p>` : ''}
+      ${liste === 'break' ? `<p class="muted small">La première mesure est ${item.origine ? 'le groove du morceau' : 'un groove simple'} : elle sert à te remettre en place après le break.</p>` : ''}
       ${rudiment ? '<p class="muted small">D = main droite, G = main gauche. Le doigté est écrit sous la partition.</p>' : ''}
       ${liste === 'rythme' ? '<p class="muted small">Dans les réglages, le mixeur isole (S) ou coupe (M) un élément pour travailler les autres séparément.</p>' : ''}
       ${rudiment || liste === 'exercice' ? METHODE : ''}`;

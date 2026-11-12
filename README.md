@@ -46,14 +46,23 @@ half-time, disco 16, funk syncopé, techno, reggaeton, breakbeat, cumbia, soca,
 6/8 afro-cubain, double shuffle, swing two-feel, valse jazz, shuffle Purdie,
 thrash, galop métal, double pédale, 5/8, 9/8…
 
-### 💿 Morceaux connus — 66 titres, rangés par genre puis par niveau
+### 💿 Morceaux connus — 112 titres, rangés par genre puis par niveau
 We Will Rock You, Seven Nation Army, Billie Jean, Back in Black, Another One Bites
-the Dust, Smells Like Teen Spirit, Zombie, Walk This Way, Superstition, Rosanna,
-Money (7/4), Take Five (5/4), Alors on danse, Get Lucky, Thunderstruck, Paranoid,
-Master of Puppets, Beat It, Blinding Lights, Stayin' Alive, Le Freak, September,
-Lose Yourself, Papaoutai, Ça plane pour moi, L'Aventurier, Dernière danse,
-Despacito, Oye Como Va, Pride and Joy, La Grange, Fly Me to the Moon, Song for the
-Deaf (Queens of the Stone Age)…
+the Dust, Smells Like Teen Spirit (avec le vrai fill d'entrée), Zombie, Walk This
+Way, Superstition, Rosanna, Money (7/4), Take Five (5/4), Alors on danse, Get Lucky,
+Thunderstruck, Paranoid, Master of Puppets, Beat It, Blinding Lights, Stayin' Alive,
+Le Freak, September, Lose Yourself, Papaoutai, Ça plane pour moi, L'Aventurier,
+Dernière danse, Despacito, Oye Como Va, Pride and Joy, La Grange, Fly Me to the
+Moon, Song for the Deaf, Sweet Dreams, Song 2, Creep, Satisfaction, Start Me Up,
+Fortunate Son, In the End, Radioactive, Viva la Vida, Hotel California, Come
+Together, Believer, Immigrant Song, Wipe Out (le solo), Iron Man, Rock You Like a
+Hurricane, Du Hast, Whole Lotta Love, Sad but True, Ace of Spades, Dancing Queen,
+Somebody That I Used to Know, Shape of You, Take On Me, Respect, Play That Funky
+Music, Good Times, **Amen, Brother** (le « Amen break », quatre mesures), **Funky
+Drummer**, Cissy Strut, Chameleon, Sandstorm, Levels, Gangsta's Paradise, Still
+D.R.E., Le vent nous portera, Désenchantée, Djadja, Three Little Birds, No Woman No
+Cry, Gasolina, The Girl from Ipanema, The Thrill Is Gone, Sing Sing Sing (le tom de
+Gene Krupa), So What…
 
 Huit genres : rock, hard rock & métal, pop, funk-soul-disco, hip-hop & électro,
 variété française, reggae & latino, blues & jazz. On choisit d'abord le style, puis
@@ -72,13 +81,17 @@ triple, double, 5, 6, 7, 9, 10, 11, 13, 15, 17…), paradiddles (simple, double,
 triolet suisse, flam tap inversé, flam drag…), drags (drag tap, leçon 25,
 dragadiddle, drag paradiddles, ratamacues simple, double et triple). Doigté D/G sous chaque note.
 
-### 🥁 Breaks & fills — 35 breaks
+### 🥁 Breaks & fills — 39 breaks
 On choisit d'abord son niveau, puis les breaks de ce niveau.
 Chaque break est présenté sous la forme **1 mesure de groove + 1 mesure de break**,
 en boucle : c'est l'enchaînement qui se travaille, pas le break tout seul.
 
 Dont triolets main-main-pied (style Bonham), paradiddle sur les toms, roulement de 6,
-triples-croches.
+triples-croches, et **quatre breaks célèbres** tirés de morceaux, précédés du groove
+du morceau : le fill d'entrée de *Smells Like Teen Spirit* (flams, grosse caisse
+glissée, charleston mi-ouvert), le roulement de *Wipe Out*, le break de toms de *In
+the Air Tonight* et le fill en triolets de *Rosanna*. La carte indique l'artiste,
+l'aide indique le tempo du disque ; le tempo proposé est un tempo de travail.
 
 ### ⏱️ Exercices — 21
 Mains (alternées, 8/8, doubles lentes, triolets, accents, nuances), pieds
